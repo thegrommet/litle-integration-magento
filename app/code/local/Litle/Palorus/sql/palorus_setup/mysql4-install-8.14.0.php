@@ -10,15 +10,86 @@
         ");
     $installer->run("
     CREATE TABLE {$installer->getTable('palorus/subscription')} (
-    subscription_id integer(10) unsigned NOT NULL auto_increment,
-    order_id integer(10) unsigned NOT NULL default 0,
-    customer_id integer(10) unsigned NOT NULL default 0,
-    product_id integer(10) NOT NULL default 0,
-    amount integer(12) NULL,
+    subscription_id integer(10) unsigned NOT NULL auto_increment COMMENT 'pk for table',
+    product_id integer(10) NOT NULL default 0 COMMENT 'fk to product',
+    customer_id integer(10) unsigned NOT NULL default 0 COMMENT 'fk to customer',
+    initial_order_id integer(10) unsigned NOT NULL default 0 COMMENT 'fk to order for first order placed in subscription',
+    
+    amount integer(12) NOT NULL COMMENT 'amount to be charged per period in pennies',
+
+    initial_fees integer(12) NOT NULL default 0 COMMENT 'amount in pennies for inital fee',
+    num_of_iterations integer(5) NOT NULL default 0 COMMENT 'how many billing cycles total',
+    iteration_length integer(3) NOT NULL default 0 COMMENT 'fk to litle_iteration_length',
+    num_of_iterations_ran integer(5) NOT NULL default 0 COMMENT 'how many iterations have happened so far',
+    
+    active boolean NOT NULL default true COMMENT 'whether it is active or not - used by suspend and trial period',
+    created_date timestamp NOT NULL default current_timestamp COMMENT 'date subscription created',
+    start_date timestamp NULL COMMENT 'when to start iteration 1',
+    
     PRIMARY KEY (subscription_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
         ");
 
+    #Add litle_subscription_suspend table
+    $installer->run("
+                DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription_suspend')};
+            ");
+    $installer->run("
+        CREATE TABLE {$installer->getTable('palorus/subscription_suspend')} (
+        suspend_id integer(10) unsigned NOT NULL auto_increment COMMENT 'pk for table',
+        subscription_id integer(10) NOT NULL default 0 COMMENT 'fk to litle_subscription',
+        turn_on_date timestamp NOT NULL default current_timestamp COMMENT 'when to restart subscription',
+        PRIMARY KEY (suspend_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
+    ");
+    
+    #Add litle_subscription_history table
+    $installer->run("
+                DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription_history')};
+                ");
+    $installer->run("
+            CREATE TABLE {$installer->getTable('palorus/subscription_history')} (
+            subscription_history_id integer(10) unsigned NOT NULL auto_increment COMMENT 'pk for table',
+            subscription_id integer(10) NOT NULL default 0 COMMENT 'fk to litle_subscription',
+            cron_id integer(10) NOT NULL default 0 COMMENT 'fk to litle_subscription_cron',
+            order_id integer(10) unsigned NOT NULL default 0 COMMENT 'fk to order for this bill',
+            PRIMARY KEY (subscription_history_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
+        ");
+    
+    #Add litle_subscription_cron_history table
+    $installer->run("
+                DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription_cron_history')};
+                ");
+    $installer->run("
+                CREATE TABLE {$installer->getTable('palorus/subscription_cron_history')} (
+                cron_history_id integer(10) unsigned NOT NULL auto_increment COMMENT 'pk for table',
+		        time_ran timestamp NOT NULL default current_timestamp COMMENT 'when this cron ran',
+            	PRIMARY KEY (cron_history_id)
+    			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
+            ");
+    
+    #Add litle_subscription_iteration_ref table
+    $installer->run("
+                    DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription_iteration_ref')};
+                    ");
+    $installer->run("
+                    CREATE TABLE {$installer->getTable('palorus/subscription_iteration_ref')} (
+                    iteration_ref_id integer(10) unsigned NOT NULL COMMENT 'pk for table',
+    		        value varchar(25) NOT NULL COMMENT 'plain text name',
+    	        	PRIMARY KEY (iteration_ref_id)
+    				) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
+                ");
+    
+    #Add the values for iteration length ref
+    $installer->run("INSERT INTO litle_subscription_iteration_ref values (1,'Daily')");
+    $installer->run("INSERT INTO litle_subscription_iteration_ref values (2,'Weekly')");
+    $installer->run("INSERT INTO litle_subscription_iteration_ref values (3,'BiWeekly')");
+    $installer->run("INSERT INTO litle_subscription_iteration_ref values (4,'Monthly')");
+    $installer->run("INSERT INTO litle_subscription_iteration_ref values (5,'SemiMonthly')");
+    $installer->run("INSERT INTO litle_subscription_iteration_ref values (6,'Annually')");
+    $installer->run("INSERT INTO litle_subscription_iteration_ref values (7,'SemiAnnually')");
+    
     #Add litle_subscription attribute, available to all products
 	$installer->run("INSERT INTO `eav_attribute` 
 		(`entity_type_id`, `attribute_code`, `backend_model`, `backend_type`, `frontend_input`, `frontend_label`, `source_model`, `is_required`, `is_user_defined`, `default_value`, `is_unique`) 
