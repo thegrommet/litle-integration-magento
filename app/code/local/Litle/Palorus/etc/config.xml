@@ -200,6 +200,19 @@
 			</updates>
 		</layout>
 	</adminhtml>
+	
+	<crontab>
+        <jobs>
+            <litle_palorus>
+                <schedule>
+                    <cron_expr>0 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>palorus/subscription::callFromCron</model>
+                </run>
+            </litle_palorus>
+        </jobs>
+    </crontab>
 
 
 </config>

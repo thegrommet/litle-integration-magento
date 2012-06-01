@@ -317,24 +317,38 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	}
 
 	public function getLineItemData(Varien_Object $payment){
+		Mage::log("in getLineItemData -- entry point");
 		$order = $payment->getOrder();
+		Mage::log("in getLineItemData -- mid point0");
 		$items = $order->getAllItems();
 		$i = 0;
 		$lineItemArray = array();
 		foreach ($items as $itemId => $item)
 		{
+		Mage::log("in getLineItemData -- mid point1");
 			$name = $item->getName();
+			Mage::log("in getLineItemData -- mid point1.1");
 			$unitPrice=$item->getPrice();
+			Mage::log("in getLineItemData -- mid point1.2");
 			$sku=$item->getSku();
+			Mage::log("in getLineItemData -- mid point1.3");
 			$productId=$item->getProductId();
+			Mage::log("in getLineItemData -- mid point1.4");
 			$qty=$item->getQtyToInvoice();
+			Mage::log("in getLineItemData -- mid point1.5");
 			
 			if( strlen($name) > 26 ) {
+				Mage::log("in getLineItemData -- mid point1.6");
 				$name = substr($name,0,26);
 			}
 			
+			Mage::log($productId);
 			$product = Mage::helper("catalog/product")->getProduct($productId, null);
+			Mage::log(var_dump($product));
+			Mage::log($product->getAttributeText('litle_subscription'));
+			Mage::log("in getLineItemData -- mid point1.7");
 			if($product->getAttributeText('litle_subscription') === "Yes") {
+				Mage::log("in getLineItemData -- mid point2");
 				for($j = 0; $j < $qty; $j++) {
 					$now = date_create();
 					$data = array(
@@ -351,7 +365,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 					Mage::getModel('palorus/subscription')->setData($data)->save();
 				}
 			}
-			
+			Mage::log("in getLineItemData -- mid point1.8");
 			$lineItemArray[$i] = array(
 			'itemSequenceNumber'=>($i+1),
 			'itemDescription'=>$name,
@@ -361,6 +375,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			'unitCost'=>($unitPrice * 100));
 			$i++;
 		}
+		Mage::log("in getLineItemData -- exit point");
 		return $lineItemArray;
 	}
 

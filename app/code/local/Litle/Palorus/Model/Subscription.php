@@ -9,5 +9,13 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$this->_model = 'palorus/subscription';
 		$this->_init($this->_model);
 	}
+	
+	public function callFromCron()
+	{
+		Mage::log("callFromCron ");
+// 		$collection = Mage::getModel('palorus/insight')
+// 		->getCollection()
+// 		->addFieldToFilter('customer_id',$customerId);
+	}
 
 }
