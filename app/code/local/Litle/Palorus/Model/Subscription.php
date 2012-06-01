@@ -13,9 +13,16 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	public function callFromCron()
 	{
 		Mage::log("callFromCron ");
-// 		$collection = Mage::getModel('palorus/insight')
-// 		->getCollection()
-// 		->addFieldToFilter('customer_id',$customerId);
+		$collection = Mage::getModel('palorus/subscription')
+		->getCollection();
+		//->addFieldToFilter('customer_id',$customerId);
+		//Mage::log(var_dump($collection));
+		
+		foreach($collection as $collectionItem)
+		{
+			Mage::log("hi");
+			Mage::log($collectionItem['subscription_id']);
+		}
 	}
 
 }
