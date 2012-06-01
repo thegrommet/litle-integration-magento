@@ -326,16 +326,22 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			$name = $item->getName();
 			$unitPrice=$item->getPrice();
 			$sku=$item->getSku();
-			$ids=$item->getProductId();
+			$productId=$item->getProductId();
 			$qty=$item->getQtyToInvoice();
 			
-			if( strlen($name) > 26 )
+			if( strlen($name) > 26 ) {
 				$name = substr($name,0,26);
+			}
+			
+			$product = Mage::helper("catalog/product")->getProduct($productId, null);
+			if($product->getAttributeText('litle_subscription') === "Yes") {
+				Mage::helper("palorus")->saveSubscription($payment, $product);
+			}
 			
 			$lineItemArray[$i] = array(
 			'itemSequenceNumber'=>($i+1),
 			'itemDescription'=>$name,
-			'productCode'=>$ids,
+			'productCode'=>$productId,
 			'quantity'=>$qty,
 			'lineItemTotal'=>(($unitPrice*$qty)*100),
 			'unitCost'=>($unitPrice * 100));

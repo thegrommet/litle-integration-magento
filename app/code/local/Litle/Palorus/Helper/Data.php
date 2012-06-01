@@ -42,6 +42,17 @@ class Litle_Palorus_Helper_Data extends Mage_Core_Helper_Abstract
 		Mage::getModel('palorus/vault')->setData($data)->save();
 	}
 	
+	public function saveSubscription($payment, $product) {
+		$data = array(
+			'order_id' => $payment->getOrder()->getId(),
+			'customer_id' => $payment->getOrder()->getCustomerId(),
+			'product_id' => 234,// TODO:: get from product
+			'amount'=> 232 // TODO:: get from product
+		);
+		Mage::getModel('palorus/subscription')->setData($data)->save();
+	}
+	
+	
 	public function getBaseUrl() {
 		$litle = new Litle_CreditCard_Model_PaymentLogic();
 		$url = $litle->getConfigData("url");
