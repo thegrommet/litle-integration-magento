@@ -335,7 +335,21 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			
 			$product = Mage::helper("catalog/product")->getProduct($productId, null);
 			if($product->getAttributeText('litle_subscription') === "Yes") {
-				Mage::helper("palorus")->saveSubscription($payment, $product);
+				for($j = 0; $j < $qty; $j++) {
+					$now = date_create();
+					$data = array(
+						'product_id' => $productId,
+						'initial_order_id' => $payment->getOrder()->getId(),
+						'customer_id' => $payment->getOrder()->getCustomerId(),
+						'amount' => 123, //TODO get from product attribute
+						'initial_fees' => $unitPrice*100,
+						'num_of_iterations' => 1, //TODO get from product attribute
+						'iteration_length' => 1, //TODO this is daily
+						'start_date' => date_timestamp_get($now), //TODO make based on length of trial period
+						'active' => true //TODO make based on trial period
+					);
+					Mage::getModel('palorus/subscription')->setData($data)->save();
+				}
 			}
 			
 			$lineItemArray[$i] = array(

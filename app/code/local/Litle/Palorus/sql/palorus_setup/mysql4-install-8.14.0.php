@@ -23,8 +23,8 @@
     num_of_iterations_ran integer(5) NOT NULL default 0 COMMENT 'how many iterations have happened so far',
     
     active boolean NOT NULL default true COMMENT 'whether it is active or not - used by suspend and trial period',
-    created_date timestamp NOT NULL default current_timestamp COMMENT 'date subscription created',
-    start_date timestamp NULL COMMENT 'when to start iteration 1',
+    created_date timestamp NOT NULL COMMENT 'date subscription created',
+    start_date timestamp NOT NULL COMMENT 'when to start iteration 1',
     
     PRIMARY KEY (subscription_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
