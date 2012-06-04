@@ -81,6 +81,11 @@
     				) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
                 ");
     
+    #Alter vault table to add the expiration date field
+    $installer->run("
+                        ALTER TABLE {$installer->getTable('palorus/vault')} ADD COLUMN expdate varchar(4) NULL COMMENT 'expiration date';
+                    ");
+    
     #Add the values for iteration length ref
     $installer->run("INSERT INTO litle_subscription_iteration_ref values (1,'Daily')");
     $installer->run("INSERT INTO litle_subscription_iteration_ref values (2,'Weekly')");

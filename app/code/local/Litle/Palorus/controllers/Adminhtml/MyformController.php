@@ -69,6 +69,6 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
 
     public function subscriptionAction()
     {
-    	Mage::getModel("palorus/subscription")->createOrder2();
+    	Mage::getModel("palorus/subscription")->createOrder("156", "2", "575");
     }
 }
