@@ -20,8 +20,14 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		
 		foreach($collection as $collectionItem)
 		{
-			Mage::log("hi");
 			Mage::log($collectionItem['subscription_id']);
+			//Get the original order for that subscription
+			$originalOrderId = $collectionItem['initial_order_id'];
+			Mage::log("Order id is " . $originalOrderId);
+			$orderCollection = Mage::getModel('sales/order')->getCollection()->addFieldToFilter('order_id', $originalOrderId);
+			foreach($orderCollection as $order) {
+				Mage::log("Actual order total is " . $order->getBaseGrandTotal());
+			}
 		}
 	}
 
