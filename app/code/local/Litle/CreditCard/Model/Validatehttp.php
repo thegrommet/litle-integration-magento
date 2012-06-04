@@ -11,12 +11,22 @@ class Litle_CreditCard_Model_Validatehttp extends Mage_Core_Model_Config_Data
 	{
 		$returnFromThisModel = Mage::getStoreConfig('payment/LEcheck/' . $fieldToLookFor);
 		if( $returnFromThisModel == NULL )
-		$returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
+			$returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
 	
 		return $returnFromThisModel;
 	}
+	
+	public function getSubscriptionConfigData($fieldToLookFor, $store = NULL)
+	{
+		$returnFromThisModel = Mage::getStoreConfig('payment/Subscription/' . $fieldToLookFor);
+		if( $returnFromThisModel == NULL )
+			$returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
+	
+		return $returnFromThisModel;
+	}
+	
 	function save(){
-		if ($this->getFieldsetDataValue('active') || $this->getEcheckConfigData('active'))
+		if ($this->getFieldsetDataValue('active') || $this->getEcheckConfigData('active') || $this->getSubscriptionConfigData('active'))
 		{
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_PROXY, $this->getFieldsetDataValue('proxy'));

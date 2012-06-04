@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<modules>
+		<Litle_LEcheck>
+			<version>8.13.0</version>
+		</Litle_LEcheck>
+	</modules>
+	<global>
+		<helpers>
+	    	<litlesubscription>
+				<class>Litle_Subscription_Helper</class>
+			</litlesubscription>
+		</helpers>
+		<models>
+			<litlesubscription>
+				<class>Litle_Subscription_Model</class>
+			</litlesubscription>
+		</models>
+		<resources>
+			<litlesubscription_setup>
+				<setup>
+					<module>Litle_LEcheck</module>
+				</setup>
+				<connection>
+					<use>core_setup</use>
+				</connection>
+			</litlesubscription_setup>
+			<litlesubscription_write>
+				<connection>
+					<use>core_write</use>
+				</connection>
+			</litlesubscription_write>
+			<litlesubscription_read>
+				<connection>
+					<use>core_read</use>
+				</connection>
+			</litlesubscription_read>
+		</resources>
+	</global>
+	<default>
+		<payment>
+			<litlesubscription>
+				<active>0</active>
+				<timeout>65</timeout>
+				<url>https://www.testlitle.com/sandbox/communicator/online</url>
+				<model>litlesubscription/paymentLogic</model>
+				<order_status>1</order_status>
+				<payment_action>authorize_capture</payment_action>
+				<test>1</test>
+				<title>Litle Subscription</title>
+				<allowspecific>0</allowspecific>
+			</litlesubscription>
+		</payment>
+	</default>
+</config>

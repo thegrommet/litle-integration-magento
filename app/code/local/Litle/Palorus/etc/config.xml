@@ -111,6 +111,10 @@
         		                <title>Post-Deposit Fraud Impact</title>
         		                <action>palorus/adminhtml_myform/dashboardpostdepositfraudimpact</action>
         		            </dashboardpostdepositfraudimpact>
+        		            <subscriptioncheck translate="title" module="palorus">
+        		                <title>Litle Subscription Check</title>
+        		                <action>palorus/adminhtml_myform/subscription</action>
+        		            </subscriptioncheck>
         		        </children>
         		    </palorus_adminform>
         		 </children>

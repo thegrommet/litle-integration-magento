@@ -18,5 +18,11 @@
             <codePool>local</codePool>
         </Litle_Palorus>
     </modules>
+    <modules>
+        <Litle_Subscription>
+            <active>true</active>
+            <codePool>local</codePool>
+        </Litle_Subscription>
+    </modules>
 	
 </config>

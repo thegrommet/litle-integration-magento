@@ -65,5 +65,10 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
     public function chargebackReportAction()
     {
     	$this->_redirectUrl(Mage::helper('palorus')->getBaseUrl() . '/ui/reports/chargebacks/compliance');
-    }    
+    }  
+
+    public function subscriptionAction()
+    {
+    	Mage::getModel("palorus/subscription")->createOrder2();
+    }
 }
