@@ -36,7 +36,18 @@
 				</connection>
 			</litlesubscription_read>
 		</resources>
+		<blocks>
+			<litlesubscription>
+				<class>Litle_Subscription_Block</class>
+			</litlesubscription>
+			<catalog>
+				<rewrite>
+					<product_view>Litle_Subscription_Block_Product_View</product_view>
+				</rewrite>
+			</catalog>
+		</blocks>
 	</global>
+	
 	<default>
 		<payment>
 			<litlesubscription>
