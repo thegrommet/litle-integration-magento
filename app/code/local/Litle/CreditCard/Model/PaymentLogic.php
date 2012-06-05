@@ -7,7 +7,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	 * unique internal payment method identifier
 	 */
 	protected $_code = 'creditcard';
-
+	
 	protected $_formBlockType = 'creditcard/form_creditCard';
 	/**
 	 * this should probably be true if you're using this
@@ -315,35 +315,40 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		$year = '20' . $year_temp['0'];
 		return $year . '-' . $month . '-' . $day;
 	}
-
+	
+	public function getProductAttribute($productId, $attributeName) {
+		$product = Mage::helper("catalog/product")->getProduct($productId, null);
+		$attributeValue = $product->getAttributeText($attributeName);
+		return $attributeValue;
+	}
+	
 	public function getLineItemData(Varien_Object $payment){
-		$order = $payment->getOrder();
-		$items = $order->getAllItems();
-		$i = 0;
-		$lineItemArray = array();
+ 		$order = $payment->getOrder();
+ 		$items = $order->getAllItems();
+ 		$i = 0;
+ 		$lineItemArray = array();
 		foreach ($items as $itemId => $item)
 		{
-			$name = $item->getName();
-			$unitPrice=$item->getPrice();
-			$sku=$item->getSku();
-			$productId=$item->getProductId();
-			$qty=$item->getQtyToInvoice();
-			
-			if( strlen($name) > 26 ) {
-				$name = substr($name,0,26);
-			}
-			$product = Mage::helper("catalog/product")->getProduct($productId, null);
-			if($product->getAttributeText('litle_subscription') === "Yes") {
+ 			$name = $item->getName();
+ 			$unitPrice=$item->getPrice();
+ 			$sku=$item->getSku();
+ 			$productId=$item->getProductId();
+ 			$qty=$item->getQtyToInvoice();
+		
+ 			if( strlen($name) > 26 ) {
+ 				$name = substr($name,0,26);
+ 			}
+			if($this->getProductAttribute($productId, 'litle_subscription') === "Yes") {
 				for($j = 0; $j < $qty; $j++) {
 					$now = date_create();
 					$data = array(
 						'product_id' => $productId,
 						'initial_order_id' => $payment->getOrder()->getId(),
 						'customer_id' => $payment->getOrder()->getCustomerId(),
-						'amount' => 123, //TODO get from product attribute
+						'amount' => $this->getProductAttribute($productId, 'litle_subs_amount_per_itr'),
 						'initial_fees' => $unitPrice*100,
-						'num_of_iterations' => 1, //TODO get from product attribute
-						'iteration_length' => 1, //TODO this is daily
+						'num_of_iterations' => $this->getProductAttribute($productId, 'litle_subs_num_of_itrs'),
+						'iteration_length' => $this->getProductAttribute($productId, 'litle_subs_itr_len'),
 						'start_date' => date_timestamp_get($now), //TODO make based on length of trial period
 						'active' => true //TODO make based on trial period
 					);
@@ -357,9 +362,9 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			'quantity'=>$qty,
 			'lineItemTotal'=>(($unitPrice*$qty)*100),
 			'unitCost'=>($unitPrice * 100));
-			$i++;
-		}
-		return $lineItemArray;
+ 			$i++;
+ 		}
+ 		return $lineItemArray;
 	}
 
 

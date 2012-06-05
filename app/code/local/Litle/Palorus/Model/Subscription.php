@@ -49,14 +49,14 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			// do nothing
 		}
 		
-		$product1 = Mage::getModel('catalog/product')->load($productId); /* HTC Touch Diamond */
+		$product1 = Mage::getModel('catalog/product')->load($productId);
 		$buyInfo1 = array('qty' => "1");
 		
 		$quote->addProduct($product1, new Varien_Object($buyInfo1));
 		$billingAddress = $quote->getBillingAddress()->addData($customer->getPrimaryBillingAddress()->getData());
 		$shippingAddress = $quote->getShippingAddress()->addData($customer->getPrimaryShippingAddress()->getData());
 		$shippingAddress->setCollectShippingRates(true)->collectShippingRates()
-		->setShippingMethod('flatrate_flatrate')
+		->setShippingMethod('flatrate_flatrate') //TODO Make based on original order id
 		->setPaymentMethod('litlesubscription');
 		$quote->getPayment()->importData(array(
 														'method' => 'litlesubscription', 
