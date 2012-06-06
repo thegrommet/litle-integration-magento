@@ -20,8 +20,11 @@ class Litle_Subscription_Block_Product_View extends Mage_Catalog_Block_Product_V
 		$litleAdditions = "Subscription amount: " . $litle_subs_amount_per_itr . " per: " . $litle_subs_itr_len . " for " . $litle_subs_num_of_itrs;
 		$allAttributes = $product1->getAttributes();
 		//echo $allAttributes['litle_subscription'];
-		foreach($allAttributes as $attribute)
- 			echo get_class($attribute);
+		foreach($allAttributes as $attribute){
+ 			if( $attribute->getFrontendLabel() === "Litle Subscription Amount Per Iteration" )
+				var_dump($attribute);
+ 				//echo $attribute["value"];
+		}
 		
  		//echo $attribute;
 		//$_helper = Mage::helper('catalog/output')->getProductAttribute();
