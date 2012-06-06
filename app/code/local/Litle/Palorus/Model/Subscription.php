@@ -12,7 +12,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	
 	public function callFromCron()
 	{
-		Mage::log("callFromCron ");
 		$collection = Mage::getModel('palorus/subscription')
 		->getCollection();
 		
@@ -26,12 +25,19 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			//foreach($orderCollection as $order) {
 				//Mage::log("Actual order total is " . $order->getBaseGrandTotal());
 			//}
-			if($collectionItem['active']){
+			if(		$collectionItem['active'] && 
+					($collectionItem['num_of_iterations_ran'] < $collectionItem['num_of_iterations'] )
+			  )
+			{
 				if(!$this->createOrder($productId, $customerId, $originalOrderId))
 				{
 					$collectionItem->setActive(false);
-					$collectionItem->save();
+				}
+				else
+				{
+					$collectionItem->setNumOfIterationsRan($collectionItem['num_of_iterations_ran'] + 1);
 				}			
+				$collectionItem->save();
 			}
 		}
 	}
