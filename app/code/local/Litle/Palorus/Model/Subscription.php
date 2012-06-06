@@ -26,8 +26,13 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			//foreach($orderCollection as $order) {
 				//Mage::log("Actual order total is " . $order->getBaseGrandTotal());
 			//}
-			$this->createOrder($productId, $customerId, $originalOrderId);
-			Mage::log("did something from subscription.");
+			if($collectionItem['active']){
+				if(!$this->createOrder($productId, $customerId, $originalOrderId))
+				{
+					$collectionItem->setActive(false);
+					$collectionItem->save();
+				}			
+			}
 		}
 	}
 	
@@ -48,7 +53,11 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		foreach($vaultCollection as $vaultRecord){
 			// do nothing
 		}
-		
+ 		if( empty($vaultRecord) )
+ 		{
+ 			Mage::log("Payment information could not be retrieved for intial order id: " . $initialOrderId . " and customer id: " . $customerId);
+ 			return false;
+ 		}
 		$product1 = Mage::getModel('catalog/product')->load($productId);
 		$buyInfo1 = array('qty' => "1");
 		
@@ -69,6 +78,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$quote->collectTotals()->save();
 		$service = Mage::getModel('sales/service_quote', $quote);
 		$service->submitAll();
+		return true;
 	}
 
 }

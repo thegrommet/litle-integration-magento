@@ -565,11 +565,6 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 								'shipToAddress'=> $this->getAddressInfo($payment),
 				);
 				$payment_hash = $this->creditCardOrPaypageOrToken($payment);
-				if( count($payment_hash) === 0 )
-				{
-					Mage::log("Payment information could not be retrieved for orderId: " . $orderId);
-					return;
-				}
 				$hash = array_merge($hash_temp,$payment_hash);
 			}
 			$merchantData = $this->merchantData($payment);
