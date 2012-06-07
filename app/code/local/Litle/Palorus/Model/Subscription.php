@@ -54,13 +54,15 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		
 		foreach($subscriptionSuspend as $suspendRecord)
 		{
-			$tempCollection = Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id', $suspendRecord['subscription_id']);
-			//Mage::log("in itemTemp blabla");
-			foreach($tempCollection as $tempItem)
-			{
-			 $tempItem->setActive(true);
-			 $tempItem->save();
-			}
+			Mage::log("########## Subscription id: " . $suspendRecord['subscription_id'] . " ##########");
+			$tempRecord = Mage::getModel('palorus/subscription');
+			$tempRecord->load($suspendRecord['subscription_id']);
+			//foreach($tempCollection as $tempItem)
+			//{
+			//	Mage::log("I'm here.....");
+				$tempRecord->setActive(true);
+				$tempRecord->save();
+			//}
 		}
 		
 		$collection = Mage::getModel('palorus/subscription')->getCollection();
@@ -77,10 +79,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			//foreach($orderCollection as $order) {
 				//Mage::log("Actual order total is " . $order->getBaseGrandTotal());
 			//}
-			$subscriptionSuspendCollection = Mage::getModel('palorus/subscriptionSuspend')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
-			foreach($subscriptionSuspendCollection as $subscriptionTurnOnDate){
-				// do nothing
-			}
+			
 			if(		$collectionItem['active'] && 
 					($collectionItem['num_of_iterations_ran'] < $collectionItem['num_of_iterations'] )
 			  )
