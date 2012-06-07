@@ -1,4 +1,38 @@
 <?php
+/**
+* Litle Subscription Module
+*
+* NOTICE OF LICENSE
+*
+* Copyright (c) 2012 Litle & Co.
+*
+* Permission is hereby granted, free of charge, to any person
+* obtaining a copy of this software and associated documentation
+* files (the "Software"), to deal in the Software without
+* restriction, including without limitation the rights to use,
+* copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the
+* Software is furnished to do so, subject to the following
+* conditions:
+*
+* The above copyright notice and this permission notice shall be
+* included in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+* OTHER DEALINGS IN THE SOFTWARE.
+*
+* @category   Litle
+* @package    Litle_Subscription
+* @copyright  Copyright (c) 2012 Litle & Co.
+* @license    http://www.opensource.org/licenses/mit-license.php
+* @author     Litle & Co <sdksupport@litle.com> www.litle.com/developers
+*/
 class Litle_Subscription_Block_Product_View extends Mage_Catalog_Block_Product_View
 {
 	public function __construct() {
@@ -8,26 +42,13 @@ class Litle_Subscription_Block_Product_View extends Mage_Catalog_Block_Product_V
 	public function getTierPriceHtml($product = null)
 	{
 		$parentRet = parent::getTierPriceHtml($product);
-		$litleAdditions = "Litle Rocks!";
-		//$product1 = Mage::helper("catalog/product")->getProduct($this->getProductId(), null);
-		//$product1 = $this->getProduct();
-		//$attributeValue = $product->getAttributeText($attributeName);
-		$product1 = parent::getProduct();
+		$product1 = $this->getProduct();
 		$litle_subscription = $product1->getAttributeText("litle_subscription");
-		$litle_subs_amount_per_itr = $product1->getAttributeText("litle_subs_amount_per_itr");
-		$litle_subs_num_of_itrs = $product1->getAttributeText("litle_subs_num_of_itrs");
+		$litle_subs_amount_per_itr = $product1->getLitleSubsAmountPerItr();
+		$litle_subs_num_of_itrs = $product1->getLitleSubsNumOfItrs();
 		$litle_subs_itr_len = $product1->getAttributeText("litle_subs_itr_len");
-		$litleAdditions = "Subscription amount: " . $litle_subs_amount_per_itr . " per: " . $litle_subs_itr_len . " for " . $litle_subs_num_of_itrs;
-		$allAttributes = $product1->getAttributes();
-		//echo $allAttributes['litle_subscription'];
-		foreach($allAttributes as $attribute){
- 			if( $attribute->getFrontendLabel() === "Litle Subscription Amount Per Iteration" )
-				var_dump($attribute);
- 				//echo $attribute["value"];
-		}
-		
- 		//echo $attribute;
-		//$_helper = Mage::helper('catalog/output')->getProductAttribute();
-		return "productId: " . $product1->getId() . $litleAdditions . $parentRet;
+		$litleAdditions = "Subscription amount: " . $litle_subs_amount_per_itr . " per " . $litle_subs_itr_len . " for " . $litle_subs_num_of_itrs;
+
+		return $litleAdditions . $parentRet;
 	}
 }

@@ -45,6 +45,11 @@
 					<product_view>Litle_Subscription_Block_Product_View</product_view>
 				</rewrite>
 			</catalog>
+			<checkout>
+				<rewrite>
+					<agreements>Litle_Subscription_Block_Agreements</agreements>
+				</rewrite>
+			</checkout>
 		</blocks>
 	</global>
 	
