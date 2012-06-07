@@ -45,8 +45,19 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	
 	public function callFromCron()
 	{
-		$collection = Mage::getModel('palorus/subscription')
-		->getCollection();
+		$subscriptionSuspend = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
+		$subscriptionSuspend->addFieldToFilter('turn_on_date', array(
+		    														'from' => date('d F Y', ( time()-(2 * 24 * 60 * 60) ) ),
+		    														'to' => date('d F Y'),
+				    												'date' => true,
+																	));
+		
+		foreach($subscriptionSuspend as $itemTemp)
+		{
+			Mage::log("in itemTemp blabla");
+		}
+		
+		$collection = Mage::getModel('palorus/subscription')->getCollection();
 		
 		foreach($collection as $collectionItem)
 		{
