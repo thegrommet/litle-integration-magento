@@ -38,7 +38,7 @@ class Litle_Palorus_Model_Mysql4_SubscriptionSuspend_Collection extends Mage_Cor
 	protected function _construct()
 	{
 		parent::_construct();
-		$this->_init('palorus/subscription_suspend');
+		$this->_init('palorus/subscriptionSuspend');
 	}
 
 }

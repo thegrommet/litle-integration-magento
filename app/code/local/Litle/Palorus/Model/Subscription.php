@@ -65,10 +65,16 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$originalOrderId = $collectionItem['initial_order_id'];
 			$customerId = $collectionItem['customer_id'];
 			$productId = $collectionItem['product_id'];
+			$subscriptionId = $collectionItem['subscription_id'];
+			$subscriptionTurnOnDate;
 			//$orderCollection = Mage::getModel('sales/order')->getCollection()->addFieldToFilter('order_id', $originalOrderId);
 			//foreach($orderCollection as $order) {
 				//Mage::log("Actual order total is " . $order->getBaseGrandTotal());
 			//}
+			$subscriptionSuspendCollection = Mage::getModel('palorus/subscriptionSuspend')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
+			foreach($subscriptionSuspendCollection as $subscriptionTurnOnDate){
+				// do nothing
+			}
 			if(		$collectionItem['active'] && 
 					($collectionItem['num_of_iterations_ran'] < $collectionItem['num_of_iterations'] )
 			  )
