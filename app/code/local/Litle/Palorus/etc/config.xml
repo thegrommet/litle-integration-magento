@@ -32,9 +32,9 @@
 					<subscription_iteration_ref>
 						<table>litle_subscription_iteration_ref</table>
 					</subscription_iteration_ref>
-					<subscription_suspend>
+					<subscriptionSuspend>
 						<table>litle_subscription_suspend</table>
-					</subscription_suspend>
+					</subscriptionSuspend>
 				</entities>
 			</palorus_mysql4>
 		</models>
