@@ -33,13 +33,13 @@
 * @license    http://www.opensource.org/licenses/mit-license.php
 * @author     Litle & Co <sdksupport@litle.com> www.litle.com/developers
 */
-class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
+class Litle_Palorus_Model_SubscriptionIterationRef extends Mage_Core_Model_Abstract
 {
 	protected $_model = NULL;
 
 	protected function _construct()
 	{
-		$this->_model = 'palorus/subscription';
+		$this->_model = 'palorus/subscriptionIterationRef';
 		$this->_init($this->_model);
 	}
 
