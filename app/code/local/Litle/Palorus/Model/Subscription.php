@@ -52,9 +52,15 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				    												'date' => true,
 																	));
 		
-		foreach($subscriptionSuspend as $itemTemp)
+		foreach($subscriptionSuspend as $suspendRecord)
 		{
-			Mage::log("in itemTemp blabla");
+			$tempCollection = Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id', $suspendRecord['subscription_id']);
+			//Mage::log("in itemTemp blabla");
+			foreach($tempCollection as $tempItem)
+			{
+			 $tempItem->setActive(true);
+			 $tempItem->save();
+			}
 		}
 		
 		$collection = Mage::getModel('palorus/subscription')->getCollection();
