@@ -37,6 +37,6 @@
   {
       protected function _construct()
       {
-          $this->_init('palorus/subscription_cron_history', 'cron_history_id');
+          $this->_init('palorus/subscriptionCronHistory', 'cron_history_id');
       }
   }

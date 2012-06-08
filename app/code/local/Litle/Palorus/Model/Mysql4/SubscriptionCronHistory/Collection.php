@@ -38,7 +38,7 @@ class Litle_Palorus_Model_Mysql4_SubscriptionCronHistory_Collection extends Mage
 	protected function _construct()
 	{
 		parent::_construct();
-		$this->_init('palorus/subscription_cron_history');
+		$this->_init('palorus/subscriptionCronHistory');
 	}
 
 }

@@ -384,7 +384,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						'num_of_iterations' => $this->getProductAttribute($productId, 'litle_subs_num_of_itrs'),
 						'iteration_length' => $this->getProductAttribute($productId, 'litle_subs_itr_len'),
 						'start_date' => date_timestamp_get($now), //TODO make based on length of trial period
-						'active' => true //TODO make based on trial period
+						'active' => false //always false -- trial periods are handled by start_date. will be set to true on next cron if startdate is today.
 					);
 					Mage::getModel('palorus/subscription')->setData($data)->save();
 				}
