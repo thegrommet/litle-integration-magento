@@ -26,6 +26,7 @@ DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription')};
 						active boolean NOT NULL default false COMMENT 'whether it is active or not - used by suspend and trial period',
 						created_date timestamp NOT NULL COMMENT 'date subscription created',
 						start_date timestamp NOT NULL COMMENT 'when to start iteration 1',
+						next_bill_date timestamp NOT NULL COMMENT 'next bill date',
 						PRIMARY KEY (subscription_id)
 						) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
 					");

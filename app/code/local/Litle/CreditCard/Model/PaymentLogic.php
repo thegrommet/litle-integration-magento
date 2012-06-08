@@ -361,6 +361,8 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
  		$items = $order->getAllItems();
  		$i = 0;
  		$lineItemArray = array();
+ 		Mage::log("iteration length: " . $this->getProductAttribute($productId, 'litle_subs_itr_len'));
+ 		Mage::log("number of iterations: " . $this->getProductAttribute($productId, 'litle_subs_num_of_itrs'));
 		foreach ($items as $itemId => $item)
 		{
  			$name = $item->getName();
@@ -368,6 +370,8 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
  			$sku=$item->getSku();
  			$productId=$item->getProductId();
  			$qty=$item->getQtyToInvoice();
+ 			$product = Mage::getModel('catalog/product')->load($productId);
+ 			Mage::log("Iteration length: " . $product->getLitleSubsItrLen());
 		
  			if( strlen($name) > 26 ) {
  				$name = substr($name,0,26);
@@ -379,11 +383,12 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						'product_id' => $productId,
 						'initial_order_id' => $payment->getOrder()->getId(),
 						'customer_id' => $payment->getOrder()->getCustomerId(),
-						'amount' => $this->getProductAttribute($productId, 'litle_subs_amount_per_itr'),
+						'amount' => $product->getLitleSubsAmountPerItr(),
 						'initial_fees' => $unitPrice*100,
-						'num_of_iterations' => $this->getProductAttribute($productId, 'litle_subs_num_of_itrs'),
-						'iteration_length' => $this->getProductAttribute($productId, 'litle_subs_itr_len'),
+						'num_of_iterations' => $product->getLitleSubsNumOfItrs(),
+						'iteration_length' => $product->getLitleSubsItrLen(),
 						'start_date' => date_timestamp_get($now), //TODO make based on length of trial period
+						'next_bill_date' => date_timestamp_get($now), // TODO needs to be the same as start_date
 						'active' => false //always false -- trial periods are handled by start_date. will be set to true on next cron if startdate is today.
 					);
 					Mage::getModel('palorus/subscription')->setData($data)->save();
