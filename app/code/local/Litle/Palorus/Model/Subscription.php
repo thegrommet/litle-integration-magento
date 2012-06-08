@@ -93,15 +93,12 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			}
 
 			//################################################################
-			//################################################################
-			//################################################################
 			//############ Implement last ran for each subscription ##########
 			//############ so that same subscription does not get run every single cron job..... (see the if statement below!)
 			if(		$collectionItem['active'] && 
 					($collectionItem['num_of_iterations_ran'] < $collectionItem['num_of_iterations'] )
 			  )
 			{
-				Mage::log("here 1");
 				$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
 				$subscriptionHistoryItemData = array("subscription_id" => $subscriptionId,
 													 "cron_id" => $cronId);
@@ -167,7 +164,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
  			$service->submitAll();
  			$order = $service->getOrder();
  			$orderId = $order->getId();
- 			Mage::log($orderId);
  			$success = true;
  		}
 		return array("success" => $success, "order_id" => $orderId);
