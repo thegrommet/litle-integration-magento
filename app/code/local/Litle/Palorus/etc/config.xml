@@ -23,12 +23,12 @@
 					<subscription>
 						<table>litle_subscription</table>
 					</subscription>
-					<subscription_cron_history>
+					<subscriptionCronHistory>
 						<table>litle_subscription_cron_history</table>
-					</subscription_cron_history>
-					<subscription_history>
+					</subscriptionCronHistory>
+					<subscriptionHistory>
 						<table>litle_subscription_history</table>
-					</subscription_history>
+					</subscriptionHistory>
 					<subscriptionSuspend>
 						<table>litle_subscription_suspend</table>
 					</subscriptionSuspend>
