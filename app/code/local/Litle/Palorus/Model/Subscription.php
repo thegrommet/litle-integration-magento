@@ -45,6 +45,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	
 	public function callFromCron()
 	{
+		// Get all items from Subscription Suspend where turn_on_date is between now and 2 days ago.
+		// 2 days is a buffer in the unlikely scenario that the cron jobs didn't run.
 		$subscriptionSuspend = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
 		$subscriptionSuspend->addFieldToFilter('turn_on_date', array(
 		    														'from' => date('d F Y', ( time()-(2 * 24 * 60 * 60) ) ),
@@ -52,21 +54,17 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				    												'date' => true,
 																	));
 		
+		// For each record grabbed from above, turn the Active flag in the subscription table to true
 		foreach($subscriptionSuspend as $suspendRecord)
 		{
 			Mage::log("########## Subscription id: " . $suspendRecord['subscription_id'] . " ##########");
 			$tempRecord = Mage::getModel('palorus/subscription');
 			$tempRecord->load($suspendRecord['subscription_id']);
-			//foreach($tempCollection as $tempItem)
-			//{
-			//	Mage::log("I'm here.....");
-				$tempRecord->setActive(true);
-				$tempRecord->save();
-			//}
+			$tempRecord->setActive(true);
+			$tempRecord->save();
 		}
 		
-		$collection = Mage::getModel('palorus/subscription')->getCollection();
-		
+		$collection = Mage::getModel('palorus/subscription')->getCollection();		
 		foreach($collection as $collectionItem)
 		{
 			//Get the original order for that subscription
@@ -74,12 +72,17 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$customerId = $collectionItem['customer_id'];
 			$productId = $collectionItem['product_id'];
 			$subscriptionId = $collectionItem['subscription_id'];
-			$subscriptionTurnOnDate;
-			//$orderCollection = Mage::getModel('sales/order')->getCollection()->addFieldToFilter('order_id', $originalOrderId);
-			//foreach($orderCollection as $order) {
-				//Mage::log("Actual order total is " . $order->getBaseGrandTotal());
-			//}
-			
+			if( strtotime($collectionItem['start_date']) < time() && $collectionItem['active'] === false )
+			{
+				$collectionItem['active'] = true;
+				$collectionItem->save();
+			}
+
+			//################################################################
+			//################################################################
+			//################################################################
+			//############ Implement last ran for each subscription ##########
+			//############ so that same subscription does not get run every single cron job..... (see the if statement below!)
 			if(		$collectionItem['active'] && 
 					($collectionItem['num_of_iterations_ran'] < $collectionItem['num_of_iterations'] )
 			  )
