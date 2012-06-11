@@ -361,8 +361,6 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
  		$items = $order->getAllItems();
  		$i = 0;
  		$lineItemArray = array();
- 		Mage::log("iteration length: " . $this->getProductAttribute($productId, 'litle_subs_itr_len'));
- 		Mage::log("number of iterations: " . $this->getProductAttribute($productId, 'litle_subs_num_of_itrs'));
 		foreach ($items as $itemId => $item)
 		{
  			$name = $item->getName();
@@ -372,6 +370,9 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
  			$qty=$item->getQtyToInvoice();
  			$product = Mage::getModel('catalog/product')->load($productId);
  			Mage::log("Iteration length: " . $product->getLitleSubsItrLen());
+ 			Mage::log("Number of Iterations: ". $product->getLitleSubsNumOfItrs());
+ 			Mage::log("Amount per Iteration: ". $product->getLitleSubsAmountPerItr());
+ 			
 		
  			if( strlen($name) > 26 ) {
  				$name = substr($name,0,26);
