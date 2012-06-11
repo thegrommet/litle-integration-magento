@@ -369,10 +369,17 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
  			$productId=$item->getProductId();
  			$qty=$item->getQtyToInvoice();
  			$product = Mage::getModel('catalog/product')->load($productId);
- 			Mage::log("Iteration length: " . $product->getLitleSubsItrLen());
- 			Mage::log("Number of Iterations: ". $product->getLitleSubsNumOfItrs());
- 			Mage::log("Amount per Iteration: ". $product->getLitleSubsAmountPerItr());
- 			
+ 			// grabs the iteration length value 
+ 			$option_id = $product->getLitleSubsItrLen();
+ 			$litleSubscriptionItrLengthValue = "";
+ 			$attributes = Mage::getModel('eav/entity_attribute_option')->getCollection()->setStoreFilter()->join('attribute','attribute.attribute_id=main_table.attribute_id', 'attribute_code');
+ 			foreach ($attributes as $attribute) {
+ 				if ($attribute->getOptionId()==$option_id) {
+ 					$litleSubscriptionItrLengthValue = $attribute->getValue();
+ 				}
+ 			}
+ 	
+ 	
 		
  			if( strlen($name) > 26 ) {
  				$name = substr($name,0,26);
@@ -387,7 +394,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						'amount' => $product->getLitleSubsAmountPerItr(),
 						'initial_fees' => $unitPrice*100,
 						'num_of_iterations' => $product->getLitleSubsNumOfItrs(),
-						'iteration_length' => $product->getLitleSubsItrLen(),
+						'iteration_length' => $litleSubscriptionItrLengthValue,
 						'start_date' => date_timestamp_get($now), //TODO make based on length of trial period
 						'next_bill_date' => date_timestamp_get($now), // TODO needs to be the same as start_date
 						'active' => false //always false -- trial periods are handled by start_date. will be set to true on next cron if startdate is today.
