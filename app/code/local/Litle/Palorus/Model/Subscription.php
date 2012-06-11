@@ -36,7 +36,8 @@
 class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 {
 	protected $_model = NULL;
-
+	protected $iterLengthToValMap = array('Daily' => 1, 'Weekly' => 7, 'Bi-Weekly' => 14, 'Semi-Monthly' => 15, 'Monthly' => 30, 'Semi-Annually' => 182, 'Annually' => 365);
+	
 	protected function _construct()
 	{
 		$this->_model = 'palorus/subscription';
@@ -45,6 +46,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	
 	public function callFromCron()
 	{
+		Mage::log("inside call from cron");
 		$subscriptionCronHistoryModel = Mage::getModel('palorus/subscriptionCronHistory');
 		$subscriptionCronHistoryData = array("time_ran" => date( 'Y-m-d H:i:s', time()) );
 		$subscriptionCronHistoryModel->setData($subscriptionCronHistoryData)->save();
@@ -96,7 +98,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			//############ Implement last ran for each subscription ##########
 			//############ so that same subscription does not get run every single cron job..... (see the if statement below!)
 			if(		$collectionItem['active'] && 
-					($collectionItem['num_of_iterations_ran'] < $collectionItem['num_of_iterations'] )
+					($collectionItem['num_of_iterations_ran'] < $collectionItem['num_of_iterations'] )&&
+					(strtotime($collectionItem['next_bill_date']) < time())
 			  )
 			{
 				$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
@@ -110,8 +113,9 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				else
 				{
 					$collectionItem->setNumOfIterationsRan($collectionItem['num_of_iterations_ran'] + 1);
-				}
-
+				}	
+				
+				$collectionItem['next_bill_date'] = $this->getNextBillDate($collectionItem['iteration_length']);
 				$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
 				$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();			
 				$collectionItem->save();
@@ -169,4 +173,73 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		return array("success" => $success, "order_id" => $orderId);
 	}
 
+	public function getNextBillDate($iterLength)
+	{
+			Mage::log("inside next bill date");
+			$nextDate; 
+//			$date = date("Y-m-d");// current date
+			$date = mktime(0, 0, 0, 7, 1, 2000);
+// 			$date = new DateTime();
+			Mage::log("the date is " . date("Y-m-d",($date)));
+			$lastDay = date('t',strtotime($date));
+			$checkDate = date('d', strtotime($date));
+			
+			switch($iterLength)
+			{
+				case 'Daily':
+			    $nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +1 day");
+				break;	
+				
+				case 'Weekly':
+				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +1 week");
+				break;
+			
+				case 'Bi-Weekly':
+				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +2 weeks");
+				break;
+			
+				// ###################### //check for 29th
+				
+				case 'Semi-Monthly': 
+				if($checkDate < 15)
+				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +15 days");
+				else
+				{
+					if($lastDay == 28)
+					$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +13 days");
+					
+					else if($lastDay == 29)
+					$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +14 days");
+					
+					else if($lastDay == 30)
+					$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +15 days");
+					
+					else
+					$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +16 days");
+				}
+				
+				break;
+			
+				case 'Monthly':
+				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +1 month");
+				
+				if($checkDate == 29 || $checkDate == 30 || $checkDate == 31)
+					{
+						$m = $checkDate->format('m');
+						$Y = $checkDate->format('Y');
+						$nextDate->setDate($Y , $m , 28);
+					}
+				break;
+			
+				case 'Semi-Annually':
+				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +6 months");
+				break;
+			
+				case 'Annually':
+				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +1 year");
+				break;
+			}
+			return $nextDate;
+		}
+	
 }

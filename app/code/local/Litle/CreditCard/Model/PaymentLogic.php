@@ -379,7 +379,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
  				}
  			}
  	
- 	
+ 			Mage::log("The iteration lenght is:" . $litleSubscriptionItrLengthValue);
 		
  			if( strlen($name) > 26 ) {
  				$name = substr($name,0,26);
