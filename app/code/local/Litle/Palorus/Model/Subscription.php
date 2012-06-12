@@ -180,8 +180,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 // 			$dateobj = new DateTime();
 // 			$date = $dateobj->getTimestamp();// current date
 
-			// TODO : Do not export for testing purposes only. 
-			$date = mktime(0, 0, 0, 3, 29, 2012);
+			// AMIT-TODO : Do not export for testing purposes only. 
+			$date = mktime(0, 0, 0, 2, 29, 2012);
 			
 			
 			
@@ -252,9 +252,9 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 						$m = date('m', strtotime($nextDate));
 						$Y = date('Y', strtotime($nextDate));
 						$nextDate = mktime(0, 0, 0, $m , 28 , $Y);
-						Mage::log("mktime gives me month year" . $m . " " . $Y);
+						Mage::log("mktime gives me month " . $m . "year " . $Y);
 					}
-					Mage::log("the next date (Monthly) " . date("Y-m-d",($nextDate)));
+				Mage::log("the next date (Monthly) " . date("Y-m-d",($nextDate)));
 				break;
 			
 				// ###################### //check for 29th needed ??
@@ -269,7 +269,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				Mage::log("the next date (Annually) " . date("Y-m-d", strtotime($nextDate)));
 				break;
 			}
-			//return $nextDate;
+		//	return $nextDate; // TODO : Do not export for testing purposes only.
 			return date("Y-m-d");
 		}
 	
