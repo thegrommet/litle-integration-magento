@@ -177,69 +177,90 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	{
 			Mage::log("inside next bill date");
 			$nextDate; 
-//			$date = date("Y-m-d");// current date
-			$date = mktime(0, 0, 0, 7, 1, 2000);
-// 			$date = new DateTime();
-			Mage::log("the date is " . date("Y-m-d",($date)));
-			$lastDay = date('t',strtotime($date));
-			$checkDate = date('d', strtotime($date));
-			
+// 			$dateobj = new DateTime();
+// 			$date = $dateobj->getTimestamp();// current date
+			$date = mktime(0, 0, 0, 2, 27, 2012);
+			Mage::log("the date is " . (date("Y-m-d",($date))));
+			$lastDay = date('t',($date));
+			$checkDate = date('d',($date));
+			Mage::log("the last day of the month is " . $lastDay);
+			Mage::log("the current next date is " . $checkDate);
 			switch($iterLength)
 			{
 				case 'Daily':
-			    $nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +1 day");
+			    $nextDate = (date("Y-m-d", strtotime($date)) . " +1 day");
+			    Mage::log("the next date (Daily) " . date("Y-m-d",($nextDate)));
 				break;	
 				
 				case 'Weekly':
-				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +1 week");
+				$nextDate = (date("Y-m-d", strtotime($date)) . " +1 week");
+				Mage::log("the next date (weekly) " . date("Y-m-d",($nextDate)));
 				break;
 			
 				case 'Bi-Weekly':
-				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +2 weeks");
+				$nextDate = (date("Y-m-d", strtotime($date)) . " +2 weeks");
+				Mage::log("the next date (Bi-weekly) " . date("Y-m-d",($nextDate)));
 				break;
 			
 				// ###################### //check for 29th
 				
 				case 'Semi-Monthly': 
-				if($checkDate < 15)
-				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +15 days");
+				if($checkDate < "15")
+				{
+					Mage::log("in semi-monthly -- less than 15");
+					$nextDate = date("Y-m-d",($date)) . " +15 days";
+				}
 				else
 				{
-					if($lastDay == 28)
-					$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +13 days");
-					
-					else if($lastDay == 29)
-					$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +14 days");
-					
-					else if($lastDay == 30)
-					$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +15 days");
-					
+					if($lastDay === "28")
+					{
+						Mage::log("in semi-monthly -- last day 28");
+						$nextDate = (date("Y-m-d", ($date)) . " +13 days");
+					}
+					else if($lastDay === "29")
+					{
+						Mage::log("in semi-monthly -- last day 29");
+						$nextDate = (date("Y-m-d", ($date)) . " +14 days");
+					}
+					else if($lastDay === "30")
+					{
+						Mage::log("in semi-monthly -- last day 30");
+						$nextDate = (date("Y-m-d", ($date)) . " +15 days");
+					}
 					else
-					$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +16 days");
+					{
+						Mage::log("in semi-monthly -- else");
+						$nextDate = (date("Y-m-d", ($date)) . " +16 days");
+					}
 				}
-				
+				Mage::log("the next date (semi-monthly) " . date("Y-m-d", strtotime($nextDate)));
 				break;
 			
 				case 'Monthly':
-				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +1 month");
+				$nextDate = (date("Y-m-d", strtotime($date)) . " +1 month");
 				
 				if($checkDate == 29 || $checkDate == 30 || $checkDate == 31)
 					{
 						$m = $checkDate->format('m');
 						$Y = $checkDate->format('Y');
-						$nextDate->setDate($Y , $m , 28);
+						mktime(0, 0, 0, 7, 1, 2000);
+						$nextDate = mktime(0, 0, 0, $m , 28 , $Y);
 					}
+					Mage::log("the next date (Monthly) " . date("Y-m-d",($nextDate)));
 				break;
 			
 				case 'Semi-Annually':
-				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +6 months");
+				$nextDate = (date("Y-m-d", strtotime($date)) . " +6 months");
+				Mage::log("the next date (Semi-annually) " . date("Y-m-d",($nextDate)));
 				break;
 			
 				case 'Annually':
-				$nextDate = strtotime(date("Y-m-d", strtotime($date)) . " +1 year");
+				$nextDate = (date("Y-m-d", strtotime($date)) . " +1 year");
+				Mage::log("the next date (Annually) " . date("Y-m-d",($nextDate)));
 				break;
 			}
-			return $nextDate;
+			//return $nextDate;
+			return date("Y-m-d");
 		}
 	
 }
