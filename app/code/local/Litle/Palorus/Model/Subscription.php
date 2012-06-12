@@ -179,7 +179,12 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$nextDate; 
 // 			$dateobj = new DateTime();
 // 			$date = $dateobj->getTimestamp();// current date
-			$date = mktime(0, 0, 0, 2, 27, 2012);
+
+			// TODO : Do not export for testing purposes only. 
+			$date = mktime(0, 0, 0, 3, 29, 2012);
+			
+			
+			
 			Mage::log("the date is " . (date("Y-m-d",($date))));
 			$lastDay = date('t',($date));
 			$checkDate = date('d',($date));
@@ -188,21 +193,21 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			switch($iterLength)
 			{
 				case 'Daily':
-			    $nextDate = (date("Y-m-d", strtotime($date)) . " +1 day");
-			    Mage::log("the next date (Daily) " . date("Y-m-d",($nextDate)));
+			    $nextDate = (date("Y-m-d", ($date)) . " +1 day");
+			    Mage::log("the next date (Daily) " . date("Y-m-d", strtotime($nextDate)));
 				break;	
 				
 				case 'Weekly':
-				$nextDate = (date("Y-m-d", strtotime($date)) . " +1 week");
-				Mage::log("the next date (weekly) " . date("Y-m-d",($nextDate)));
+				$nextDate = (date("Y-m-d", ($date)) . " +1 week");
+				Mage::log("the next date (weekly) " . date("Y-m-d", strtotime($nextDate)));
 				break;
 			
 				case 'Bi-Weekly':
-				$nextDate = (date("Y-m-d", strtotime($date)) . " +2 weeks");
-				Mage::log("the next date (Bi-weekly) " . date("Y-m-d",($nextDate)));
+				$nextDate = (date("Y-m-d", ($date)) . " +2 weeks");
+				Mage::log("the next date (Bi-weekly) " . date("Y-m-d", strtotime($nextDate)));
 				break;
 			
-				// ###################### //check for 29th
+				// Needs optimization !
 				
 				case 'Semi-Monthly': 
 				if($checkDate < "15")
@@ -236,27 +241,32 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				Mage::log("the next date (semi-monthly) " . date("Y-m-d", strtotime($nextDate)));
 				break;
 			
-				case 'Monthly':
-				$nextDate = (date("Y-m-d", strtotime($date)) . " +1 month");
 				
-				if($checkDate == 29 || $checkDate == 30 || $checkDate == 31)
-					{
-						$m = $checkDate->format('m');
-						$Y = $checkDate->format('Y');
-						mktime(0, 0, 0, 7, 1, 2000);
+				//// ###### Please confirm this !
+				
+				case 'Monthly':
+				$nextDate = (date("Y-m-d", ($date)) . " +1 month");
+				Mage::log("in monthly -- ");
+				if($checkDate === "29" || $checkDate === "30"|| $checkDate === "31")
+					{					
+						$m = date('m', strtotime($nextDate));
+						$Y = date('Y', strtotime($nextDate));
 						$nextDate = mktime(0, 0, 0, $m , 28 , $Y);
+						Mage::log("mktime gives me month year" . $m . " " . $Y);
 					}
 					Mage::log("the next date (Monthly) " . date("Y-m-d",($nextDate)));
 				break;
 			
+				// ###################### //check for 29th needed ??
+				
 				case 'Semi-Annually':
-				$nextDate = (date("Y-m-d", strtotime($date)) . " +6 months");
-				Mage::log("the next date (Semi-annually) " . date("Y-m-d",($nextDate)));
+				$nextDate = (date("Y-m-d", ($date)) . " +6 months");
+				Mage::log("the next date (Semi-annually) " . date("Y-m-d", strtotime($nextDate)));
 				break;
 			
 				case 'Annually':
-				$nextDate = (date("Y-m-d", strtotime($date)) . " +1 year");
-				Mage::log("the next date (Annually) " . date("Y-m-d",($nextDate)));
+				$nextDate = (date("Y-m-d", ($date)) . " +1 year");
+				Mage::log("the next date (Annually) " . date("Y-m-d", strtotime($nextDate)));
 				break;
 			}
 			//return $nextDate;
