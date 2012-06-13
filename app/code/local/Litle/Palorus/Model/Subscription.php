@@ -158,7 +158,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 					$collectionItem->setNumOfIterationsRan($collectionItem['num_of_iterations_ran'] + 1);
 				}	
 				
-				$collectionItem['next_bill_date'] = $this->getNextBillDate($collectionItem['iteration_length']);
+				$collectionItem['next_bill_date'] = $this->getNextBillDate($collectionItem['iteration_length'], $collectionItem['next_bill_Date']);
 				$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
 				$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();			
 				$collectionItem->save();
@@ -222,15 +222,15 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		return array("success" => $success, "order_id" => $orderId);
 	}
 
-	public function getNextBillDate($iterLength)
+	public function getNextBillDate($iterLength, $previousNextBillDate)
 	{
 			Mage::log("inside next bill date");
 			$nextDate; 
 // 			$dateobj = new DateTime();
 // 			$date = $dateobj->getTimestamp();// current date
-
+			$date = $previousNextBillDate; 
 			// AMIT-TODO : Do not export for testing purposes only. 
-			$date = mktime(0, 0, 0, 1, 30, 2012);
+			//$date = mktime(0, 0, 0, 1, 30, 2012);
 			
 			
 			
