@@ -33,11 +33,11 @@ DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription')};
 
     #Add litle_subscription_suspend table
     $installer->run("
-						DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription_suspend')};
+						DROP TABLE IF EXISTS {$installer->getTable('palorus/subscriptionSuspend')};
 					");
     
     $installer->run("
-						CREATE TABLE {$installer->getTable('palorus/subscription_suspend')} (
+						CREATE TABLE {$installer->getTable('palorus/subscriptionSuspend')} (
 						suspend_id integer(10) unsigned NOT NULL auto_increment COMMENT 'pk for table',
 						subscription_id integer(10) NOT NULL default 0 COMMENT 'fk to litle_subscription',
 						turn_on_date timestamp NOT NULL default current_timestamp COMMENT 'when to restart subscription',
@@ -47,10 +47,10 @@ DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription')};
     
     #Add litle_subscription_history table
     $installer->run("
-						DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription_history')};
+						DROP TABLE IF EXISTS {$installer->getTable('palorus/subscriptionHistory')};
 					");
     $installer->run("
-						CREATE TABLE {$installer->getTable('palorus/subscription_history')} (
+						CREATE TABLE {$installer->getTable('palorus/subscriptionHistory')} (
 						subscription_history_id integer(10) unsigned NOT NULL auto_increment COMMENT 'pk for table',
 						subscription_id integer(10) NOT NULL default 0 COMMENT 'fk to litle_subscription',
 						cron_id integer(10) NOT NULL default 0 COMMENT 'fk to litle_subscription_cron',
@@ -62,25 +62,13 @@ DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription')};
     
     #Add litle_subscription_cron_history table
     $installer->run("
-						DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription_cron_history')};
+						DROP TABLE IF EXISTS {$installer->getTable('palorus/subscriptionCronHistory')};
 					");
     $installer->run("
-						CREATE TABLE {$installer->getTable('palorus/subscription_cron_history')} (
+						CREATE TABLE {$installer->getTable('palorus/subscriptionCronHistory')} (
 						cron_history_id integer(10) unsigned NOT NULL auto_increment COMMENT 'pk for table',
 						time_ran timestamp NOT NULL default current_timestamp COMMENT 'when this cron ran',
 						PRIMARY KEY (cron_history_id)
-						) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
-					");
-    
-    #Add litle_subscription_iteration_ref table
-    $installer->run("
-						DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription_iteration_ref')};
-					");
-    $installer->run("
-						CREATE TABLE {$installer->getTable('palorus/subscription_iteration_ref')} (
-						iteration_ref_id integer(10) unsigned NOT NULL COMMENT 'pk for table',
-						value varchar(25) NOT NULL COMMENT 'plain text name',
-						PRIMARY KEY (iteration_ref_id)
 						) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
 					");
     
