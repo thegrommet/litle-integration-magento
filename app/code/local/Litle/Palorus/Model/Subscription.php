@@ -56,11 +56,10 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$cronId = 0;
 		foreach($subscriptionCronHistoryCollection as $subscriptionCronHistoryCollectionItem)
 		{
-			// do nothing -- DO NOT DELETE!
 			$cronId = $subscriptionCronHistoryCollectionItem['cron_id'];
 		}
 		
-		
+		Mage::log("done calculating cron id");
 		// Get all items from Subscription Suspend where turn_on_date is between now and 2 days ago.
 		// 2 days is a buffer in the unlikely scenario that the cron jobs didn't run.
 		$subscriptionSuspendCollection = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
@@ -80,24 +79,55 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$tempRecord->save();
 		}
 		
+		Mage::log("done going through subscription suspend table");
+		
 		$collection = Mage::getModel('palorus/subscription')->getCollection();		
 		foreach($collection as $collectionItem)
 		{
+			Mage::log("Starting to go through subscription table");
 			//Get the original order for that subscription
 			$originalOrderId = $collectionItem['initial_order_id'];
 			$customerId = $collectionItem['customer_id'];
 			$productId = $collectionItem['product_id'];
 			$subscriptionId = $collectionItem['subscription_id'];
+			Mage::log("start date from db: " . $collectionItem['start_date']);
+			Mage::log("current date from php: " . date('d F Y', time()) );
 			if( strtotime($collectionItem['start_date']) < time() && $collectionItem['active'] === false )
 			{
 				$collectionItem['active'] = true;
 				$collectionItem->save();
+				Mage::log("done marking in-active records active if start_date is past");
 			}
+			
+			
+			$subscriptionSuspendCollectionForSubsId = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
+// 			$subscriptionSuspendCollectionForSubsId->addFieldToFilter('turn_on_date', array(
+// 					    														'from' => date('d F Y', ( time()-(365 * 24 * 60 * 60) ) )
+// 																		));
+			$subscriptionSuspendCollectionForSubsId->addFieldToFilter(array(
+																		    array(
+																		        'attribute' => 'subscription_id',
+																		        'in'        => array($collectionItem['subscription_id']),
+																		        ),
+																		    array(
+																		        'attribute' => 'turn_on_date',
+																		        'from'      => date('d F Y', ( time()-(365 * 24 * 60 * 60) ) ),
+																		        ),
+																		));
+			
+			
+			//Notify merchant that the previous transcation has not gone through yet and it is time for
+			//next charge.
+			//Subscription is Active, and run_next_iteration is false (which mean it's in recycling OR suspended)
+			//and next_bill_date is in the past, AND subscription is not suspended as per subscriptionSuspend.
+			if( $collectionItem['active'] && !$collectionItem['run_next_iteration'] &&
+				(strtotime($collectionItem['next_bill_date']) < time())
+			     )
 
 			//################################################################
 			//############ Implement last ran for each subscription ##########
 			//############ so that same subscription does not get run every single cron job..... (see the if statement below!)
-			if(		$collectionItem['active'] && 
+			if(		$collectionItem['active'] && $collectionItem['run_next_iteration'] &&
 					($collectionItem['num_of_iterations_ran'] < $collectionItem['num_of_iterations'] )&&
 					(strtotime($collectionItem['next_bill_date']) < time())
 			  )
@@ -108,7 +138,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$returnFromCreateOrder = $this->createOrder($productId, $customerId, $originalOrderId);
 				if( !$returnFromCreateOrder["success"] )
 				{
-					$collectionItem->setActive(false);
+					$collectionItem->setRunNextIteration(false);
 				}
 				else
 				{
@@ -146,29 +176,35 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
  			Mage::log("Payment information could not be retrieved for intial order id: " . $initialOrderId . " and customer id: " . $customerId);
  		}
  		else{
- 			$product1 = Mage::getModel('catalog/product')->load($productId);
- 			$buyInfo1 = array('qty' => "1");
- 			
- 			$quote->addProduct($product1, new Varien_Object($buyInfo1));
- 			$billingAddress = $quote->getBillingAddress()->addData($customer->getPrimaryBillingAddress()->getData());
- 			$shippingAddress = $quote->getShippingAddress()->addData($customer->getPrimaryShippingAddress()->getData());
- 			$shippingAddress->setCollectShippingRates(true)->collectShippingRates()
- 			->setShippingMethod('flatrate_flatrate') //TODO Make based on original order id
- 			->setPaymentMethod('litlesubscription');
- 			$quote->getPayment()->importData(array(
- 													'method' => 'litlesubscription', 
- 													'litletoken' => $vaultRecord['token'],
- 													'litletokentype' => $vaultRecord['type'],
- 													'litletokenexpdate' => $vaultRecord['expdate']
- 													)
- 											);
- 			
- 			$quote->collectTotals()->save();
- 			$service = Mage::getModel('sales/service_quote', $quote);
- 			$service->submitAll();
- 			$order = $service->getOrder();
- 			$orderId = $order->getId();
- 			$success = true;
+ 			try{
+ 				Mage::log("creating order");
+ 				$product1 = Mage::getModel('catalog/product')->load($productId);
+ 				$buyInfo1 = array('qty' => "1");
+ 				
+ 				$quote->addProduct($product1, new Varien_Object($buyInfo1));
+ 				$billingAddress = $quote->getBillingAddress()->addData($customer->getPrimaryBillingAddress()->getData());
+ 				$shippingAddress = $quote->getShippingAddress()->addData($customer->getPrimaryShippingAddress()->getData());
+ 				$shippingAddress->setCollectShippingRates(true)->collectShippingRates()
+ 				->setShippingMethod('flatrate_flatrate') //TODO Make based on original order id
+ 				->setPaymentMethod('litlesubscription');
+ 				$quote->getPayment()->importData(array(
+ 				 											'method' => 'litlesubscription', 
+ 				 											'litletoken' => $vaultRecord['token'],
+ 				 											'litletokentype' => $vaultRecord['type'],
+ 				 											'litletokenexpdate' => $vaultRecord['expdate']
+ 														)
+ 												);
+ 				
+ 				$quote->collectTotals()->save();
+ 				$service = Mage::getModel('sales/service_quote', $quote);
+ 				$service->submitAll();
+ 				$order = $service->getOrder();
+ 				$orderId = $order->getId();
+ 				$success = true;
+ 			} catch (Exception $e)
+ 			{
+ 				$success = false;
+ 			}
  		}
 		return array("success" => $success, "order_id" => $orderId);
 	}
@@ -272,5 +308,13 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		//	return $nextDate; 
 			return date("Y-m-d"); // TODO : Do not export for testing purposes only.
 		}
-	
+		
+		// ################### FOR FAILED TRANSACTIONS ############################
+// 		$transaction = Mage::getModel('core/resource_transaction');
+// 		$transaction->addObject($order);
+// 		$transaction->addCommitCallback(array($order, 'place'));
+// 		$transaction->addCommitCallback(array($order, 'save'));
+// 		$transaction->save();
+		// ################### FOR FAILED TRANSACTIONS ############################
+		
 }
