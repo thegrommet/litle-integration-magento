@@ -115,15 +115,28 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 																		        ),
 																		));
 			
+			$subscriptionSuspendCollectionForSubsId->addAttributeToSort('turn_on_date','ASC');
+			$turnOnDate;
+			foreach ($subscriptionSuspendCollectionForSubsId as $suspendedItem)
+			{
+				$turnOnDate = $suspendedItem['turn_on_date'];
+			
+			}
 			
 			//Notify merchant that the previous transcation has not gone through yet and it is time for
 			//next charge.
 			//Subscription is Active, and run_next_iteration is false (which mean it's in recycling OR suspended)
 			//and next_bill_date is in the past, AND subscription is not suspended as per subscriptionSuspend.
 			if( $collectionItem['active'] && !$collectionItem['run_next_iteration'] &&
-				(strtotime($collectionItem['next_bill_date']) < time())
-			     )
-
+				(strtotime($collectionItem['next_bill_date']) < time()) &&
+				( is_null($turnOnDate) || (!is_null($turnOnDate) && (strtotime($turnOnDate) < time())) )
+				)
+				{
+			 		// TODO :  Notify the merchant about this case ! 
+			 		continue;
+				}
+				
+				
 			//################################################################
 			//############ Implement last ran for each subscription ##########
 			//############ so that same subscription does not get run every single cron job..... (see the if statement below!)
