@@ -89,4 +89,13 @@ class Litle_Subscription_Model_PaymentLogic extends Litle_CreditCard_Model_Payme
 		
 		return $payment_hash;
 	}
+	
+// 	public function processResponse(Varien_Object $payment,$litleResponse){
+// 		try{
+// 			parent::processResponse($payment, $litleResponse);
+// 			return true;
+// 		} catch (Exception $e){
+// 			return false;
+// 		}
+// 	}
 }

@@ -134,7 +134,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			{
 				$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
 				$subscriptionHistoryItemData = array("subscription_id" => $subscriptionId,
-													 "cron_id" => $cronId);
+													 "cron_id" => $cronId,
+													 "run_date" => time());
 				$returnFromCreateOrder = $this->createOrder($productId, $customerId, $originalOrderId);
 				if( !$returnFromCreateOrder["success"] )
 				{

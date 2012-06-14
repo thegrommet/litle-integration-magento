@@ -32,6 +32,9 @@
 					<subscriptionSuspend>
 						<table>litle_subscription_suspend</table>
 					</subscriptionSuspend>
+					<recycling>
+						<table>litle_recycling</table>
+					</recycling>
 				</entities>
 			</palorus_mysql4>
 		</models>

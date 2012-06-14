@@ -57,6 +57,7 @@ DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription')};
 						cron_id integer(10) NOT NULL default 0 COMMENT 'fk to litle_subscription_cron',
 						order_id integer(10) unsigned NULL default 0 COMMENT 'fk to order for this bill',
 						success boolean NOT NULL default true COMMENT 'Whether this attempt was successful or not',
+						run_date timestamp NOT NULL COMMENT 'Date this subscription transaction originally ran',
 						PRIMARY KEY (subscription_history_id)
 						) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
 					");
@@ -71,6 +72,22 @@ DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription')};
 						time_ran timestamp NOT NULL default current_timestamp COMMENT 'when this cron ran',
 						PRIMARY KEY (cron_history_id)
 						) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Subscription Order Info';
+					");
+    
+    #Add litle_recycling table
+    $installer->run("
+						DROP TABLE IF EXISTS {$installer->getTable('palorus/recycling')};
+					");
+    $installer->run("
+						CREATE TABLE {$installer->getTable('palorus/recycling')} (
+						recycling_id integer(10) unsigned NOT NULL auto_increment COMMENT 'pk for table',
+					    subscription_id integer(10) unsigned NOT NULL COMMENT 'fk from subscription table',
+					    subscription_history_id integer(10) unsigned NULL COMMENT 'fk from subscription history table',
+					    successful boolean NOT NULL default 0 COMMENT 'whether or not this recycling attempt was successful',
+					    status varchar(25) NOT NULL default 'waiting' COMMENT 'status of this recyclying attempt. can be waiting, cancelled, completed or failed',
+					    to_run_date timestamp NOT NULL COMMENT 'next run date',
+					    PRIMARY KEY (recycling_id)
+					    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Litle Recycling Transaction Info';
 					");
     
     #Alter vault table to add the expiration date field
