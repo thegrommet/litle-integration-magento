@@ -46,6 +46,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	
 	public function callFromCron()
 	{
+		// Add record for cron run to cron history and calculate the current run cron_id
 		$subscriptionCronHistoryModel = Mage::getModel('palorus/subscriptionCronHistory');
 		$subscriptionCronHistoryData = array("time_ran" => date( 'Y-m-d H:i:s', time()) );
 		$subscriptionCronHistoryModel->setData($subscriptionCronHistoryData)->save();
@@ -67,18 +68,33 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				    												'date' => true,
 																	));
 		
-		// For each record grabbed from above, turn the Active flag in the subscription table to true
+		// For each record grabbed from above, turn the run_next_iteration flag in the subscription table to true
 		foreach($subscriptionSuspendCollection as $suspendRecord)
 		{
 			Mage::log("########## Subscription id: " . $suspendRecord['subscription_id'] . " ##########");
 			$tempRecord = Mage::getModel('palorus/subscription');
 			$tempRecord->load($suspendRecord['subscription_id']);
-			$tempRecord->setActive(true);
+			$tempRecord->setRunNextIteration(true);
 			$tempRecord->save();
 		}
 		
+		// Get all the subscription items from the subscription table where next_run_date < current time and
+		// active flag is true
+		$collection = Mage::getModel('palorus/subscription')->getCollection();
+// 		$collection->addFieldToFilter('next_bill_date', array('to' => date('d F Y'),
+// 				    												'date' => true,
+// 									));
 		
-		$collection = Mage::getModel('palorus/subscription')->getCollection();		
+		$collection->addFieldToFilter(array(
+											array(
+												    'attribute' => 'next_bill_date',
+												    'to'        => date('d F Y'),
+											),
+											array(
+												    'attribute' => 'active',
+												    'in'      => array(true),
+											),
+										));
 		foreach($collection as $collectionItem)
 		{
 			//Get the original order for that subscription
@@ -86,12 +102,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$customerId = $collectionItem['customer_id'];
 			$productId = $collectionItem['product_id'];
 			$subscriptionId = $collectionItem['subscription_id'];
-			if( strtotime($collectionItem['start_date']) < time() && $collectionItem['active'] === false )
-			{
-				$collectionItem['active'] = true;
-				$collectionItem->save();
-			}
-			
 			
 			$subscriptionSuspendCollectionForSubsId = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
 			$subscriptionSuspendCollectionForSubsId->addFieldToFilter(array(
