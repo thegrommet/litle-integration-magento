@@ -42,5 +42,11 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		$this->_model = 'palorus/recycling';
 		$this->_init($this->_model);
 	}
+	
+	public function callFromCron()
+	{
+		$recyclingCollection = Mage::getModel('palorus/recycling')->getCollection();
+		$subscriptionCronHistoryCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(cron_history_id) as cron_id');
+	}
 
 }

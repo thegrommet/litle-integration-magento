@@ -41,4 +41,12 @@ class Litle_Palorus_Model_Mysql4_SubscriptionHistory_Collection extends Mage_Cor
 		$this->_init('palorus/subscriptionHistory');
 	}
 
+	public function addAttributeToSort($attribute, $dir=’asc’)
+	{
+		if (!is_string($attribute)) {
+			return $this;
+		}
+		$this->setOrder($attribute, $dir);
+		return $this;
+	}
 }

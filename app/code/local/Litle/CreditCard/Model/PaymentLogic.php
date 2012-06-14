@@ -379,7 +379,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
  				}
  			}
  	
- 			Mage::log("The iteration lenght is:" . $litleSubscriptionItrLengthValue);
+ 			Mage::log("The iteration length is:" . $litleSubscriptionItrLengthValue);
 		
  			if( strlen($name) > 26 ) {
  				$name = substr($name,0,26);
@@ -480,7 +480,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			if( isset($litleResponse))
 			{
 				$litleResponseCode = XMLParser::getNode($litleResponse,'response');
-				if($litleResponseCode != "000")
+				if($litleResponseCode === "000")
 				{
 					//Mage::throwException('response code is: ' . $litleResponseCode . 'txn type is: ');
 					if(($litleResponseCode === "362") && Mage::helper("creditcard")->isStateOfOrderEqualTo($payment->getOrder(), Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE))
@@ -496,6 +496,13 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						->setTransactionId(XMLParser::getNode($litleResponse,'litleTxnId'))
 						->setIsTransactionClosed(0)
 						->setTransactionAdditionalInfo("additional_information", XMLParser::getNode($litleResponse,'message'));
+						
+						// TODO::Add logic to check if ordersource is recurring/subscription
+						if( true )
+						{
+							//Mage::dispatchEvent('litle_subscription_txn_failed', array('recycletime'=> XMLParser::getNode($litleResponse,'nextrecycleTime'), 'recycleadviceend'=> XMLParser::getNode($litleResponse,'recycleAdviceEnd')));
+							Mage::dispatchEvent('litle_subscription_txn_failed', array('recycletime'=> '1/22/2012', 'recycleadviceend'=> null));
+						}
 						
 						if($isSale)
 							throw new Mage_Payment_Model_Info_Exception(Mage::helper('core')->__("Transaction was not approved. Contact us or try again later."));

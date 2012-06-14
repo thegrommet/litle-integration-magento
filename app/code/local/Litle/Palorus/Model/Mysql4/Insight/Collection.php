@@ -40,5 +40,14 @@ class Litle_Palorus_Model_Mysql4_Insight_Collection extends Mage_Core_Model_Mysq
 		parent::_construct();
 		$this->_init('palorus/insight');
 	}
+	
+	public function addAttributeToSort($attribute, $dir=’asc’)
+	{
+		if (!is_string($attribute)) {
+			return $this;
+		}
+		$this->setOrder($attribute, $dir);
+		return $this;
+	}
 
 }

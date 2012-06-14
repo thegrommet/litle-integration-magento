@@ -40,5 +40,14 @@ class Litle_Palorus_Model_Mysql4_SubscriptionIterationRef_Collection extends Mag
 		parent::_construct();
 		$this->_init('palorus/subscription_iteration_ref');
 	}
+	
+	public function addAttributeToSort($attribute, $dir=’asc’)
+	{
+		if (!is_string($attribute)) {
+			return $this;
+		}
+		$this->setOrder($attribute, $dir);
+		return $this;
+	}
 
 }

@@ -36,7 +36,6 @@
 class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 {
 	protected $_model = NULL;
-	protected $iterLengthToValMap = array('Daily' => 1, 'Weekly' => 7, 'Bi-Weekly' => 14, 'Semi-Monthly' => 15, 'Monthly' => 30, 'Semi-Annually' => 182, 'Annually' => 365);
 	
 	protected function _construct()
 	{
@@ -47,6 +46,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	public function callFromCron()
 	{
 		// Add record for cron run to cron history and calculate the current run cron_id
+		Mage::log("in call from cron");
 		$subscriptionCronHistoryModel = Mage::getModel('palorus/subscriptionCronHistory');
 		$subscriptionCronHistoryData = array("time_ran" => date( 'Y-m-d H:i:s', time()) );
 		$subscriptionCronHistoryModel->setData($subscriptionCronHistoryData)->save();
@@ -58,6 +58,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		{
 			$cronId = $subscriptionCronHistoryCollectionItem['cron_id'];
 		}
+		Mage::log("cronId to use: " . $cronId );
 		
 		// Get all items from Subscription Suspend where turn_on_date is between now and 2 days ago.
 		// 2 days is a buffer in the unlikely scenario that the cron jobs didn't run.
@@ -85,36 +86,47 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 // 				    												'date' => true,
 // 									));
 		
-		$collection->addFieldToFilter(array(
-											array(
-												    'attribute' => 'next_bill_date',
-												    'to'        => date('d F Y'),
-											),
-											array(
-												    'attribute' => 'active',
-												    'in'      => array(true),
-											),
-										));
+// 		$collection->addFieldToFilter(array(
+// 											array(
+// 												    'attribute' => 'next_bill_date',
+// 												    'to'        => date('d F Y'),
+// 											),
+// 											array(
+// 												    'attribute' => 'active',
+// 												    'in'      => array(true),
+// 											),
+// 										));
+		
+		//$collection->addFieldToFilter("next_bill_date", array('to' => date('d F Y')));
+		//$collection->addFieldToFilter("active", array('in' => array(true)));
+		
 		foreach($collection as $collectionItem)
 		{
+			Mage::log("going over subscription table");
 			//Get the original order for that subscription
 			$originalOrderId = $collectionItem['initial_order_id'];
 			$customerId = $collectionItem['customer_id'];
 			$productId = $collectionItem['product_id'];
 			$subscriptionId = $collectionItem['subscription_id'];
 			
-			$subscriptionSuspendCollectionForSubsId = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
-			$subscriptionSuspendCollectionForSubsId->addFieldToFilter(array(
-																		    array(
-																		        'attribute' => 'subscription_id',
-																		        'in'        => array($collectionItem['subscription_id']),
-																		        ),
-																		    array(
-																		        'attribute' => 'turn_on_date',
-																		        'from'      => date('d F Y', ( time()-(365 * 24 * 60 * 60) ) ),
-																		        ),
-																		));
 			
+			Mage::log("1");
+			$subscriptionSuspendCollectionForSubsId = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
+// 			$subscriptionSuspendCollectionForSubsId->addFieldToFilter(array(
+// 																		    array(
+// 																		        'attribute' => 'subscription_id',
+// 																		        'in'        => array($collectionItem['subscription_id']),
+// 																		        ),
+// 																		    array(
+// 																		        'attribute' => 'turn_on_date',
+// 																		        'from'      => date('d F Y', ( time()-(365 * 24 * 60 * 60) ) ),
+// 																		        ),
+// 																		));
+			
+			$subscriptionSuspendCollectionForSubsId->addFieldToFilter("subscription_id", array("in", array($collectionItem['subscription_id'])));
+			$subscriptionSuspendCollectionForSubsId->addFieldToFilter("turn_on_date", array("from", date('d F Y', ( time()-(365 * 24 * 60 * 60) ) )));
+			
+			Mage::log("2");
 			$subscriptionSuspendCollectionForSubsId->addAttributeToSort('turn_on_date','ASC');
 			$turnOnDate;
 			foreach ($subscriptionSuspendCollectionForSubsId as $suspendedItem)
@@ -123,6 +135,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			
 			}
 			
+			Mage::log("3");
 			//Notify merchant that the previous transcation has not gone through yet and it is time for
 			//next charge.
 			//Subscription is Active, and run_next_iteration is false (which mean it's in recycling OR suspended)
@@ -136,7 +149,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			 		continue;
 				}
 				
-				
+				Mage::log("4");
 			//################################################################
 			//############ Implement last ran for each subscription ##########
 			//############ so that same subscription does not get run every single cron job..... (see the if statement below!)
@@ -150,19 +163,38 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 													 "cron_id" => $cronId,
 													 "run_date" => time());
 				$returnFromCreateOrder = $this->createOrder($productId, $customerId, $originalOrderId);
+				Mage::log("5");
 				if( !$returnFromCreateOrder["success"] )
 				{
 					$collectionItem->setRunNextIteration(false);
+					
+					// Add data to recycling table
+					$recyclingCollection = Mage::getModel('palorus/recycling')->getCollection();
+					$subscriptionHistoryItemData = array(	"subscription_id" => $subscriptionId,
+					 														"cron_id" => $cronId,
+					 														"run_date" => time());
+					$recyclingItemData = array(
+					 							"subscription_id" => $subscriptionId,
+					 							"subscription_history_id" => something,
+					 							"successful" => false,
+					 							"status" => "waiting",
+					 							"to_run_date"				
+												);
+					$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
+					$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();
+					Mage::log("6");
 				}
 				else
 				{
 					$collectionItem->setNumOfIterationsRan($collectionItem['num_of_iterations_ran'] + 1);
+					Mage::log("7");
 				}	
 				
 				$collectionItem['next_bill_date'] = $this->getNextBillDate($collectionItem['iteration_length'], $collectionItem['next_bill_Date']);
 				$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
 				$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();			
 				$collectionItem->save();
+				Mage::log("8");
 			}
 		}
 	}
@@ -218,6 +250,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
  			} catch (Exception $e)
  			{
  				$success = false;
+ 				//Mage::log("Exception is: " . $e);
  			}
  		}
 		return array("success" => $success, "order_id" => $orderId);
@@ -330,5 +363,10 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 // 		$transaction->addCommitCallback(array($order, 'save'));
 // 		$transaction->save();
 		// ################### FOR FAILED TRANSACTIONS ############################
-		
+		public function catchFailedSubscriptionTxnInfo(Varien_Event_Observer $observer)
+		{
+			Mage::log("here in catchFailedblabla");
+			Mage::log($observer->getRecycletime());
+			//Mage::log();
+		}
 }

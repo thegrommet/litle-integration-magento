@@ -41,4 +41,12 @@ class Litle_Palorus_Model_Mysql4_Recycling_Collection extends Mage_Core_Model_My
 		$this->_init('palorus/recycling');
 	}
 
+	public function addAttributeToSort($attribute, $dir=’asc’)
+	{
+		if (!is_string($attribute)) {
+			return $this;
+		}
+		$this->setOrder($attribute, $dir);
+		return $this;
+	}
 }

@@ -40,5 +40,14 @@ class Litle_Palorus_Model_Mysql4_Vault_Collection extends Mage_Core_Model_Mysql4
 		parent::_construct();
 		$this->_init('palorus/vault');
 	}
+	
+	public function addAttributeToSort($attribute, $dir=’asc’)
+	{
+		if (!is_string($attribute)) {
+			return $this;
+		}
+		$this->setOrder($attribute, $dir);
+		return $this;
+	}
 
 }

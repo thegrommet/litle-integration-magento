@@ -77,7 +77,19 @@
 			<palorus>
 				<class>Litle_Palorus_Helper</class>
 			</palorus>
-		</helpers>	
+		</helpers>
+		
+		<events>
+			<litle_subscription_txn_failed>
+				<observers>
+					<add_txn_to_recycling>
+						<type>singleton</type>
+						<class>palorus/subscription</class>
+						<method>catchFailedSubscriptionTxnInfo</method>
+					</add_txn_to_recycling>
+				</observers>
+			</litle_subscription_txn_failed>
+		</events>	
 	</global>
 	
 	<admin>
