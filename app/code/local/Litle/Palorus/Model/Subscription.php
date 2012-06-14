@@ -46,7 +46,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	
 	public function callFromCron()
 	{
-		Mage::log("inside call from cron");
 		$subscriptionCronHistoryModel = Mage::getModel('palorus/subscriptionCronHistory');
 		$subscriptionCronHistoryData = array("time_ran" => date( 'Y-m-d H:i:s', time()) );
 		$subscriptionCronHistoryModel->setData($subscriptionCronHistoryData)->save();
@@ -59,7 +58,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$cronId = $subscriptionCronHistoryCollectionItem['cron_id'];
 		}
 		
-		Mage::log("done calculating cron id");
 		// Get all items from Subscription Suspend where turn_on_date is between now and 2 days ago.
 		// 2 days is a buffer in the unlikely scenario that the cron jobs didn't run.
 		$subscriptionSuspendCollection = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
@@ -79,31 +77,23 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$tempRecord->save();
 		}
 		
-		Mage::log("done going through subscription suspend table");
 		
 		$collection = Mage::getModel('palorus/subscription')->getCollection();		
 		foreach($collection as $collectionItem)
 		{
-			Mage::log("Starting to go through subscription table");
 			//Get the original order for that subscription
 			$originalOrderId = $collectionItem['initial_order_id'];
 			$customerId = $collectionItem['customer_id'];
 			$productId = $collectionItem['product_id'];
 			$subscriptionId = $collectionItem['subscription_id'];
-			Mage::log("start date from db: " . $collectionItem['start_date']);
-			Mage::log("current date from php: " . date('d F Y', time()) );
 			if( strtotime($collectionItem['start_date']) < time() && $collectionItem['active'] === false )
 			{
 				$collectionItem['active'] = true;
 				$collectionItem->save();
-				Mage::log("done marking in-active records active if start_date is past");
 			}
 			
 			
 			$subscriptionSuspendCollectionForSubsId = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
-// 			$subscriptionSuspendCollectionForSubsId->addFieldToFilter('turn_on_date', array(
-// 					    														'from' => date('d F Y', ( time()-(365 * 24 * 60 * 60) ) )
-// 																		));
 			$subscriptionSuspendCollectionForSubsId->addFieldToFilter(array(
 																		    array(
 																		        'attribute' => 'subscription_id',
