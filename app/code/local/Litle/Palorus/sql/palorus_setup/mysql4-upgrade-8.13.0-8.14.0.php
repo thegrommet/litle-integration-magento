@@ -21,7 +21,7 @@ DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription')};
 						
 						initial_fees integer(12) NOT NULL default 0 COMMENT 'amount in pennies for inital fee - this is the product price in pennies configured on the catalog screen',
 						num_of_iterations integer(5) NOT NULL default 0 COMMENT 'how many billing cycles total',
-						iteration_length integer(3) NOT NULL default 0 COMMENT 'fk to litle_iteration_length',
+						iteration_length varchar(25) NOT NULL default 0 COMMENT 'fk to litle_iteration_length',
 						num_of_iterations_ran integer(5) NOT NULL default 0 COMMENT 'how many iterations have happened so far',
 						run_next_iteration boolean NOT NULL default 1 COMMENT 'should next iteration be run -- depends on if previous txn passed of failed as well as suspend',
 						active boolean NOT NULL default false COMMENT 'whether it is active or not - used by suspend and trial period',

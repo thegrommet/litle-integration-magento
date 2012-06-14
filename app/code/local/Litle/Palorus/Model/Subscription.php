@@ -190,7 +190,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 					Mage::log("7");
 				}	
 				
-				$collectionItem['next_bill_date'] = $this->getNextBillDate($collectionItem['iteration_length'], $collectionItem['next_bill_Date']);
+				$collectionItem['next_bill_date'] = $this->getNextBillDate($collectionItem['iteration_length'], $collectionItem['next_bill_date']);
 				$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
 				$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();			
 				$collectionItem->save();
@@ -262,13 +262,13 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$nextDate; 
 // 			$dateobj = new DateTime();
 // 			$date = $dateobj->getTimestamp();// current date
-			$date = $previousNextBillDate; 
+			$date = strtotime($previousNextBillDate); 
 			// AMIT-TODO : Do not export for testing purposes only. 
 			//$date = mktime(0, 0, 0, 1, 30, 2012);
 			
 			
-			
-			Mage::log("the date is " . (date("Y-m-d",($date))));
+			Mage::log("the previous billd date is" .$previousNextBillDate);
+			Mage::log("the date is " . (date("Y-m-d",$date)));
 			$lastDay = date('t',($date));
 			$checkDate = date('d',($date));
 			Mage::log("the last day of the month is " . $lastDay);
@@ -337,7 +337,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 						$nextDate = mktime(0, 0, 0, $m , 1 , $Y);
 						Mage::log("mktime gives me month " . $m . "year " . $Y);
 					}
-				Mage::log("the next date (Monthly) " . date("Y-m-d",($nextDate)));
+				Mage::log("the next date (Monthly) " . date("Y-m-d", strtotime($nextDate)));
 				break;
 			
 				// ###################### //check for 29th needed ??

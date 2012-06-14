@@ -397,7 +397,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						'iteration_length' => $litleSubscriptionItrLengthValue,
 						'start_date' => date_timestamp_get($now), //TODO make based on length of trial period
 						'next_bill_date' => date_timestamp_get($now), // TODO needs to be the same as start_date
-						'active' => false //always false -- trial periods are handled by start_date. will be set to true on next cron if startdate is today.
+						'active' => true //always false -- trial periods are handled by start_date. will be set to true on next cron if startdate is today.
 					);
 					Mage::getModel('palorus/subscription')->setData($data)->save();
 				}
@@ -480,7 +480,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			if( isset($litleResponse))
 			{
 				$litleResponseCode = XMLParser::getNode($litleResponse,'response');
-				if($litleResponseCode === "000")
+				if(!$litleResponseCode === "000")
 				{
 					//Mage::throwException('response code is: ' . $litleResponseCode . 'txn type is: ');
 					if(($litleResponseCode === "362") && Mage::helper("creditcard")->isStateOfOrderEqualTo($payment->getOrder(), Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE))
