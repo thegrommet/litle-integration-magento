@@ -115,15 +115,28 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 																		        ),
 																		));
 			
+			$subscriptionSuspendCollectionForSubsId->addAttributeToSort('turn_on_date','ASC');
+			$turnOnDate;
+			foreach ($subscriptionSuspendCollectionForSubsId as $suspendedItem)
+			{
+				$turnOnDate = $suspendedItem['turn_on_date'];
+			
+			}
 			
 			//Notify merchant that the previous transcation has not gone through yet and it is time for
 			//next charge.
 			//Subscription is Active, and run_next_iteration is false (which mean it's in recycling OR suspended)
 			//and next_bill_date is in the past, AND subscription is not suspended as per subscriptionSuspend.
 			if( $collectionItem['active'] && !$collectionItem['run_next_iteration'] &&
-				(strtotime($collectionItem['next_bill_date']) < time())
-			     )
-
+				(strtotime($collectionItem['next_bill_date']) < time()) &&
+				( is_null($turnOnDate) || (!is_null($turnOnDate) && (strtotime($turnOnDate) < time())) )
+				)
+				{
+			 		// TODO :  Notify the merchant about this case ! 
+			 		continue;
+				}
+				
+				
 			//################################################################
 			//############ Implement last ran for each subscription ##########
 			//############ so that same subscription does not get run every single cron job..... (see the if statement below!)
@@ -146,7 +159,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 					$collectionItem->setNumOfIterationsRan($collectionItem['num_of_iterations_ran'] + 1);
 				}	
 				
-				$collectionItem['next_bill_date'] = $this->getNextBillDate($collectionItem['iteration_length']);
+				$collectionItem['next_bill_date'] = $this->getNextBillDate($collectionItem['iteration_length'], $collectionItem['next_bill_Date']);
 				$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
 				$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();			
 				$collectionItem->save();
@@ -210,15 +223,15 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		return array("success" => $success, "order_id" => $orderId);
 	}
 
-	public function getNextBillDate($iterLength)
+	public function getNextBillDate($iterLength, $previousNextBillDate)
 	{
 			Mage::log("inside next bill date");
 			$nextDate; 
 // 			$dateobj = new DateTime();
 // 			$date = $dateobj->getTimestamp();// current date
-
+			$date = $previousNextBillDate; 
 			// AMIT-TODO : Do not export for testing purposes only. 
-			$date = mktime(0, 0, 0, 1, 30, 2012);
+			//$date = mktime(0, 0, 0, 1, 30, 2012);
 			
 			
 			
