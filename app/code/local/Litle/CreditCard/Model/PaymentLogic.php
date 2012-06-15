@@ -116,18 +116,22 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 
 	public function assignData($data)
 	{
+		$info = $this->getInfoInstance();
 		if( $this->getConfigData('paypage_enabled') == "1")
 		{
 			if (!($data instanceof Varien_Object)) {
 				$data = new Varien_Object($data);
 			}
 
-			$info = $this->getInfoInstance();
+			
 			$info->setAdditionalInformation('paypage_enabled', $data->getPaypageEnabled());
 			$info->setAdditionalInformation('paypage_registration_id', $data->getPaypageRegistrationId());
 			$info->setAdditionalInformation('paypage_order_id', $data->getOrderId());
 			$info->setAdditionalInformation('cc_vaulted', $data->getCcVaulted());
 		}
+
+		$info->setAdditionalInformation('ordersource', $data->getOrdersource());
+		
 		return parent::assignData($data);
 	}
 
@@ -369,39 +373,10 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
  			$productId=$item->getProductId();
  			$qty=$item->getQtyToInvoice();
  			$product = Mage::getModel('catalog/product')->load($productId);
- 			// grabs the iteration length value 
- 			$option_id = $product->getLitleSubsItrLen();
- 			$litleSubscriptionItrLengthValue = "";
- 			$attributes = Mage::getModel('eav/entity_attribute_option')->getCollection()->setStoreFilter()->join('attribute','attribute.attribute_id=main_table.attribute_id', 'attribute_code');
- 			foreach ($attributes as $attribute) {
- 				if ($attribute->getOptionId()==$option_id) {
- 					$litleSubscriptionItrLengthValue = $attribute->getValue();
- 				}
- 			}
- 	
- 			Mage::log("The iteration length is:" . $litleSubscriptionItrLengthValue);
-		
+ 
  			if( strlen($name) > 26 ) {
  				$name = substr($name,0,26);
  			}
-			if($this->getProductAttribute($productId, 'litle_subscription') === "Yes") {
-				for($j = 0; $j < $qty; $j++) {
-					$now = date_create();
-					$data = array(
-						'product_id' => $productId,
-						'initial_order_id' => $payment->getOrder()->getId(),
-						'customer_id' => $payment->getOrder()->getCustomerId(),
-						'amount' => $product->getLitleSubsAmountPerItr(),
-						'initial_fees' => $unitPrice*100,
-						'num_of_iterations' => $product->getLitleSubsNumOfItrs(),
-						'iteration_length' => $litleSubscriptionItrLengthValue,
-						'start_date' => date_timestamp_get($now), //TODO make based on length of trial period
-						'next_bill_date' => date_timestamp_get($now), // TODO needs to be the same as start_date
-						'active' => true //always false -- trial periods are handled by start_date. will be set to true on next cron if startdate is today.
-					);
-					Mage::getModel('palorus/subscription')->setData($data)->save();
-				}
-			}
 			$lineItemArray[$i] = array(
 			'itemSequenceNumber'=>($i+1),
 			'itemDescription'=>$name,
@@ -536,6 +511,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	 */
 	public function authorize(Varien_Object $payment, $amount)
 	{
+		$info = $this->getInfoInstance();
 		if (preg_match("/sales_order_create/i", $_SERVER['REQUEST_URI']) && ($this->getConfigData('paypage_enable') == "1") )
 		{
 			$payment
@@ -550,11 +526,15 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			$order = $payment->getOrder();
 			$orderId =  $order->getIncrementId();
 			$amountToPass = ($amount* 100);
+			$ordersource = $info->getAdditionalInformation('ordersource');
+			if(empty($ordersource))
+				$ordersource = "ecommerce";
+			//	$ordersource = (empty($info->getAdditionalInformation('ordersource'))) ? "ecommerce" : $info->getAdditionalInformation('ordersource');
 			if (!empty($order)){
 				$hash = array(
 				 					'orderId'=> $orderId,
 				 					'amount'=> $amountToPass,
-				 					'orderSource'=> "ecommerce",
+				 					'orderSource'=> $ordersource,
 									'billToAddress'=> $this->getBillToAddress($payment),
 									'shipToAddress'=> $this->getAddressInfo($payment),
 									'cardholderAuthentication'=> $this->getFraudCheck($payment),
@@ -568,8 +548,13 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 				$litleRequest = new LitleOnlineRequest();
 				$litleResponse = $litleRequest->authorizationRequest($hash_in);
 				$this->processResponse($payment,$litleResponse);
+				
+				if( $ordersource != "recurring" )
+					$this->populateSubscription($payment);
+				
 				Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse);
-				Mage::helper("palorus")->saveVault($payment, $litleResponse);
+				Mage::log("the token is: ". getToken());
+				Mage::helper("palorus")->saveVault($payment, $litleResponse, array('token' => getToken()));
 			}
 		}
 	}
@@ -580,6 +565,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	 */
 	public function capture (Varien_Object $payment, $amount)
 	{
+		$info = $this->getInfoInstance();
 		if (preg_match("/sales_order_create/i", $_SERVER['REQUEST_URI']) && ($this->getConfigData('paypage_enable') == "1") )
 		{
 			$payment
@@ -594,7 +580,10 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		}
 
 		$this->isFromVT($payment, "capture");
-
+		$ordersource = $info->getAdditionalInformation('ordersource');
+		if(empty($ordersource))
+		$ordersource = "ecommerce";
+	//	$ordersource = (empty($info->getAdditionalInformation('ordersource'))) ? "ecommerce" : $info->getAdditionalInformation('ordersource');
 		$order = $payment->getOrder();
 		if (!empty($order)){
 
@@ -614,7 +603,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 				$hash_temp = array(
 			 					'orderId'=> $orderId,
 			 					'amount'=> $amountToPass,
-			 					'orderSource'=> "ecommerce",
+			 					'orderSource'=> $ordersource,
 								'billToAddress'=> $this->getBillToAddress($payment),
 								'shipToAddress'=> $this->getAddressInfo($payment),
 				);
@@ -627,14 +616,25 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 
 			if( $isSale )
 			{
+				Mage::log("Inside is sale");
 				$litleResponse = $litleRequest->saleRequest($hash_in);
-				Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse);
-				Mage::helper("palorus")->saveVault($payment, $litleResponse);
+				
 			} else {
 				$litleResponse = $litleRequest->captureRequest($hash_in);
 			}
 		}
 		$this->processResponse($payment,$litleResponse);
+		
+		if($isSale)
+		{
+			Mage::log("populating subscription");
+			
+			if( $ordersource != "recurring" )
+				$this->populateSubscription($payment);
+			
+			Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse);
+			Mage::helper("palorus")->saveVault($payment, $litleResponse);
+		}
 	}
 
 	/**
@@ -693,4 +693,57 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		$this->void($payment);
 	}
 
+	
+	public function populateSubscription(Varien_Object $payment)
+	{
+		$order = $payment->getOrder();
+		$items = $order->getAllItems();
+		foreach ($items as $itemId => $item)
+		{
+			Mage::log("grabing an item one at a time inside subscription");
+			$unitPrice=$item->getPrice();
+			$productId=$item->getProductId();
+			$qty=$item->getQtyToInvoice();
+			if($qty == 0)
+			{
+				$qty = $item->getQtyToShip();
+			}
+			$product = Mage::getModel('catalog/product')->load($productId);
+			// grabs the iteration length value
+			$option_id = $product->getLitleSubsItrLen();
+			$litleSubscriptionItrLengthValue = "";
+			$attributes = Mage::getModel('eav/entity_attribute_option')->getCollection()->setStoreFilter()->join('attribute','attribute.attribute_id=main_table.attribute_id', 'attribute_code');
+			foreach ($attributes as $attribute) {
+				if ($attribute->getOptionId()==$option_id) {
+					$litleSubscriptionItrLengthValue = $attribute->getValue();
+				}
+			}
+			Mage::log("Litle subscription is :" . $this->getProductAttribute($productId, 'litle_subscription'));
+			Mage::log("Quantity is " . $qty);
+			if($this->getProductAttribute($productId, 'litle_subscription') === "Yes") {
+				for($j = 0; $j < $qty; $j++) {
+					$now = date_create();
+					Mage::log("Storing the subscription data");
+					$data = array(
+								'product_id' => $productId,
+								'initial_order_id' => $payment->getOrder()->getId(),
+								'customer_id' => $payment->getOrder()->getCustomerId(),
+								'amount' => $product->getLitleSubsAmountPerItr(),
+								'initial_fees' => $unitPrice*100,
+								'num_of_iterations' => $product->getLitleSubsNumOfItrs(),
+								'iteration_length' => $litleSubscriptionItrLengthValue,
+								'start_date' => date_timestamp_get($now), //TODO make based on length of trial period
+								'next_bill_date' => date_timestamp_get($now), // TODO needs to be the same as start_date
+								'active' => true //always false -- trial periods are handled by start_date. will be set to true on next cron if startdate is today.
+					);
+					Mage::getModel('palorus/subscription')->setData($data)->save();
+				}
+			}
+		}
+	}
+
+	public function getToken()
+	{
+		return "";
+	}
 }

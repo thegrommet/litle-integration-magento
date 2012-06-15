@@ -57,21 +57,32 @@ class Litle_Palorus_Helper_Data extends Mage_Core_Helper_Abstract
 		Mage::getModel('palorus/insight')->setData($data)->save();
 	}
 
-	public function saveVault($payment, $litleResponse) {
+	public function saveVault($payment, $litleResponse, $miscData = NULL) {
 		preg_match('/.*(\d\d\d\d)/', $payment->getCcNumber(), $matches);
 		$last4 = $matches[1];
 		$token = XMLParser::getNode($litleResponse, 'litleToken');
-		if($token == NULL) {
-			return;
+		Mage::log("inside savevault");
+		if($token == NULL) 
+		{
+			$token = $miscData['token'];
+			Mage::log("token is :" . $token);
+				if($token == NULL)
+					return;
 		}
 		$data = array(
 			'customer_id' => $payment->getOrder()->getCustomerId(), 
 			'order_id' => $payment->getOrder()->getId(),
 			'last4' => $last4,
-			'token'=> XMLParser::getNode($litleResponse, 'litleToken'),
+			'token'=> $token,
 			'type' => XMLParser::getNode($litleResponse, 'type'),
 			'bin' => XMLParser::getNode($litleResponse, 'bin')
 		);
+		Mage::log("customer id is :" . $payment->getOrder()->getCustomerId());
+		Mage::log("order id is :" .$payment->getOrder()->getId());
+		Mage::log("last4 is : " . $last4);
+		Mage::log("token is :" . $token);
+		Mage::log("type is : " . XMLParser::getNode($litleResponse, 'type'));
+		Mage::log("Bin is : " .XMLParser::getNode($litleResponse, 'bin'));
 		Mage::getModel('palorus/vault')->setData($data)->save();
 	}
 	

@@ -90,6 +90,12 @@ class Litle_Subscription_Model_PaymentLogic extends Litle_CreditCard_Model_Payme
 		return $payment_hash;
 	}
 	
+	public function getToken()
+	{
+		$info = $this->getInfoInstance();
+		Mage::log("get token for Payment logic of subscription");
+		return $info->getAdditionalInformation('litletoken');
+	}
 // 	public function processResponse(Varien_Object $payment,$litleResponse){
 // 		try{
 // 			parent::processResponse($payment, $litleResponse);

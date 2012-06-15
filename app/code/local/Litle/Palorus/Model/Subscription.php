@@ -124,7 +124,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 // 																		));
 			
 			$subscriptionSuspendCollectionForSubsId->addFieldToFilter("subscription_id", array("in", array($collectionItem['subscription_id'])));
-			$subscriptionSuspendCollectionForSubsId->addFieldToFilter("turn_on_date", array("from", date('d F Y', ( time()-(365 * 24 * 60 * 60) ) )));
+			$subscriptionSuspendCollectionForSubsId->addFieldToFilter("turn_on_date", array("from", date('d F Y', ( time()-(30 * 24 * 60 * 60) ) )));
 			
 			Mage::log("2");
 			$subscriptionSuspendCollectionForSubsId->addAttributeToSort('turn_on_date','ASC');
@@ -146,7 +146,9 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				)
 				{
 			 		// TODO :  Notify the merchant about this case ! 
-			 		continue;
+			 		Mage::log("3.1");
+					continue;
+			 	
 				}
 				
 				Mage::log("4");
@@ -237,7 +239,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
  				 											'method' => 'litlesubscription', 
  				 											'litletoken' => $vaultRecord['token'],
  				 											'litletokentype' => $vaultRecord['type'],
- 				 											'litletokenexpdate' => $vaultRecord['expdate']
+ 				 											'litletokenexpdate' => $vaultRecord['expdate'],
+ 				 											'ordersource' => 'recurring'
  														)
  												);
  				
@@ -250,7 +253,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
  			} catch (Exception $e)
  			{
  				$success = false;
- 				//Mage::log("Exception is: " . $e);
+ 				Mage::log("Exception is: " . $e);
  			}
  		}
 		return array("success" => $success, "order_id" => $orderId);
