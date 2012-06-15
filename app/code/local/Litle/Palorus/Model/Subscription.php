@@ -258,10 +258,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 
 	public function getNextBillDate($iterLength, $previousNextBillDate)
 	{
-			Mage::log("inside next bill date");
 			$nextDate; 
-// 			$dateobj = new DateTime();
-// 			$date = $dateobj->getTimestamp();// current date
 			$date = strtotime($previousNextBillDate); 
 			// AMIT-TODO : Do not export for testing purposes only. 
 			//$date = mktime(0, 0, 0, 1, 30, 2012);
@@ -275,23 +272,26 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			Mage::log("the current next date is " . $checkDate);
 			switch($iterLength)
 			{
+				// Add one day to the current day to get the next bill date
 				case 'Daily':
 			    $nextDate = (date("Y-m-d", ($date)) . " +1 day");
 			    Mage::log("the next date (Daily) " . date("Y-m-d", strtotime($nextDate)));
 				break;	
 				
+				// Add one week to the current day to get the next bill date
 				case 'Weekly':
 				$nextDate = (date("Y-m-d", ($date)) . " +1 week");
 				Mage::log("the next date (weekly) " . date("Y-m-d", strtotime($nextDate)));
 				break;
 			
+				// Add two weeks to the current date to get the next bill date
 				case 'Bi-Weekly':
 				$nextDate = (date("Y-m-d", ($date)) . " +2 weeks");
 				Mage::log("the next date (Bi-weekly) " . date("Y-m-d", strtotime($nextDate)));
 				break;
-			
-				// Needs optimization !
 				
+				// Add days in a manner where the billing cycle remains the same, and the customer 
+				// gets billed twice a month.
 				case 'Semi-Monthly': 
 				if($checkDate < "15")
 				{
@@ -323,10 +323,9 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				}
 				Mage::log("the next date (semi-monthly) " . date("Y-m-d", strtotime($nextDate)));
 				break;
-			
 				
-				//// ###### Please confirm this !
-				
+				// Add one month to the current bill date, if the date is on the 29,30.31 then
+				// move it to the first of the following month.
 				case 'Monthly':
 				$nextDate = (date("Y-m-d", ($date)) . " +1 month");
 				Mage::log("in monthly -- ");
@@ -339,14 +338,14 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 					}
 				Mage::log("the next date (Monthly) " . date("Y-m-d", strtotime($nextDate)));
 				break;
-			
-				// ###################### //check for 29th needed ??
-				
+								
+				// Add 6 months to get the next billing date
 				case 'Semi-Annually':
 				$nextDate = (date("Y-m-d", ($date)) . " +6 months");
 				Mage::log("the next date (Semi-annually) " . date("Y-m-d", strtotime($nextDate)));
 				break;
 			
+				// Add one year to get the next billing date
 				case 'Annually':
 				$nextDate = (date("Y-m-d", ($date)) . " +1 year");
 				Mage::log("the next date (Annually) " . date("Y-m-d", strtotime($nextDate)));
