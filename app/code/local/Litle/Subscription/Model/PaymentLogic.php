@@ -63,7 +63,6 @@ class Litle_Subscription_Model_PaymentLogic extends Litle_CreditCard_Model_Payme
 	
 	public function assignData($data)
 	{
-		Mage::log("subscription assigndata being called");
 		$info = $this->getInfoInstance();
 		
 		$info->setAdditionalInformation('litletoken', $data->getLitletoken());
@@ -71,11 +70,12 @@ class Litle_Subscription_Model_PaymentLogic extends Litle_CreditCard_Model_Payme
 		$info->setAdditionalInformation('litletokenexpdate', $data->getLitletokenexpdate());
 		$info->setAdditionalInformation('litleissubscription', $data->getLitleissubscription());
 		
+		$info->setAdditionalInformation('subscriptionid', $data->getSubscriptionid());
+		
 		return parent::assignData($data);
 	}
 	
 	public function creditCardOrPaypageOrToken($payment){
-		Mage::log("subscription creditCardOrPaypage being called");
 		$info = $this->getInfoInstance();
 		$payment_hash = array();
 		
@@ -90,18 +90,12 @@ class Litle_Subscription_Model_PaymentLogic extends Litle_CreditCard_Model_Payme
 		return $payment_hash;
 	}
 	
-	public function getToken()
-	{
-		$info = $this->getInfoInstance();
-		Mage::log("get token for Payment logic of subscription");
-		return $info->getAdditionalInformation('litletoken');
+	public function processResponse(Varien_Object $payment,$litleResponse){
+		try{
+			parent::processResponse($payment, $litleResponse);
+			return true;
+		} catch (Exception $e){
+			return false;
+		}
 	}
-// 	public function processResponse(Varien_Object $payment,$litleResponse){
-// 		try{
-// 			parent::processResponse($payment, $litleResponse);
-// 			return true;
-// 		} catch (Exception $e){
-// 			return false;
-// 		}
-// 	}
 }

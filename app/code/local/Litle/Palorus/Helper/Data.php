@@ -58,31 +58,38 @@ class Litle_Palorus_Helper_Data extends Mage_Core_Helper_Abstract
 	}
 
 	public function saveVault($payment, $litleResponse, $miscData = NULL) {
-		preg_match('/.*(\d\d\d\d)/', $payment->getCcNumber(), $matches);
-		$last4 = $matches[1];
+		// get the token
 		$token = XMLParser::getNode($litleResponse, 'litleToken');
-		Mage::log("inside savevault");
 		if($token == NULL) 
 		{
-			$token = $miscData['token'];
-			Mage::log("token is :" . $token);
+			$token = $miscData['litleToken'];
 				if($token == NULL)
 					return;
 		}
+		
+		// get the last 4
+		preg_match('/.*(\d\d\d\d)/', $payment->getCcNumber(), $matches);
+		$last4 = $matches[1];
+		if( empty($last4) ){
+			preg_match('/.*(\d\d\d\d)/', $token, $matches);
+			$last4 = $matches[1];
+		}
+		
+		$customerId = $payment->getOrder()->getCustomerId();
+		$orderId = $payment->getOrder()->getId();
+		$type = XMLParser::getNode($litleResponse, 'type');
+		if( empty($type) ){
+			$type = $miscData['type'];
+		}
+		$bin = XMLParser::getNode($litleResponse, 'bin');
 		$data = array(
-			'customer_id' => $payment->getOrder()->getCustomerId(), 
-			'order_id' => $payment->getOrder()->getId(),
+			'customer_id' => $customerId, 
+			'order_id' => $orderId,
 			'last4' => $last4,
 			'token'=> $token,
-			'type' => XMLParser::getNode($litleResponse, 'type'),
-			'bin' => XMLParser::getNode($litleResponse, 'bin')
+			'type' => $type,
+			'bin' => $bin
 		);
-		Mage::log("customer id is :" . $payment->getOrder()->getCustomerId());
-		Mage::log("order id is :" .$payment->getOrder()->getId());
-		Mage::log("last4 is : " . $last4);
-		Mage::log("token is :" . $token);
-		Mage::log("type is : " . XMLParser::getNode($litleResponse, 'type'));
-		Mage::log("Bin is : " .XMLParser::getNode($litleResponse, 'bin'));
 		Mage::getModel('palorus/vault')->setData($data)->save();
 	}
 	

@@ -448,6 +448,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	
 
 	public function processResponse(Varien_Object $payment,$litleResponse){
+		$info = $this->getInfoInstance();
 		$this->accountUpdater($payment,$litleResponse);
 		$message = XmlParser::getAttribute($litleResponse,'litleOnlineResponse','message');
 		if ($message == "Valid Format"){
@@ -455,7 +456,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			if( isset($litleResponse))
 			{
 				$litleResponseCode = XMLParser::getNode($litleResponse,'response');
-				if(!$litleResponseCode === "000")
+				if($litleResponseCode === "000")
 				{
 					//Mage::throwException('response code is: ' . $litleResponseCode . 'txn type is: ');
 					if(($litleResponseCode === "362") && Mage::helper("creditcard")->isStateOfOrderEqualTo($payment->getOrder(), Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE))
@@ -476,7 +477,9 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						if( true )
 						{
 							//Mage::dispatchEvent('litle_subscription_txn_failed', array('recycletime'=> XMLParser::getNode($litleResponse,'nextrecycleTime'), 'recycleadviceend'=> XMLParser::getNode($litleResponse,'recycleAdviceEnd')));
-							Mage::dispatchEvent('litle_subscription_txn_failed', array('recycletime'=> '1/22/2012', 'recycleadviceend'=> null));
+							$date = time();
+							Mage::log($date);
+							Mage::dispatchEvent('litle_subscription_txn_failed', array('recycletime'=> (time()+(2 * 24 * 60 * 60)), 'recycleadviceend'=> null, 'subscriptionid' => $info->getAdditionalInformation('subscriptionid')));
 						}
 						
 						if($isSale)
@@ -553,8 +556,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 					$this->populateSubscription($payment);
 				
 				Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse);
-				Mage::log("the token is: ". getToken());
-				Mage::helper("palorus")->saveVault($payment, $litleResponse, array('token' => getToken()));
+				Mage::helper("palorus")->saveVault($payment, $litleResponse, $this->getTokenInfo($payment));
 			}
 		}
 	}
@@ -616,7 +618,6 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 
 			if( $isSale )
 			{
-				Mage::log("Inside is sale");
 				$litleResponse = $litleRequest->saleRequest($hash_in);
 				
 			} else {
@@ -627,7 +628,6 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		
 		if($isSale)
 		{
-			Mage::log("populating subscription");
 			
 			if( $ordersource != "recurring" )
 				$this->populateSubscription($payment);
@@ -700,7 +700,6 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		$items = $order->getAllItems();
 		foreach ($items as $itemId => $item)
 		{
-			Mage::log("grabing an item one at a time inside subscription");
 			$unitPrice=$item->getPrice();
 			$productId=$item->getProductId();
 			$qty=$item->getQtyToInvoice();
@@ -718,12 +717,9 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 					$litleSubscriptionItrLengthValue = $attribute->getValue();
 				}
 			}
-			Mage::log("Litle subscription is :" . $this->getProductAttribute($productId, 'litle_subscription'));
-			Mage::log("Quantity is " . $qty);
 			if($this->getProductAttribute($productId, 'litle_subscription') === "Yes") {
 				for($j = 0; $j < $qty; $j++) {
 					$now = date_create();
-					Mage::log("Storing the subscription data");
 					$data = array(
 								'product_id' => $productId,
 								'initial_order_id' => $payment->getOrder()->getId(),
@@ -740,10 +736,5 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 				}
 			}
 		}
-	}
-
-	public function getToken()
-	{
-		return "";
 	}
 }
