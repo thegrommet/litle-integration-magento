@@ -60,6 +60,9 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$cronId = $subscriptionCronHistoryCollectionItem['cron_id'];
 		}
 
+		$recyclingModel = Mage::getModel('palorus/recycling');
+		$recyclingModel->callFromCron($cronId);
+		
 		// Get all items from Subscription Suspend where turn_on_date is between now and 2 days ago.
 		// 2 days is a buffer in the unlikely scenario that the cron jobs didn't run.
 		$subscriptionSuspendCollection = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
@@ -97,7 +100,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$subscriptionSuspendCollectionForSubsId->addFieldToFilter("turn_on_date", array("from", date('d F Y', ( time()-(30 * 24 * 60 * 60) ) )));
 				
 			$subscriptionSuspendCollectionForSubsId->addAttributeToSort('turn_on_date','ASC');
-			$turnOnDate;
+			$turnOnDate = NULL;
 			foreach ($subscriptionSuspendCollectionForSubsId as $suspendedItem)
 			{
 				$turnOnDate = $suspendedItem['turn_on_date'];

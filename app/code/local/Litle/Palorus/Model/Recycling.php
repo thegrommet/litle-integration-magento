@@ -46,7 +46,6 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 	public function callFromCron($cronId)
 	{
 		$recyclingCollection = Mage::getModel('palorus/recycling')->getCollection();
-		$subscriptionCronHistoryCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(cron_history_id) as cron_id');
 	
 		// Select records where date to run is less than the current date and status is currently waiting.
 		$recyclingCollection->addFieldToFilter("status", array("in", array('waiting')));
@@ -98,7 +97,8 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 			}
 			else
 			{
-			//	TODO : implement overlap of current recycle time with next bill date.
+				$subscriptionItem->setActive(false);
+				$subscriptionItem->save();
 			}
 			
 		}
