@@ -51,27 +51,31 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		$recyclingCollection->addFieldToFilter("status", array("in", array('waiting')));
 		$recyclingCollection->addFieldToFilter("to_run_date", array("to", date('d F Y', ( time()))));
 
-		foreach($recyclingCollection  as $collectionItem)
+		foreach($recyclingCollection as $recyclingCollectionItem)
 		{
 			$subscriptionCollection = Mage::getModel('palorus/subscription')->getCollection();
-			$subscriptionCollection->addFieldToFilter("subscription_id",array("in",array($collectionItem['subscription_id'])));
+			$subscriptionCollection->addFieldToFilter("subscription_id",array("in",array($recyclingCollectionItem['subscription_id'])));
 			
 			foreach($subscriptionCollection as $subscriptionItem)
 			{
 				
 			}
 			
+			// if subscription is still active, and current time < "next_bill_date" time in subscription table ...
+			// (we do not want to run re-cycling if "next_bill_date" time was in the past -- we want to deactivate the subscription
+			// and notify the admins via email etc.)
 			if($subscriptionItem['active'] && (time() < strtotime($subscriptionItem['next_bill_date'])))
 			{
 				$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
-				$subscriptionHistoryItemData = array("subscription_id" => $collectionItem['subscription_id'],
+				$subscriptionHistoryItemData = array("subscription_id" => $recyclingCollectionItem['subscription_id'],
 																 "cron_id" => $cronId,
 																 "run_date" => time());
-				$returnFromCreateOrder = $this->createOrder($subscriptionItem['product_id'], $subscriptionItem['customer_id'], $subscriptionItem['initial_order_id'], $collectionItem['subscription_id']);
+				
+				$returnFromCreateOrder = $this->createOrder($subscriptionItem['product_id'], $subscriptionItem['customer_id'], $subscriptionItem['initial_order_id'], $recyclingCollectionItem['subscription_id']);
 				if( !$returnFromCreateOrder["success"] )
 				{
-					$collectionItem->setSuccessful(false);
-					$collectionItem->setStatus('failed');
+					$recyclingCollectionItem->setSuccessful(false);
+					$recyclingCollectionItem->setStatus('failed');
 					
 // 					$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
 // 					$subsHistoryForLastSubsHistIdCollection = $subscriptionHistoryModel->getCollection();
@@ -85,15 +89,15 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 				}
 				else
 				{
-					$collectionItem->setNumOfIterationsRan($collectionItem['num_of_iterations_ran'] + 1);
-					$collectionItem->setSuccessful(true);
-					$collectionItem->setStatus('completed');
+					$subscriptionItem->setNumOfIterationsRan($collectionItem['num_of_iterations_ran'] + 1);
 					$subscriptionItem->setRunNextIteration(true);
+					$subscriptionItem->save();
+					$recyclingCollectionItem->setSuccessful(true);
+					$recyclingCollectionItem->setStatus('completed');
 				}
-				$subscriptionItem->save();
-				$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
+				$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData, $returnFromCreateOrder);
 				$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();
-				$collectionItem->save();
+				$recyclingCollectionItem->save();
 			}
 			else
 			{
@@ -109,6 +113,7 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 	
 	
 	public function createOrder($productId, $customerId, $initialOrderId, $subscriptionId){
+		Mage::log("Recycling initial order: " . $initialOrderId . " for subscription id: " . $subscriptionId );
 		$store = Mage::app()->getStore('default');
 		$success = false;
 		$orderId = 0;
@@ -160,6 +165,12 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 			} catch (Exception $e)
 			{
 				$success = false;
+				
+				$subscriptionSingleton = Mage::getSingleton('palorus/subscription');
+				if( $subscriptionSingleton->getShouldRecycleDateBeRead() )
+					$subscriptionSingleton->saveDataInSubscriptionHistory($subscriptionId);
+				
+				$subscriptionSingleton->setShouldRecycleDateBeRead( false );
 			}
 		}
 		return array("success" => $success, "order_id" => $orderId);

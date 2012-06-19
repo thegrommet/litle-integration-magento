@@ -63,6 +63,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	{
 		$this->_model = 'palorus/subscription';
 		$this->_init($this->_model);
+		
+		$this->shouldRecycleDateBeRead = false;
 	}
 
 	public function callFromCron()
@@ -222,6 +224,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			} catch (Exception $e)
 			{
 				$success = false;
+				
 				if( $this->shouldRecycleDateBeRead )
 					$this->saveDataInSubscriptionHistory($subscriptionId);
 				
