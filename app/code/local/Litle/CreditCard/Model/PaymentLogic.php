@@ -477,9 +477,12 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						if( true )
 						{
 							//Mage::dispatchEvent('litle_subscription_txn_failed', array('recycletime'=> XMLParser::getNode($litleResponse,'nextrecycleTime'), 'recycleadviceend'=> XMLParser::getNode($litleResponse,'recycleAdviceEnd')));
-							$date = time();
-							Mage::log($date);
-							Mage::dispatchEvent('litle_subscription_txn_failed', array('recycletime'=> (time()+(2 * 24 * 60 * 60)), 'recycleadviceend'=> null, 'subscriptionid' => $info->getAdditionalInformation('subscriptionid')));
+// 							$date = time();
+// 							Mage::log($date);
+// 							Mage::dispatchEvent('litle_subscription_txn_failed', array('recycletime'=> (time()+(2 * 24 * 60 * 60)), 'recycleadviceend'=> null, 'subscriptionid' => $info->getAdditionalInformation('subscriptionid')));
+							$subscriptionSingleton = Mage::getSingleton('palorus/subscription');
+							$subscriptionSingleton->setRecycleNextRunDate((time()+(2 * 24 * 60 * 60)));
+							$subscriptionSingleton->setShouldRecycleDateBeRead(true);
 						}
 						
 						if($isSale)

@@ -102,6 +102,6 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
 
     public function subscriptionAction()
     {
-    	Mage::getModel("palorus/subscription")->callFromCron();
+    	Mage::getSingleton("palorus/subscription")->callFromCron();
     }
 }

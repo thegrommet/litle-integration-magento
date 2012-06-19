@@ -38,6 +38,26 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	protected $_model = NULL;
 
 	protected $recycleNextRunDate;
+	
+	protected $shouldRecycleDateBeRead;
+	
+	public function getRecycleNextRunDate()
+	{
+		return $this->recycleNextRunDate;
+	}
+	
+	public function setRecycleNextRunDate($in_date)
+	{
+		$this->recycleNextRunDate = $in_date;
+	}
+	
+	public function getShouldRecycleDateBeRead(){
+		return $this->shouldRecycleDateBeRead;
+	}
+	
+	public function setShouldRecycleDateBeRead( $in_updated ){
+		$this->shouldRecycleDateBeRead = $in_updated;
+	}
 
 	protected function _construct()
 	{
@@ -202,6 +222,10 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			} catch (Exception $e)
 			{
 				$success = false;
+				if( $this->shouldRecycleDateBeRead )
+					$this->saveDataInSubscriptionHistory($subscriptionId);
+				
+				$this->setShouldRecycleDateBeRead( false );
 			}
 		}
 		return array("success" => $success, "order_id" => $orderId);
@@ -294,8 +318,13 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	// 		$transaction->addCommitCallback(array($order, 'save'));
 	// 		$transaction->save();
 	// ################### FOR FAILED TRANSACTIONS ############################
-	public function saveDataInSubscriptionHistory($subscriptionId, $nextRunDate)
+	public function saveDataInSubscriptionHistory($subscriptionId, $nextRunDate = "")
 	{
+		if( $nextRunDate === "" )
+		{
+			$nextRunDate = $this->getRecycleNextRunDate();
+		}
+		
 		$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
 		$subsHistoryForLastSubsHistIdCollection = $subscriptionHistoryModel->getCollection();
 		$subsHistoryForLastSubsHistIdCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(subscription_history_id) as subscription_history_id');
@@ -309,22 +338,11 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$recyclingModel = Mage::getModel('palorus/recycling');
 		$recyclingItemData = array(
 						 							"subscription_id" => $subscriptionId,
-						 							"subscription_history_id" => $lastSubscriptionHistoryId,
+						 							"subscription_history_id" => $lastSubscriptionHistoryId + 1,
 						 							"successful" => false,
 						 							"status" => "waiting",
 						 							"to_run_date" => $nextRunDate		
 		);
 		$recyclingModel->setData($recyclingItemData)->save();
-	}
-
-
-
-	public function catchFailedSubscriptionTxnInfo(Varien_Event_Observer $observer)
-	{
-		Mage::log($observer->getRecycletime());
-		//Mage::log();
-		Mage::log(date("Y-m-d", ($observer->getRecycletime())));
-			
-		$this->saveDataInSubscriptionHistory($observer->getSubscriptionid(), $observer->getRecycletime());
 	}
 }
