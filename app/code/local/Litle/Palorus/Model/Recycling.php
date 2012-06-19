@@ -45,7 +45,6 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 	
 	public function callFromCron($cronId)
 	{
-		Mage::log("entered recycling.");
 		$recyclingCollection = Mage::getModel('palorus/recycling')->getCollection();
 		// Select records where date to run is less than the current date and status is currently waiting.
 		$recyclingCollection->addFieldToFilter("status", array("in", array('waiting')));
@@ -58,13 +57,11 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		$i = 0;
 		foreach($recyclingCollection as $recyclingCollectionItem)
 		{
-			Mage::log("running recycling record " . ++$i);
 			$subscriptionCollection = Mage::getModel('palorus/subscription')->getCollection();
 			$subscriptionCollection->addFieldToFilter("subscription_id",array("in",array($recyclingCollectionItem['subscription_id'])));
 			
 			foreach($subscriptionCollection as $subscriptionItem)
 			{
-				Mage::log("trying to figure out subscriptionItem");	
 			}
 			
 			// if subscription is still active, and current time < "next_bill_date" time in subscription table ...
@@ -72,7 +69,6 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 			// and notify the admins via email etc.)
 			if($subscriptionItem['active'] && (time() < strtotime($subscriptionItem['next_bill_date'])))
 			{
-				Mage::log("have the subscription item, and it is active.");
 				$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
 				$subscriptionHistoryItemData = array("subscription_id" => $recyclingCollectionItem['subscription_id'],
 																 "cron_id" => $cronId,
@@ -83,16 +79,6 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 				{
 					$recyclingCollectionItem->setSuccessful(false);
 					$recyclingCollectionItem->setStatus('failed');
-					
-// 					$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
-// 					$subsHistoryForLastSubsHistIdCollection = $subscriptionHistoryModel->getCollection();
-// 					$subsHistoryForLastSubsHistIdCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(subscription_history_id) as subscription_history_id');
-						
-// 					$lastSubscriptionHistoryId = 0;
-// 					foreach($subsHistoryForLastSubsHistIdCollection as $subscriptionHistoryCollectionItem)
-// 					{
-// 						$lastSubscriptionHistoryId = $subscriptionHistoryCollectionItem['subscription_history_id'];
-// 					}
 				}
 				else
 				{
@@ -111,16 +97,10 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 				$subscriptionItem->setActive(false);
 				$subscriptionItem->save();
 			}
-			
 		}
 	}
 
-	
-	
-	
-	
 	public function createOrder($productId, $customerId, $initialOrderId, $subscriptionId){
-		Mage::log("Recycling initial order: " . $initialOrderId . " for subscription id: " . $subscriptionId );
 		$store = Mage::app()->getStore('default');
 		$success = false;
 		$orderId = 0;
