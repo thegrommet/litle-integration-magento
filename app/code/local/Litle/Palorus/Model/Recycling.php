@@ -57,6 +57,7 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		$i = 0;
 		foreach($recyclingCollection as $recyclingCollectionItem)
 		{
+			Mage::log("inside recycling collection");
 			$subscriptionCollection = Mage::getModel('palorus/subscription')->getCollection();
 			$subscriptionCollection->addFieldToFilter("subscription_id",array("in",array($recyclingCollectionItem['subscription_id'])));
 			
@@ -77,11 +78,14 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 				$returnFromCreateOrder = $this->createOrder($subscriptionItem['product_id'], $subscriptionItem['customer_id'], $subscriptionItem['initial_order_id'], $recyclingCollectionItem['subscription_id']);
 				if( !$returnFromCreateOrder["success"] )
 				{
+					Mage::log("the transaction failed");
 					$recyclingCollectionItem->setSuccessful(false);
 					$recyclingCollectionItem->setStatus('failed');
+					
 				}
 				else
 				{
+					Mage::log("the transaction passed");
 					$subscriptionItem->setNumOfIterationsRan($subscriptionItem['num_of_iterations_ran'] + 1);
 					$subscriptionItem->setRunNextIteration(true);
 					$subscriptionItem->save();
@@ -90,6 +94,16 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 				}
 				$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData, $returnFromCreateOrder);
 				$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();
+				$nextSubscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
+				$nextSubscriptionIdCollection = $nextSubscriptionHistoryModel->getCollection();
+				$nextSubscriptionIdCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(subscription_history_id) as subscription_history_id');
+				$nextSubscriptionId = 0;
+				foreach ($nextSubscriptionIdCollection as $nextSubscriptionIdCollectionItem)
+				{
+					$nextSubscriptionId = $nextSubscriptionIdCollectionItem['subscription_history_id'];
+				}
+				Mage::log("the next subscription id is " . $nextSubscriptionId);
+				$recyclingCollectionItem->setNextSubscriptionId($nextSubscriptionId);
 				$recyclingCollectionItem->save();
 			}
 			else

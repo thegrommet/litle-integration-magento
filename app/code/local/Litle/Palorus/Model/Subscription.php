@@ -138,6 +138,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			)
 			{
 				// TODO :  Notify the merchant about this case !
+				Mage::log("In that if statement");
 				continue;
 					
 			}
