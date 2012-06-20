@@ -199,4 +199,56 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		);
 		$recyclingModel->setData($recyclingItemData)->save();
 	}
+	
+	public function syncSubscriptionIdWithHistory()
+	{
+		$recyclingCollection = Mage::getModel('palorus/recycling')->getCollection();
+		// Select records where date to run is less than the current date and status is currently waiting.
+		$recyclingCollection->addFieldToFilter('to_run_date', array(
+						    														'from' => date('d F Y', ( time()-(7 * 24 * 60 * 60) ) ),
+						    														'to' => date('d F Y'),
+								    												'date' => true,
+		));
+		foreach($recyclingCollection as $recyclingCollectionItem)
+		{
+			$id = this->syncRecycleWithSubscription($recyclingCollectionItem['subscription_id']);
+			$recyclingCollectionItem->setSubscriptionHistoryId($id);
+			$recyclingCollectionItem->save();
+		}
+		
+	}
+	
+	
+	public function syncRecycleWithSubscription($subscriptionHistoryId)
+	{
+		$subscriptionHistoryCollection = Mage::getModel('palorus/subscriptionHistory')->getCollection();
+		$subscriptionHistoryCollection->addFieldToFilter("subscription_history_id",array("in",array($subscriptionHistoryId)));
+		
+		
+		foreach( $subscriptionHistoryCollection as $subscriptionHistoryItem)
+		{
+		
+		}
+		if($subscriptionHistoryItem['subscription_id'] == $subscriptionHistoryId)
+		{
+			Mage::log("All set");
+			return $subscriptionHistoryId;
+		}
+			
+		else
+		{
+			Mage::log("ooooohh boy trouble");
+			$subsHistoryForSubsHistIdCollection = Mage::getModel('palorus/subscriptionHistory')->getCollection();
+			$subsHistoryForSubsHistIdCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(subscription_history_id) as subscription_history_id');
+		
+			$subsHistoryForSubsHistIdCollection->addFieldToFilter('subscription_id',array("in" , $subscriptionHistoryId));
+		
+			foreach($subsHistoryForSubsHistIdCollection as $subsHistoryForSubsHistIdCollectionItem)
+			{
+					
+			}
+			return $subsHistoryForSubsHistIdCollectionItem['subscription_history_id'];
+		
+		}
+	}
 }

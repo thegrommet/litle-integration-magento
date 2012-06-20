@@ -85,6 +85,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$recyclingModel = Mage::getModel('palorus/recycling');
 		$recyclingModel->callFromCron($cronId);
 		
+		
+		
 		// Get all items from Subscription Suspend where turn_on_date is between now and 2 days ago.
 		// 2 days is a buffer in the unlikely scenario that the cron jobs didn't run.
 		$subscriptionSuspendCollection = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
@@ -163,6 +165,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				else
 				{
 					$collectionItem->setNumOfIterationsRan($collectionItem['num_of_iterations_ran'] + 1);
+					if($collectionItem[num_of_iterations_ran] == $collectionItem['num_of_iterations'])
+					$collectionItem->setActive(false);
 				}
 
 				$collectionItem['next_bill_date'] = $this->getNextBillDate($collectionItem['iteration_length'], $collectionItem['next_bill_date']);
@@ -171,6 +175,9 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$collectionItem->save();
 			}
 		}
+		//sync the subscription id in the recycle with the subscription id in the History
+		$recyclingModel->syncSubscriptionIdWithHistory();
+		
 	}
 
 	public function createOrder($productId, $customerId, $initialOrderId, $subscriptionId){
