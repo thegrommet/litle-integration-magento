@@ -63,6 +63,12 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 
 	protected function _prepareColumns()
 	{
+		$this->addColumn('customer_id', array(
+				'header'    => 'Customer ID',
+				'width'     => '100',
+				'index'     => 'customer_id',
+				'sortable'		=> false,
+		));
 		$this->addColumn('subscription_id', array(
                 'header'    => 'Subscription ID',
                 'width'     => '100',
