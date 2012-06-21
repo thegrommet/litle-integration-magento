@@ -33,7 +33,7 @@
 * @license    http://www.opensource.org/licenses/mit-license.php
 * @author     Litle & Co <sdksupport@litle.com> www.litle.com/developers
 */
-class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscription
+class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptioninvoice
 extends Mage_Adminhtml_Block_Widget_Grid
 implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 
@@ -58,15 +58,11 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 		$collection = Mage::getModel('palorus/subscription')
 			->getCollection()
 			->addFieldToFilter('customer_id',$customerId);
-		/*
-		$productId = $this->getProductId();
-		$product = Mage::getModel('catalog/product')->load($productId);
-		$name = $product->getName();
-		*/	
+			
 		$this->setCollection($collection);
 		return parent::_prepareCollection();
 	}
-	
+
 	protected function _prepareColumns()
 	{
 		$this->addColumn('subscription_id', array(
@@ -81,10 +77,10 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
                 'index'     => 'product_id',
                 'sortable'		=> false,
 		));
-// 		$this->addColumn((string)$name, array(
+// 		$this->addColumn('a-man-having-a-period', array(
 //                'header'    => 'Product Name',
 //                'width'     => '100',
-//                'index'     => (string)$name,
+//                'index'     => 'a-man-having-a-period',
 //                'sortable'		=> false,
 // 		));
 		$this->addColumn('start_date', array(
