@@ -227,17 +227,19 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 	public function syncRecycleWithSubscription($subscriptionHistoryId)
 	{
 		$subscriptionHistoryCollection = Mage::getModel('palorus/subscriptionHistory')->getCollection();
-		$subscriptionHistoryCollection->addFieldToFilter("subscription_history_id",array("in",array($subscriptionHistoryId)));
-		
+		$subscriptionHistoryCollection->addFieldToFilter('subscription_id',array('in',($subscriptionHistoryId)));
+		$subscriptionHistoryItem = "";
 		
 		foreach( $subscriptionHistoryCollection as $subscriptionHistoryItem)
 		{
 		
 		}
+		Mage::log("The history item id is " . $subscriptionHistoryItem['subscription_id']);
+		Mage::log("the recycling sub id is " . $subscriptionHistoryId);
 		if($subscriptionHistoryItem['subscription_id'] == $subscriptionHistoryId)
 		{
 			Mage::log("All set");
-			return $subscriptionHistoryId;
+			return $subscriptionHistoryItem['subscription_history_id'];
 		}
 			
 		else
@@ -253,6 +255,7 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 					
 			}
 		}
-			return $subsHistoryForSubsHistIdCollectionItem['subscription_history_id'];
+			Mage::log("the return value is " . $subsHistoryForSubsHistIdCollectionItem['subscription_history_id']);
+		return $subsHistoryForSubsHistIdCollectionItem['subscription_history_id'];
 	}
 }
