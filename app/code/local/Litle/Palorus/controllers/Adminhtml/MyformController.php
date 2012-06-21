@@ -109,10 +109,7 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
     public function litleSubscriptionAction()
     {
      	$this->loadLayout();
-    	$block = $this->getLayout()->createBlock(
-    	          'adminhtml/sales_order_view_tab_invoices'
-    	          //'palorus/adminhtml_palorus_insight_subscriptionhome'
-    	);
+    	$block = $this->getLayout()->createBlock('palorus/adminhtml_palorus_insight_subscriptionhome');
 		$this->getLayout()->getBlock('content')->append($block);
     	$this->renderLayout();
     }
