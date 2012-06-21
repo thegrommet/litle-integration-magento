@@ -9,6 +9,16 @@
         </reference>
     </adminhtml_customer_edit>
     
+    <adminhtml_customer_edit>
+        <reference name="customer_edit_tabs">
+            <action method="addTab">
+                <name>my_custom_subscription</name>
+                <block>palorus/adminhtml_palorus_insight_subscription</block>
+            </action>
+        </reference>
+    </adminhtml_customer_edit>
+    
+    
     <palorus_adminhtml_myform_index>
         <update handle="palorus_myform_index"/>
         <reference name="content">
