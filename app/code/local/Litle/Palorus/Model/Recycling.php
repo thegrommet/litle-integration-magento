@@ -211,7 +211,8 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		));
 		foreach($recyclingCollection as $recyclingCollectionItem)
 		{
-			$id = this->syncRecycleWithSubscription($recyclingCollectionItem['subscription_id']);
+			Mage::log("Id sync");
+			$id = $this->syncRecycleWithSubscription($recyclingCollectionItem['subscription_id']);
 			$recyclingCollectionItem->setSubscriptionHistoryId($id);
 			$recyclingCollectionItem->save();
 		}
@@ -247,8 +248,7 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 			{
 					
 			}
-			return $subsHistoryForSubsHistIdCollectionItem['subscription_history_id'];
-		
 		}
+			return $subsHistoryForSubsHistIdCollectionItem['subscription_history_id'];
 	}
 }
