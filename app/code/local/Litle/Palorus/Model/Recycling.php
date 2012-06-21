@@ -223,6 +223,31 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		
 	}
 	
+	public function syncSubscriptionHistoryId()
+	{
+		$recyclingCollection = Mage::getModel('palorus/recycling')->getCollection();
+		$recyclingCollection->addFieldToFilter('to_run_date', array(
+		    														'from' => date('d F Y'),
+					   												'date' => true,
+									     		));
+		foreach($recyclingCollection as $recyclingCollectionItem)
+		{
+			Mage::log("Id sync 2");
+			$id = $this->syncRecycleWithSubscription($recyclingCollectionItem['subscription_id']);
+			if($recyclingCollectionItem['next_subscription_id'] === NULL)
+			{
+			Mage::log("It is the null case, hence dont update the final entry");	
+			}
+			else
+			$recyclingCollectionItem->setNextSubscriptionId($id);
+			
+			$recyclingCollectionItem->save();
+		}
+	
+	}
+	
+	
+	
 	
 	public function syncRecycleWithSubscription($subscriptionHistoryId)
 	{
@@ -259,3 +284,4 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		return $subsHistoryForSubsHistIdCollectionItem['subscription_history_id'];
 	}
 }
+

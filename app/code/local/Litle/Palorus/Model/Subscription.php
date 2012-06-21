@@ -177,6 +177,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		}
 		//sync the subscription id in the recycle with the subscription id in the History
 		$recyclingModel->syncSubscriptionIdWithHistory();
+		$recyclingModel->syncSubscriptionHistoryId();
 		
 	}
 
