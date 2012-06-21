@@ -131,6 +131,13 @@ class Litle_LEcheck_Model_PaymentLogic extends Mage_Payment_Model_Method_Abstrac
 
 	public function getEcheckInfo(Varien_Object $payment)
 	{
+		$ret = "";
+		$ret = $this->getLineItemData($payment);
+		Mage::log($ret);
+		if($ret === "1")
+		throw new Mage_Payment_Model_Info_Exception(Mage::helper('core')->__("Cannot use ECheck to buy a subscription Item"));
+
+		
 		$info = $this->getInfoInstance();
 		$retArray = array();
 		$retArray["accNum"] = $info->getAdditionalInformation('echeck_bank_acc_num');
@@ -215,6 +222,7 @@ class Litle_LEcheck_Model_PaymentLogic extends Mage_Payment_Model_Method_Abstrac
 			if( isset($litleResponse))
 			{
 				$litleResponseCode = XMLParser::getNode($litleResponse,'response');
+				Mage::log($litleResponseCode);
 				if($litleResponseCode != "000")
 				{
 				if(($litleResponseCode === "362") && Mage::helper("creditcard")->isStateOfOrderEqualTo($payment->getOrder(), Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE))
@@ -257,6 +265,7 @@ class Litle_LEcheck_Model_PaymentLogic extends Mage_Payment_Model_Method_Abstrac
 	 */
 	public function authorize(Varien_Object $payment, $amount)
 	{
+		Mage::log("Authorise");
 		$order = $payment->getOrder();
 		$orderId = $order->getIncrementId();
 		$amountToPass = ($amount* 100);
@@ -348,5 +357,28 @@ class Litle_LEcheck_Model_PaymentLogic extends Mage_Payment_Model_Method_Abstrac
 			$litleResponse = $litleRequest->echeckVoidRequest($hash_in);
 		}
 		$this->processResponse($payment,$litleResponse);
+	}
+	
+	public function getProductAttribute($productId, $attributeName) {
+		$product = Mage::helper("catalog/product")->getProduct($productId, null);
+		$attributeValue = $product->getAttributeText($attributeName);
+		return $attributeValue;
+	}
+	
+	public function getLineItemData(Varien_Object $payment){
+		$order = $payment->getOrder();
+		$items = $order->getAllItems();
+		foreach ($items as $itemId => $item)
+		{
+			if($this->getProductAttribute($productId, 'litle_subscription') === "Yes")
+				{
+					// Item is subscription item, cannot use Echeck to buy it now !
+					Mage::log("return true");
+					return 1;	
+				}
+			// item is not a subscription item
+				Mage::log("return false");
+			return 0;
+		}
 	}
 }
