@@ -204,10 +204,14 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 	{
 		$recyclingCollection = Mage::getModel('palorus/recycling')->getCollection();
 		// Select records where date to run is less than the current date and status is currently waiting.
+// 		$recyclingCollection->addFieldToFilter('to_run_date', array(
+// 						    														'from' => date('d F Y', ( time()-(7 * 24 * 60 * 60) ) ),
+// 						    														'to' => date('d F Y'),
+// 								    												'date' => true,
+// 		));
 		$recyclingCollection->addFieldToFilter('to_run_date', array(
-						    														'from' => date('d F Y', ( time()-(7 * 24 * 60 * 60) ) ),
-						    														'to' => date('d F Y'),
-								    												'date' => true,
+								    														'from' => date('d F Y'),
+										    												'date' => true,
 		));
 		foreach($recyclingCollection as $recyclingCollectionItem)
 		{
