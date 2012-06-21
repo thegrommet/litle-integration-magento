@@ -33,7 +33,7 @@
 * @license    http://www.opensource.org/licenses/mit-license.php
 * @author     Litle & Co <sdksupport@litle.com> www.litle.com/developers
 */
-class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptioninvoice
+class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview
 extends Mage_Adminhtml_Block_Widget_Grid
 implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 
@@ -43,6 +43,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	 */
 	public function _construct()
 	{
+		echo "herhe"; exit;
 		parent::_construct();
 		$this->setId('litle_customer_orders_grid');
 		$this->setDefaultSort('order_number', 'desc');
