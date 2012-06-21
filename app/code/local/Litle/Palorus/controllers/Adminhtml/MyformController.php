@@ -35,6 +35,7 @@
 */
 class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller_Action
 {
+
     public function activityAction()
     {
     	$this->_redirectUrl(Mage::helper('palorus')->getBaseUrl() . '/ui/reports/activity');
@@ -107,15 +108,12 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
     
     public function litleSubscriptionAction()
     {
-    	$this->loadLayout();
     	
+     	$this->loadLayout();
     	$block = $this->getLayout()->createBlock(
-    	           'Mage_Core_Block_Template');//),
-    	  //          'adminhtml_palorus_insight_subscription',
-     	//array('template' => 'shani/example_core_block.phtml');
-
-    	$this->getLayout()->getBlock('content')->append($block);
-    	
+    	           'adminhtml/sales_order_view_tab_invoices');
+//     	           'palorus/adminhtml_palorus_insight_tab')->toHtml();
+		$this->getLayout()->getBlock('content')->append($block);
     	$this->renderLayout();
     }
 }
