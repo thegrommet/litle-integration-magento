@@ -104,4 +104,18 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
     {
     	Mage::getSingleton("palorus/subscription")->callFromCron();
     }
+    
+    public function litleSubscriptionAction()
+    {
+    	$this->loadLayout();
+    	
+    	$block = $this->getLayout()->createBlock(
+    	           'Mage_Core_Block_Template');//),
+    	  //          'adminhtml_palorus_insight_subscription',
+     	//array('template' => 'shani/example_core_block.phtml');
+
+    	$this->getLayout()->getBlock('content')->append($block);
+    	
+    	$this->renderLayout();
+    }
 }
