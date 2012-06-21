@@ -209,13 +209,13 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 // 						    														'to' => date('d F Y'),
 // 								    												'date' => true,
 // 		));
+		//select all the records in recycling table where time is greater than current time   
 		$recyclingCollection->addFieldToFilter('to_run_date', array(
 								    														'from' => date('d F Y'),
 										    												'date' => true,
 		));
 		foreach($recyclingCollection as $recyclingCollectionItem)
 		{
-			Mage::log("Id sync");
 			$id = $this->syncRecycleWithSubscription($recyclingCollectionItem['subscription_id']);
 			$recyclingCollectionItem->setSubscriptionHistoryId($id);
 			$recyclingCollectionItem->save();
@@ -232,11 +232,10 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 									     		));
 		foreach($recyclingCollection as $recyclingCollectionItem)
 		{
-			Mage::log("Id sync 2");
 			$id = $this->syncRecycleWithSubscription($recyclingCollectionItem['subscription_id']);
 			if($recyclingCollectionItem['next_subscription_id'] === NULL)
 			{
-			Mage::log("It is the null case, hence dont update the final entry");	
+			// There is no other subscription history record to point to ! happens at the very beginning	
 			}
 			else
 			$recyclingCollectionItem->setNextSubscriptionId($id);
@@ -254,33 +253,26 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		$subscriptionHistoryCollection = Mage::getModel('palorus/subscriptionHistory')->getCollection();
 		$subscriptionHistoryCollection->addFieldToFilter('subscription_id',array('in',($subscriptionHistoryId)));
 		$subscriptionHistoryItem = "";
-		
 		foreach( $subscriptionHistoryCollection as $subscriptionHistoryItem)
 		{
 		
 		}
-		Mage::log("The history item id is " . $subscriptionHistoryItem['subscription_id']);
-		Mage::log("the recycling sub id is " . $subscriptionHistoryId);
+		// check if both the subscription id's match if yes return the history id !
 		if($subscriptionHistoryItem['subscription_id'] == $subscriptionHistoryId)
 		{
-			Mage::log("All set");
 			return $subscriptionHistoryItem['subscription_history_id'];
 		}
-			
+		// Boom, something went wrong, fix it return the correct  history ID 
 		else
 		{
-			Mage::log("ooooohh boy trouble");
 			$subsHistoryForSubsHistIdCollection = Mage::getModel('palorus/subscriptionHistory')->getCollection();
 			$subsHistoryForSubsHistIdCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(subscription_history_id) as subscription_history_id');
-		
 			$subsHistoryForSubsHistIdCollection->addFieldToFilter('subscription_id',array("in" , $subscriptionHistoryId));
-		
 			foreach($subsHistoryForSubsHistIdCollection as $subsHistoryForSubsHistIdCollectionItem)
 			{
 					
 			}
 		}
-			Mage::log("the return value is " . $subsHistoryForSubsHistIdCollectionItem['subscription_history_id']);
 		return $subsHistoryForSubsHistIdCollectionItem['subscription_history_id'];
 	}
 }
