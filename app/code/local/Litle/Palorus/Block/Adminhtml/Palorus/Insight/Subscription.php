@@ -65,10 +65,10 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 
 	protected function _prepareColumns()
 	{
-		$this->addColumn('subscription_Id', array(
+		$this->addColumn('subscription_id', array(
                 'header'    => 'Subscription ID',
                 'width'     => '100',
-                'index'     => 'subscription_Id',
+                'index'     => 'subscription_id',
                 'sortable'		=> false,
 		));
 		$this->addColumn('product_id', array(
@@ -77,18 +77,18 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
                 'index'     => 'product_id',
                 'sortable'		=> false,
 		));
-		$this->addColumn('start_date', array(
-				'header'    => 'Product Name',
-				'width'     => '100',
-				'index'     => 'order_amount',
-				'sortable'		=> false,
-		));
-// 		$this->addColumn('start_date', array(
-//                'header'    => 'Start Date',
+// 		$this->addColumn('a-man-having-a-period', array(
+//                'header'    => 'Product Name',
 //                'width'     => '100',
-//                'index'     => 'start_date',
+//                'index'     => 'a-man-having-a-period',
 //                'sortable'		=> false,
 // 		));
+		$this->addColumn('start_date', array(
+				'header'    => 'Start Date',
+				'width'     => '100',
+				'index'     => 'start_date',
+				'sortable'		=> false,
+		));
 		$this->addColumn('iteration_length', array(
                'header'    => 'Billing Cycle Period',
                'width'     => '100',
