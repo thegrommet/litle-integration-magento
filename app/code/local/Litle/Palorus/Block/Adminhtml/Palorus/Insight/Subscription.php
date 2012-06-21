@@ -58,11 +58,15 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 		$collection = Mage::getModel('palorus/subscription')
 			->getCollection()
 			->addFieldToFilter('customer_id',$customerId);
-			
+		/*
+		$productId = $this->getProductId();
+		$product = Mage::getModel('catalog/product')->load($productId);
+		$name = $product->getName();
+		*/	
 		$this->setCollection($collection);
 		return parent::_prepareCollection();
 	}
-
+	
 	protected function _prepareColumns()
 	{
 		$this->addColumn('subscription_id', array(
@@ -77,10 +81,10 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
                 'index'     => 'product_id',
                 'sortable'		=> false,
 		));
-// 		$this->addColumn('a-man-having-a-period', array(
+// 		$this->addColumn((string)$name, array(
 //                'header'    => 'Product Name',
 //                'width'     => '100',
-//                'index'     => 'a-man-having-a-period',
+//                'index'     => (string)$name,
 //                'sortable'		=> false,
 // 		));
 		$this->addColumn('start_date', array(
