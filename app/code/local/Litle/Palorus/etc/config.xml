@@ -89,7 +89,16 @@
 					</add_txn_to_recycling>
 				</observers>
 			</litle_subscription_txn_failed>
-		</events>	
+		</events>
+		<template>
+        <email>
+            <custom_email_template1 module="SampleModule1">
+                <label>Subscription in Jeopardy Email</label>
+                <file>subscription_in_jeopardy_email.html</file>
+                <type>html</type>
+            </custom_email_template1>
+        </email>
+    </template>	
 	</global>
 	
 	<admin>
