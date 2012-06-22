@@ -47,8 +47,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 		$this->setId('litle_customer_orders_grid');
 		$this->setDefaultSort('order_number', 'desc');
 		$this->setUseAjax(true);
-		$this->setPagerVisibility(false);
-		$this->setFilterVisibility(false);
+		$this->setFilterVisibility(true);
 	}
 
 	protected function _prepareCollection()
@@ -58,11 +57,12 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 		$collection = Mage::getModel('palorus/subscription')
 			->getCollection()
 			->addFieldToFilter('customer_id',$customerId);
-		/*
+		
 		$productId = $this->getProductId();
 		$product = Mage::getModel('catalog/product')->load($productId);
 		$name = $product->getName();
-		*/	
+		
+	//	$name = array("mokies");
 		$this->setCollection($collection);
 		return parent::_prepareCollection();
 	}
@@ -81,12 +81,12 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
                 'index'     => 'product_id',
                 'sortable'		=> false,
 		));
-// 		$this->addColumn((string)$name, array(
-//                'header'    => 'Product Name',
-//                'width'     => '100',
-//                'index'     => (string)$name,
-//                'sortable'		=> false,
-// 		));
+		$this->addColumn((string)$name, array(
+               'header'    => 'Product Name',
+               'width'     => '100',
+               'index'     => (string)$name,
+               'sortable'		=> false,
+		));
 		$this->addColumn('start_date', array(
 				'header'    => 'Start Date',
 				'width'     => '100',

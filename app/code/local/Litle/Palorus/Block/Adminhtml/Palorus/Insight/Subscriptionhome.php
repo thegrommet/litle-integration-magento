@@ -44,13 +44,13 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	public function _construct()
 	{
 		parent::_construct();
-		$this->setId('litle_customer_orders_grid');
+		$this->setTitle(Mage::helper('palorus')->__('Litle Subscription Home'));
 		$this->setDefaultSort('order_number', 'desc');
 		$this->setUseAjax(true);
-		$this->setPagerVisibility(false);
-		$this->setFilterVisibility(false);
+		$this->setFilterVisibility(true);
+		$this->getHeaderText();
 	}
-
+	
 	protected function _prepareCollection()
 	{
 
@@ -110,8 +110,6 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	
 	public function getGridUrl()
 	{
-// 		Mage::log("Get grid url");
-// 		return $this->getUrl('*/*/orders', array('_current' => true));
 	}
 
 	/**
@@ -121,7 +119,6 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	 */
 	public function getTabLabel()
 	{
-		return $this->__('Litle & Co. Subscription');
 	}
 
 	/**
@@ -131,7 +128,6 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	 */
 	public function getTabTitle()
 	{
-		return $this->__('Click here to view Litle & Co. Subscription');
 	}
 
 	/**
@@ -142,7 +138,6 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	 */
 	public function canShowTab()
 	{
-		return true;
 	}
 
 	/**
@@ -152,7 +147,6 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	 */
 	public function isHidden()
 	{
-		return false;
 	}
 
 
