@@ -41,6 +41,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	 * Set the template for the block
 	 *
 	 */
+	
 	public function _construct()
 	{
 		parent::_construct();
@@ -57,12 +58,13 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 		$collection = Mage::getModel('palorus/subscription')
 			->getCollection()
 			->addFieldToFilter('customer_id',$customerId);
-		
-		$productId = $this->getProductId();
-		$product = Mage::getModel('catalog/product')->load($productId);
-		$name = $product->getName();
-		
-	//	$name = array("mokies");
+		foreach ($collection as $order){
+	 		$productId = $order->getData();
+	 		$productName = $productId['product_id'];
+ 			$product = Mage::getModel('catalog/product')->load($productName);
+ 			$name = $product->getName();
+			$order->setData('name', $name);
+		}
 		$this->setCollection($collection);
 		return parent::_prepareCollection();
 	}
@@ -81,10 +83,10 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
                 'index'     => 'product_id',
                 'sortable'		=> false,
 		));
-		$this->addColumn((string)$name, array(
+		$this->addColumn('name', array(
                'header'    => 'Product Name',
                'width'     => '100',
-               'index'     => (string)$name,
+               'index'     => 'name',
                'sortable'		=> false,
 		));
 		$this->addColumn('start_date', array(
