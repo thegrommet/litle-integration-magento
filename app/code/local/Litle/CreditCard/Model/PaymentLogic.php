@@ -458,7 +458,6 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 				$litleResponseCode = XMLParser::getNode($litleResponse,'response');
 				if($litleResponseCode != "000")
 				{
-					//Mage::throwException('response code is: ' . $litleResponseCode . 'txn type is: ');
 					if(($litleResponseCode === "362") && Mage::helper("creditcard")->isStateOfOrderEqualTo($payment->getOrder(), Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE))
 					{
 						Mage::throwException("The void did not go through. Do a refund instead.");
@@ -473,15 +472,16 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						->setIsTransactionClosed(0)
 						->setTransactionAdditionalInfo("additional_information", XMLParser::getNode($litleResponse,'message'));
 						
-						// TODO::Add logic to check if ordersource is recurring/subscription
-						if( true )
+						$ordersource = $info->getAdditionalInformation('ordersource');
+						if(empty($ordersource))
+							$ordersource = "ecommerce";
+						
+						if( $ordersource === "recurring" )
 						{
-							//Mage::dispatchEvent('litle_subscription_txn_failed', array('recycletime'=> XMLParser::getNode($litleResponse,'nextrecycleTime'), 'recycleadviceend'=> XMLParser::getNode($litleResponse,'recycleAdviceEnd')));
-// 							$date = time();
-// 							Mage::log($date);
-// 							Mage::dispatchEvent('litle_subscription_txn_failed', array('recycletime'=> (time()+(2 * 24 * 60 * 60)), 'recycleadviceend'=> null, 'subscriptionid' => $info->getAdditionalInformation('subscriptionid')));
 							$subscriptionSingleton = Mage::getSingleton('palorus/subscription');
-							$subscriptionSingleton->setRecycleNextRunDate((time()+(2 * 24 * 60 * 60)));
+							//$subscriptionSingleton->setRecycleNextRunDate((time()+(2 * 24 * 60 * 60)));
+							$subscriptionSingleton->setRecycleNextRunDate(XMLParser::getNode($litleResponse,'nextRecycleTime'));
+							$subscriptionSingleton->setRecycleAdviceEnd(XMLParser::getNode($litleResponse,'recycleAdviceEnd'));
 							$subscriptionSingleton->setShouldRecycleDateBeRead(true);
 						}
 						
@@ -587,8 +587,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		$this->isFromVT($payment, "capture");
 		$ordersource = $info->getAdditionalInformation('ordersource');
 		if(empty($ordersource))
-		$ordersource = "ecommerce";
-	//	$ordersource = (empty($info->getAdditionalInformation('ordersource'))) ? "ecommerce" : $info->getAdditionalInformation('ordersource');
+			$ordersource = "ecommerce";
 		$order = $payment->getOrder();
 		if (!empty($order)){
 

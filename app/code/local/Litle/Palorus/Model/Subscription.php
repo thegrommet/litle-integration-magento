@@ -39,7 +39,19 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 
 	protected $recycleNextRunDate;
 	
+	protected $recycleAdviceEnd;
+	
 	protected $shouldRecycleDateBeRead;
+	
+	public function getRecycleAdviceEnd()
+	{
+		return $this->recycleAdviceEnd;
+	}
+	
+	public function setRecycleAdviceEnd($in_val)
+	{
+		$this->recycleAdviceEnd = $in_val;
+	}
 	
 	public function getRecycleNextRunDate()
 	{
@@ -48,7 +60,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	
 	public function setRecycleNextRunDate($in_date)
 	{
-		$this->recycleNextRunDate = $in_date;
+		$this->recycleNextRunDate = strtotime($in_date);
 	}
 	
 	public function getShouldRecycleDateBeRead(){
@@ -343,13 +355,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		return date("Y-m-d"); // TODO : Do not export for testing purposes only.
 	}
 
-	// ################### FOR FAILED TRANSACTIONS ############################
-	// 		$transaction = Mage::getModel('core/resource_transaction');
-	// 		$transaction->addObject($order);
-	// 		$transaction->addCommitCallback(array($order, 'place'));
-	// 		$transaction->addCommitCallback(array($order, 'save'));
-	// 		$transaction->save();
-	// ################### FOR FAILED TRANSACTIONS ############################
+	
 	public function saveDataInSubscriptionHistory($subscriptionId, $nextRunDate = "")
 	{
 		if( $nextRunDate === "" )
@@ -368,13 +374,19 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		}
 
 		$recyclingModel = Mage::getModel('palorus/recycling');
+		$status = "waiting";
+		if( $this->recycleAdviceEnd && $nextRunDate == "" ){
+			// TODO :  Notify the merchant about this case !
+			$status = "cancelled";
+		}
+		
 		$recyclingItemData = array(
-						 							"subscription_id" => $subscriptionId,
-						 							"subscription_history_id" => $lastSubscriptionHistoryId + 1,
-						 							"successful" => false,
-						 							"status" => "waiting",
-						 							"to_run_date" => $nextRunDate		
-		);
+		 							"subscription_id" => $subscriptionId,
+		 							"subscription_history_id" => $lastSubscriptionHistoryId + 1,
+		 							"successful" => false,
+		 							"status" => $status,
+		 							"to_run_date" => $nextRunDate		
+								);
 		$recyclingModel->setData($recyclingItemData)->save();
 	}
 }

@@ -41,13 +41,13 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	 * Set the template for the block
 	 *
 	 */
+	
 	public function _construct()
 	{
 		parent::_construct();
 		$this->setId('litle_customer_orders_grid');
 		$this->setDefaultSort('order_number', 'desc');
 		$this->setUseAjax(true);
-		$this->setPagerVisibility(false);
 		$this->setFilterVisibility(false);
 	}
 
@@ -58,11 +58,13 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 		$collection = Mage::getModel('palorus/subscription')
 			->getCollection()
 			->addFieldToFilter('customer_id',$customerId);
-		/*
-		$productId = $this->getProductId();
-		$product = Mage::getModel('catalog/product')->load($productId);
-		$name = $product->getName();
-		*/	
+		foreach ($collection as $order){
+	 		$productId = $order->getData();
+	 		$productName = $productId['product_id'];
+ 			$product = Mage::getModel('catalog/product')->load($productName);
+ 			$name = $product->getName();
+			$order->setData('name', $name);
+		}
 		$this->setCollection($collection);
 		return parent::_prepareCollection();
 	}
@@ -81,12 +83,12 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
                 'index'     => 'product_id',
                 'sortable'		=> false,
 		));
-// 		$this->addColumn((string)$name, array(
-//                'header'    => 'Product Name',
-//                'width'     => '100',
-//                'index'     => (string)$name,
-//                'sortable'		=> false,
-// 		));
+		$this->addColumn('name', array(
+               'header'    => 'Product Name',
+               'width'     => '100',
+               'index'     => 'name',
+               'sortable'		=> false,
+		));
 		$this->addColumn('start_date', array(
 				'header'    => 'Start Date',
 				'width'     => '100',
@@ -110,7 +112,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	
 	public function getRowUrl($row)
 	{
-		return $this->getUrl('*/sales_order/view', array('order_id' => $row->getOrderId()));
+		return $this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('order_id' => $row->getOrderId()));
 	}
 	
 	public function getGridUrl()
