@@ -43,18 +43,12 @@ extends Mage_Adminhtml_Block_Widget_Grid{
 	public function _construct()
 	{
 		parent::_construct();
-		$this->_headerText = Mage::helper('palorus')->__('Litle Subscription Home');
-		
-		echo ($this->_headerText);
-		//$this->setTitle('Litle Subscription Home');
-		
+//		$this->_headerText = Mage::helper('palorus')->__('Litle Subscription Home');
+//		echo ($this->_headerText);
 		$this->setDefaultSort('subscription_id', 'desc');
 		$this->setUseAjax(true);
 		$this->setFilterVisibility(false);
-		//$this->getHeaderText();
 	}
-	
-
 	
 	protected function _prepareCollection()
 	{

@@ -48,7 +48,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 		$this->setId('litle_customer_orders_grid');
 		$this->setDefaultSort('order_number', 'desc');
 		$this->setUseAjax(true);
-		$this->setFilterVisibility(true);
+		$this->setFilterVisibility(false);
 	}
 
 	protected function _prepareCollection()
