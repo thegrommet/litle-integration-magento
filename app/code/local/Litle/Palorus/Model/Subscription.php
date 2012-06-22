@@ -167,12 +167,12 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$emailTemplate->setSenderName('Test Mail');
 				$emailTemplate->setSenderEmail('a@litle.com');
 				$emailTemplate->setTemplateSubject('Invalid Subscription Status');
+				$ret = $collectionItem->getConfigData('email_id');
+				Mage::log($ret);
 				
+				$emailTemplate->send($ret,'', $emailTemplateVariables);
 				
-				$emailTemplate->send('avig@litle.com','Amit Vig', $emailTemplateVariables);
-				
-				
-				Mage::log("Sent Email");
+				//Mage::log("Sent Email");
 				continue;
 					
 			}
@@ -388,5 +388,14 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		 							"to_run_date" => $nextRunDate		
 								);
 		$recyclingModel->setData($recyclingItemData)->save();
+	}
+	
+	public function getConfigData($fieldToLookFor, $store = NULL)
+	{
+		$returnFromThisModel = Mage::getStoreConfig('payment/Subscription/' . $fieldToLookFor);
+		if( $returnFromThisModel == NULL )
+		$returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
+		Mage::log($returnFromThisModel);
+		return $returnFromThisModel;
 	}
 }
