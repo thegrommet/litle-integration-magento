@@ -55,7 +55,7 @@ extends Mage_Adminhtml_Block_Widget_Form{
 		$subscriptionForm = Mage::getModel('palorus/subscription');
 		$subscriptionForm->setEntity($subscriptionId)
 		->setFormCode('adminhtml_subscription');
-		
+
 		$customerForm = Mage::getModel('customer/form');
 		//var_dump($customerForm);
 
@@ -66,8 +66,8 @@ extends Mage_Adminhtml_Block_Widget_Form{
 		$collection = Mage::getModel('palorus/subscription')
 		->getCollection()->addFieldToFilter('subscription_id', 1);
 
-		         $attributes = $subscriptionForm->getAttributes();
-		         //var_dump($attributes);
+		$attributes = $subscriptionForm->getAttributes();
+		//var_dump($attributes);
 		//         foreach ($attributes as $attribute) {
 		//             $attribute->unsIsVisible();
 		//         }
@@ -229,5 +229,5 @@ extends Mage_Adminhtml_Block_Widget_Form{
 		//         $form->setValues($customer->getData());
 		$this->setForm($form);
 		return $this;
-		}
 	}
+}

@@ -82,13 +82,16 @@ class Litle_Palorus_Helper_Data extends Mage_Core_Helper_Abstract
 			$type = $miscData['type'];
 		}
 		$bin = XMLParser::getNode($litleResponse, 'bin');
+		preg_match("/\d\d(\d\d)/", $payment->getCcExpYear(), $expYear);
+		$expdate = sprintf('%02d%02d', $payment->getCcExpMonth(), $expYear[1]);
 		$data = array(
 			'customer_id' => $customerId, 
 			'order_id' => $orderId,
 			'last4' => $last4,
 			'token'=> $token,
 			'type' => $type,
-			'bin' => $bin
+			'bin' => $bin,
+			'expdate' => $expdate
 		);
 		Mage::getModel('palorus/vault')->setData($data)->save();
 	}
