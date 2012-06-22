@@ -34,8 +34,7 @@
 * @author     Litle & Co <sdksupport@litle.com> www.litle.com/developers
 */
 class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionhome
-extends Mage_Adminhtml_Block_Widget_Grid
-implements Mage_Adminhtml_Block_Widget_Tab_Interface {
+extends Mage_Adminhtml_Block_Widget_Grid{
 
 	/**
 	 * Set the template for the block
@@ -44,19 +43,31 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	public function _construct()
 	{
 		parent::_construct();
-		$this->setTitle(Mage::helper('palorus')->__('Litle Subscription Home'));
-		$this->setDefaultSort('order_number', 'desc');
+		$this->_headerText = Mage::helper('palorus')->__('Litle Subscription Home');
+		
+		echo ($this->_headerText);
+		//$this->setTitle('Litle Subscription Home');
+		
+		$this->setDefaultSort('subscription_id', 'desc');
 		$this->setUseAjax(true);
-		$this->setFilterVisibility(true);
-		$this->getHeaderText();
+		$this->setFilterVisibility(false);
+		//$this->getHeaderText();
 	}
+	
+
 	
 	protected function _prepareCollection()
 	{
 
 		$collection = Mage::getModel('palorus/subscription')
 			->getCollection();
-			
+		foreach ($collection as $order){
+			$productId = $order->getData();
+			$productName = $productId['product_id'];
+			$product = Mage::getModel('catalog/product')->load($productName);
+			$name = $product->getName();
+			$order->setData('name', $name);
+		}
 		$this->setCollection($collection);
 		return parent::_prepareCollection();
 	}
@@ -81,7 +92,12 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
                 'index'     => 'product_id',
                 'sortable'		=> false,
 		));
-
+		$this->addColumn('name', array(
+		               'header'    => 'Product Name',
+		               'width'     => '100',
+		               'index'     => 'name',
+		               'sortable'		=> false,
+		));
 		$this->addColumn('start_date', array(
 				'header'    => 'Start Date',
 				'width'     => '100',
@@ -105,49 +121,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	
 	public function getRowUrl($row)
 	{
-		return $this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('order_id' => $row->getOrderId()));
+		return $this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $row->getSubscriptionId()));
 	}
 	
-	public function getGridUrl()
-	{
-	}
-
-	/**
-	 * Retrieve the label used for the tab relating to this block
-	 *
-	 * @return string
-	 */
-	public function getTabLabel()
-	{
-	}
-
-	/**
-	 * Retrieve the title used by this tab
-	 *
-	 * @return string
-	 */
-	public function getTabTitle()
-	{
-	}
-
-	/**
-	 * Determines whether to display the tab
-	 * Add logic here to decide whether you want the tab to display
-	 *
-	 * @return bool
-	 */
-	public function canShowTab()
-	{
-	}
-
-	/**
-	 * Stops the tab being hidden
-	 *
-	 * @return bool
-	 */
-	public function isHidden()
-	{
-	}
-
-
 }
