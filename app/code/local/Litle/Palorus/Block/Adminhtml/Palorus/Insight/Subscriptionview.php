@@ -1,233 +1,275 @@
 <?php
 /**
- * Litle Palorus Module
+ * Magento
  *
  * NOTICE OF LICENSE
  *
- * Copyright (c) 2012 Litle & Co.
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@magentocommerce.com so we can send you a copy immediately.
  *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
+ * DISCLAIMER
  *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
+ * Do not edit or add to this file if you wish to upgrade Magento to newer
+ * versions in the future. If you wish to customize Magento for your
+ * needs please refer to http://www.magentocommerce.com for more information.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * @category   Litle
- * @package    Litle_Palorus
- * @copyright  Copyright (c) 2012 Litle & Co.
- * @license    http://www.opensource.org/licenses/mit-license.php
- * @author     Litle & Co <sdksupport@litle.com> www.litle.com/developers
+ * @category    Mage
+ * @package     Mage_Adminhtml
+ * @copyright   Copyright (c) 2011 Magento Inc. (http://www.magentocommerce.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview
-extends Mage_Adminhtml_Block_Widget_Form{
 
-	public function __construct()
-	{
-		parent::__construct();
-		$this->initForm();
-	}
+/**
+ * Customer addresses forms
+ *
+ * @category   Mage
+ * @package    Mage_Adminhtml
+ * @author      Magento Core Team <core@magentocommerce.com>
+ */
+class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mage_Adminhtml_Block_Widget_Form
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setTemplate('payment/form/subscription.phtml');
+    }
 
-	public function initForm()
-	{
-		$form = new Varien_Data_Form();
-		$form->setHtmlIdPrefix('_account');
-		$form->setFieldNameSuffix('account');
+    public function getRegionsUrl()
+    {
+       // return $this->getUrl('*/json/countryRegion');
+    }
 
-		//        $customer = Mage::registry('current_customer');
-		$subscriptionId = Mage::registry('current_subscription');
+    protected function _prepareLayout()
+    {
+//         $this->setChild('delete_button',
+//             $this->getLayout()->createBlock('adminhtml/widget_button')
+//                 ->setData(array(
+//                     'label'  => Mage::helper('customer')->__('Delete Address'),
+//                     'name'   => 'delete_address',
+//                     'element_name' => 'delete_address',
+//                     'disabled' => $this->isReadonly(),
+//                     'class'  => 'delete' . ($this->isReadonly() ? ' disabled' : '')
+//                 ))
+//         );
+//         $this->setChild('add_address_button',
+//             $this->getLayout()->createBlock('adminhtml/widget_button')
+//                 ->setData(array(
+//                     'label'  => Mage::helper('customer')->__('Add New Address'),
+//                     'id'     => 'add_address_button',
+//                     'name'   => 'add_address_button',
+//                     'element_name' => 'add_address_button',
+//                     'disabled' => $this->isReadonly(),
+//                     'class'  => 'add'  . ($this->isReadonly() ? ' disabled' : ''),
+//                     'onclick'=> 'customerAddresses.addNewAddress()'
+//                 ))
+//         );
+//         $this->setChild('cancel_button',
+//             $this->getLayout()->createBlock('adminhtml/widget_button')
+//                 ->setData(array(
+//                     'label'  => Mage::helper('customer')->__('Cancel'),
+//                     'id'     => 'cancel_add_address'.$this->getTemplatePrefix(),
+//                     'name'   => 'cancel_address',
+//                     'element_name' => 'cancel_address',
+//                     'class'  => 'cancel delete-address'  . ($this->isReadonly() ? ' disabled' : ''),
+//                     'disabled' => $this->isReadonly(),
+//                     'onclick'=> 'customerAddresses.cancelAdd(this)',
+//                 ))
+//         );
+//         return parent::_prepareLayout();
+    }
 
-		/* @var $subscriptionForm Mage_Customer_Model_Form */
-		$subscriptionForm = Mage::getModel('palorus/subscription');
-		$subscriptionForm->setEntity($subscriptionId)
-		->setFormCode('adminhtml_subscription');
+    /**
+     * Check block is readonly.
+     *
+     * @return boolean
+     */
+    public function isReadonly()
+    {
+//         $customer = Mage::registry('current_customer');
+//         return $customer->isReadonly();
+    }
 
-		$customerForm = Mage::getModel('customer/form');
-		//var_dump($customerForm);
+    public function getDeleteButtonHtml()
+    {
+        //return $this->getChildHtml('delete_button');
+    }
 
-		$fieldset = $form->addFieldset('base_fieldset',
-		array('legend'=>Mage::helper('customer')->__('Subscription Information'))
-		);
+    /**
+     * Initialize form object
+     *
+     * @return Mage_Adminhtml_Block_Customer_Edit_Tab_Addresses
+     */
+    public function initForm()
+    {
+    	echo "hehrhe";
+//         /* @var $customer Mage_Customer_Model_Customer */
+//         $customer = Mage::registry('current_customer');
 
-		$collection = Mage::getModel('palorus/subscription')
-		->getCollection()->addFieldToFilter('subscription_id', 1);
+//         $form = new Varien_Data_Form();
+//         $fieldset = $form->addFieldset('address_fieldset', array(
+//             'legend'    => Mage::helper('customer')->__("Edit Customer's Address"))
+//         );
 
-		$attributes = $subscriptionForm->getAttributes();
-// 		var_dump($attributes);
-// 		foreach ($attributes as $attribute) {
-// 			$attribute->unsIsVisible();
-// 		}
-// 		$this->_setFieldset($collection, $fieldset);
+//         $addressModel = Mage::getModel('customer/address');
+//         $addressModel->setCountryId(Mage::helper('core')->getDefaultCountry($customer->getStore()));
+//         /** @var $addressForm Mage_Customer_Model_Form */
+//         $addressForm = Mage::getModel('customer/form');
+//         $addressForm->setFormCode('adminhtml_customer_address')
+//             ->setEntity($addressModel)
+//             ->initDefaultValues();
 
-// 		if ($customer->getId()) {
-// 			$form->getElement('website_id')->setDisabled('disabled');
-// 			$form->getElement('created_in')->setDisabled('disabled');
-// 		} else {
-// 			$fieldset->removeField('created_in');
-// 		}
+//         $attributes = $addressForm->getAttributes();
+//         if(isset($attributes['street'])) {
+//             Mage::helper('adminhtml/addresses')
+//                 ->processStreetAttribute($attributes['street']);
+//         }
+//         foreach ($attributes as $attribute) {
+//             $attribute->unsIsVisible();
+//         }
+//         $this->_setFieldset($attributes, $fieldset);
 
-// 		$customerStoreId = null;
-// 		if ($customer->getId()) {
-// 			$customerStoreId = Mage::app()->getWebsite($customer->getWebsiteId())->getDefaultStore()->getId();
-// 		}
+//         $regionElement = $form->getElement('region');
+//         if ($regionElement) {
+//             $regionElement->setRenderer(Mage::getModel('adminhtml/customer_renderer_region'));
+//         }
 
-// 		$prefixElement = $form->getElement('prefix');
-// 		if ($prefixElement) {
-// 			$prefixOptions = $this->helper('customer')->getNamePrefixOptions($customerStoreId);
-// 			if (!empty($prefixOptions)) {
-// 				$fieldset->removeField($prefixElement->getId());
-// 				$prefixField = $fieldset->addField($prefixElement->getId(),
-// 						'select',
-// 						$prefixElement->getData(),
-// 						$form->getElement('group_id')->getId()
-// 				);
-// 				$prefixField->setValues($prefixOptions);
-// 				if ($customer->getId()) {
-// 					$prefixField->addElementValues($customer->getPrefix());
-// 				}
+//         $regionElement = $form->getElement('region_id');
+//         if ($regionElement) {
+//             $regionElement->setNoDisplay(true);
+//         }
 
-// 			}
-// 		}
+//         $country = $form->getElement('country_id');
+//         if ($country) {
+//             $country->addClass('countries');
+//         }
 
-// 		$suffixElement = $form->getElement('suffix');
-// 		if ($suffixElement) {
-// 			$suffixOptions = $this->helper('customer')->getNameSuffixOptions($customerStoreId);
-// 			if (!empty($suffixOptions)) {
-// 				$fieldset->removeField($suffixElement->getId());
-// 				$suffixField = $fieldset->addField($suffixElement->getId(),
-// 						'select',
-// 						$suffixElement->getData(),
-// 						$form->getElement('lastname')->getId()
-// 				);
-// 				$suffixField->setValues($suffixOptions);
-// 				if ($customer->getId()) {
-// 					$suffixField->addElementValues($customer->getSuffix());
-// 				}
-// 			}
-// 		}
+//         if ($this->isReadonly()) {
+//             foreach ($addressModel->getAttributes() as $attribute) {
+//                 $element = $form->getElement($attribute->getAttributeCode());
+//                 if ($element) {
+//                     $element->setReadonly(true, true);
+//                 }
+//             }
+//         }
 
-// 		if ($customer->getId()) {
-// 			if (!$customer->isReadonly()) {
-// 				// add password management fieldset
-// 				$newFieldset = $form->addFieldset(
-// 						'password_fieldset',
-// 						array('legend'=>Mage::helper('customer')->__('Password Management'))
-// 				);
-// 				// New customer password
-// 				$field = $newFieldset->addField('new_password', 'text',
-// 						array(
-// 								'label' => Mage::helper('customer')->__('New Password'),
-// 								'name'  => 'new_password',
-// 								'class' => 'validate-new-password'
-// 						)
-// 				);
-// 				$field->setRenderer($this->getLayout()->createBlock('adminhtml/customer_edit_renderer_newpass'));
+//         $customerStoreId = null;
+//         if ($customer->getId()) {
+//             $customerStoreId = Mage::app()->getWebsite($customer->getWebsiteId())->getDefaultStore()->getId();
+//         }
 
-// 				// prepare customer confirmation control (only for existing customers)
-// 				$confirmationKey = $customer->getConfirmation();
-// 				if ($confirmationKey || $customer->isConfirmationRequired()) {
-// 					$confirmationAttribute = $customer->getAttribute('confirmation');
-// 					if (!$confirmationKey) {
-// 						$confirmationKey = $customer->getRandomConfirmationKey();
-// 					}
-// 					$element = $fieldset->addField('confirmation', 'select', array(
-// 							'name'  => 'confirmation',
-// 							'label' => Mage::helper('customer')->__($confirmationAttribute->getFrontendLabel()),
-// 					))->setEntityAttribute($confirmationAttribute)
-// 					->setValues(array('' => 'Confirmed', $confirmationKey => 'Not confirmed'));
+//         $prefixElement = $form->getElement('prefix');
+//         if ($prefixElement) {
+//             $prefixOptions = $this->helper('customer')->getNamePrefixOptions($customerStoreId);
+//             if (!empty($prefixOptions)) {
+//                 $fieldset->removeField($prefixElement->getId());
+//                 $prefixField = $fieldset->addField($prefixElement->getId(),
+//                     'select',
+//                     $prefixElement->getData(),
+//                     '^'
+//                 );
+//                 $prefixField->setValues($prefixOptions);
+//             }
+//         }
 
-// 					// prepare send welcome email checkbox, if customer is not confirmed
-// 					// no need to add it, if website id is empty
-// 					if ($customer->getConfirmation() && $customer->getWebsiteId()) {
-// 						$fieldset->addField('sendemail', 'checkbox', array(
-// 								'name'  => 'sendemail',
-// 								'label' => Mage::helper('customer')->__('Send Welcome Email after Confirmation')
-// 						));
-// 						$customer->setData('sendemail', '1');
-// 					}
-// 				}
-// 			}
-// 		} else {
-// 			$newFieldset = $form->addFieldset(
-// 					'password_fieldset',
-// 					array('legend'=>Mage::helper('customer')->__('Password Management'))
-// 			);
-// 			$field = $newFieldset->addField('password', 'text',
-// 					array(
-// 							'label' => Mage::helper('customer')->__('Password'),
-// 							'class' => 'input-text required-entry validate-password',
-// 							'name'  => 'password',
-// 							'required' => true
-// 					)
-// 			);
-// 			$field->setRenderer($this->getLayout()->createBlock('adminhtml/customer_edit_renderer_newpass'));
+//         $suffixElement = $form->getElement('suffix');
+//         if ($suffixElement) {
+//             $suffixOptions = $this->helper('customer')->getNameSuffixOptions($customerStoreId);
+//             if (!empty($suffixOptions)) {
+//                 $fieldset->removeField($suffixElement->getId());
+//                 $suffixField = $fieldset->addField($suffixElement->getId(),
+//                     'select',
+//                     $suffixElement->getData(),
+//                     $form->getElement('lastname')->getId()
+//                 );
+//                 $suffixField->setValues($suffixOptions);
+//             }
+//         }
 
-// 			// prepare send welcome email checkbox
-// 			$fieldset->addField('sendemail', 'checkbox', array(
-// 					'label' => Mage::helper('customer')->__('Send Welcome Email'),
-// 					'name'  => 'sendemail',
-// 					'id'    => 'sendemail',
-// 			));
-// 			$customer->setData('sendemail', '1');
-// 			if (!Mage::app()->isSingleStoreMode()) {
-// 				$fieldset->addField('sendemail_store_id', 'select', array(
-// 						'label' => $this->helper('customer')->__('Send From'),
-// 						'name' => 'sendemail_store_id',
-// 						'values' => Mage::getSingleton('adminhtml/system_store')->getStoreValuesForForm()
-// 				));
-// 			}
-// 		}
+//         $addressCollection = $customer->getAddresses();
+//         $this->assign('customer', $customer);
+//         $this->assign('addressCollection', $addressCollection);
+//         $form->setValues($addressModel->getData());
+//         $this->setForm($form);
 
-// 		// make sendemail and sendmail_store_id disabled, if website_id has empty value
-// 		$isSingleMode = Mage::app()->isSingleStoreMode();
-// 		$sendEmailId = $isSingleMode ? 'sendemail' : 'sendemail_store_id';
-// 		$sendEmail = $form->getElement($sendEmailId);
+//         return $this;
+    }
 
-// 		$prefix = $form->getHtmlIdPrefix();
-// 		if ($sendEmail) {
-// 			$_disableStoreField = '';
-// 			if (!$isSingleMode) {
-// 				$_disableStoreField = "$('{$prefix}sendemail_store_id').disabled=(''==this.value || '0'==this.value);";
-// 			}
-// 			$sendEmail->setAfterElementHtml(
-// 					'<script type="text/javascript">'
-// 					. "
-// 					$('{$prefix}website_id').disableSendemail = function() {
-// 					$('{$prefix}sendemail').disabled = ('' == this.value || '0' == this.value);".
-// 					$_disableStoreField
-// 					."}.bind($('{$prefix}website_id'));
-// 					Event.observe('{$prefix}website_id', 'change', $('{$prefix}website_id').disableSendemail);
-// 					$('{$prefix}website_id').disableSendemail();
-// 					"
-// 					. '</script>'
-// 					);
-// 		}
+    public function getCancelButtonHtml()
+    {
+       // return $this->getChildHtml('cancel_button');
+    }
 
-// 		if ($customer->isReadonly()) {
-// 			foreach ($customer->getAttributes() as $attribute) {
-// 				$element = $form->getElement($attribute->getAttributeCode());
-// 				if ($element) {
-// 					$element->setReadonly(true, true);
-// 				}
-// 			}
-// 		}
+    public function getAddNewButtonHtml()
+    {
+      //  return $this->getChildHtml('add_address_button');
+    }
 
-// 		$form->setValues($customer->getData());
-		$this->setForm($form);
-		return $this;
-	}
+    public function getTemplatePrefix()
+    {
+      //  return '_template_';
+    }
+
+    /**
+     * Return predefined additional element types
+     *
+     * @return array
+     */
+    protected function _getAdditionalElementTypes()
+    {
+//         return array(
+//             'file'      => Mage::getConfig()->getBlockClassName('adminhtml/customer_form_element_file'),
+//             'image'     => Mage::getConfig()->getBlockClassName('adminhtml/customer_form_element_image'),
+//             'boolean'   => Mage::getConfig()->getBlockClassName('adminhtml/customer_form_element_boolean'),
+//         );
+    }
+
+    /**
+     * Return JSON object with countries associated to possible websites
+     *
+     * @return string
+     */
+    public function getDefaultCountriesJson() {
+//         $websites = Mage::getSingleton('adminhtml/system_store')->getWebsiteValuesForForm(false, true);
+//         $result = array();
+//         foreach ($websites as $website) {
+//             $result[$website['value']] = Mage::app()->getWebsite($website['value'])->getConfig(
+//                 Mage_Core_Helper_Data::XML_PATH_DEFAULT_COUNTRY
+//             );
+//         }
+
+//         return Mage::helper('core')->jsonEncode($result);
+    }
+
+    /**
+     * Add specified values to name prefix element values
+     *
+     * @param string|int|array $values
+     * @return Mage_Adminhtml_Block_Customer_Edit_Tab_Addresses
+     */
+    public function addValuesToNamePrefixElement($values)
+    {
+//         if ($this->getForm() && $this->getForm()->getElement('prefix')) {
+//             $this->getForm()->getElement('prefix')->addElementValues($values);
+//         }
+//         return $this;
+    }
+
+    /**
+     * Add specified values to name suffix element values
+     *
+     * @param string|int|array $values
+     * @return Mage_Adminhtml_Block_Customer_Edit_Tab_Addresses
+     */
+    public function addValuesToNameSuffixElement($values)
+    {
+//         if ($this->getForm() && $this->getForm()->getElement('suffix')) {
+//             $this->getForm()->getElement('suffix')->addElementValues($values);
+//         }
+//         return $this;
+    }
 }
