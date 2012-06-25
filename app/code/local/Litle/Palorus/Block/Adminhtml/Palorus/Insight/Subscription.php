@@ -54,7 +54,6 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	protected function _prepareCollection()
 	{
 		$customerId = Mage::registry('current_customer')->getId();
-		$subscriptionId = Mage::registry('current_customer')->getId();
 		$collection = Mage::getModel('palorus/subscription')
 			->getCollection()
 			->addFieldToFilter('customer_id',$customerId);
@@ -120,7 +119,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	
 	public function getRowUrl($row)
 	{
-		return $this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('order_id' => $row->getOrderId()));
+		return $this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $row->getSubscriptionId()));
 	}
 	
 	public function getGridUrl()
