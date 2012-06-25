@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
 	<modules>
-		<Litle_LEcheck>
+		<Litle_Subscription>
 			<version>8.13.0</version>
-		</Litle_LEcheck>
+		</Litle_Subscription>
 	</modules>
 	<global>
 		<helpers>
