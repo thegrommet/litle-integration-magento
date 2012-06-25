@@ -64,6 +64,8 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
  			$product = Mage::getModel('catalog/product')->load($productName);
  			$name = $product->getName();
 			$order->setData('name', $name);
+			$amount = money_format('%i', $productId['amount']/100);
+			$order->setData('price', '$'.$amount);
 		}
 		$this->setCollection($collection);
 		return parent::_prepareCollection();
@@ -89,11 +91,11 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
                'index'     => 'name',
                'sortable'		=> false,
 		));
-		$this->addColumn('amount', array(
-				    	        'header'    => 'Price',
-					            'width'     => '100',
-				                'index'     => 'amount',
-				                'sortable'		=> false,
+		$this->addColumn('price', array(
+		    	        'header'    => 'Price',
+			            'width'     => '100',
+		                'index'     => 'price',
+		                'sortable'		=> false,
 		));
 		$this->addColumn('start_date', array(
 				'header'    => 'Start Date',
