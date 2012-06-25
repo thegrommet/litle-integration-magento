@@ -89,6 +89,12 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
                'index'     => 'name',
                'sortable'		=> false,
 		));
+		$this->addColumn('amount', array(
+				    	        'header'    => 'Price',
+					            'width'     => '100',
+				                'index'     => 'amount',
+				                'sortable'		=> false,
+		));
 		$this->addColumn('start_date', array(
 				'header'    => 'Start Date',
 				'width'     => '100',
