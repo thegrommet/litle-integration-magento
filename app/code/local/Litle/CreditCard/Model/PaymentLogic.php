@@ -726,7 +726,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 								'product_id' => $productId,
 								'initial_order_id' => $payment->getOrder()->getId(),
 								'customer_id' => $payment->getOrder()->getCustomerId(),
-								'amount' => $product->getLitleSubsAmountPerItr(),
+								'amount' => $product->getLitleSubsAmountPerItr()*100,
 								'initial_fees' => $unitPrice*100,
 								'num_of_iterations' => $product->getLitleSubsNumOfItrs(),
 								'iteration_length' => $litleSubscriptionItrLengthValue,
