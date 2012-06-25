@@ -32,7 +32,21 @@
         <h4 class="icon-head head-customer-address-list"><?php echo Mage::helper('customer')->__('Subscription Details') ?></h4>
     </div>
     <div class="sub-btn-set"><?php echo $this->getAddNewButtonHtml() ?></div>
-    <ul id="address_list">
+    <ul id="address_list">  
+    <?php echo "Subscription Id : " . $this->getSubscriptionId()?>
+	<br>
+    <?php echo "Product Name : " . $this->getSubscriptionName()?>
+	<br>
+    <?php echo "Date Started : " . $this->getSubscriptionData('start_date')?>
+	<br>
+    <?php echo "Initial Fees :" . $this->getSubscriptionData('initial_fees')?>
+	<br>
+    <?php echo "Recurring Fees : " . $this->getSubscriptionData('amount')?>
+	<br>
+    <?php echo "Is Recycling? : " . $this->getIsRecycling()?>
+	<br>
+    <?php echo "Next Recycling Attempt : " . $this->getRecyclingData('to_run_date')?>
+
     <?php $_iterator = 0; ?>
     <?php if(count($addressCollection)): ?>
         <?php foreach ($addressCollection as $_address): ?>

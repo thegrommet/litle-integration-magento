@@ -37,28 +37,10 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     {
         parent::__construct();
         $this->setTemplate('payment/form/subscription.phtml');
-        echo $this->getSubscriptionInfo('subscription_id');
-        echo $this->getSubscriptionName();
     }
 
+
     public function getSubscriptionData(string $field)
-    {
-    	$subscriptionId = $this->getSubscriptionId();
-    	$collection = Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
-    	foreach ($collection as $order){
-	    	$productId = $order->getData();
-    		$productName = $productId['product_id'];
-    		
-    		$product = Mage::getModel('catalog/product')->load($productName);
-    		$name = $product->getName();
-    		print $name;
-    		//$order->setData('name', $name);
-    		//$amount = money_format('%i', $productId['amount']/100);
-    		//$order->setData('price', '$'.$amount);
-    	}
-    }
-    
-    public function getSubscriptionInfo(string $field)
     {
     	$subscriptionId = $this->getSubscriptionId();
     	$collection = Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
@@ -86,6 +68,25 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      	$stringAfterSubscriptionId = explode('subscription_id/', $url);
      	$stringBeforeKey = explode('/key', $stringAfterSubscriptionId[1]);
      	return $stringBeforeKey[0];
+     }
+     
+     public function getRecyclingData(string $field){
+     	$subscriptionId = $this->getSubscriptionId();
+    	$collection = Mage::getModel('palorus/recycling')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
+    	foreach ($collection as $order){
+    		$row = $order->getData();
+    		return $row[$field];
+    	}
+     }
+     
+     public function getIsRecycling(){
+     	$runNextIteration = $this->getSubscriptionData('run_next_iteration');
+     	$active = $this->getSubscriptionData('active');
+     	if(!$runNextIteration && $active){
+     		return "Yes";
+     	}else{
+     		return "No";
+     	}
      }
 
     /**
