@@ -34,8 +34,7 @@
 * @author     Litle & Co <sdksupport@litle.com> www.litle.com/developers
 */
 class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionhome
-extends Mage_Adminhtml_Block_Widget_Grid
-implements Mage_Adminhtml_Block_Widget_Tab_Interface {
+extends Mage_Adminhtml_Block_Widget_Grid{
 
 	/**
 	 * Set the template for the block
@@ -44,19 +43,25 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	public function _construct()
 	{
 		parent::_construct();
-		$this->setId('litle_customer_orders_grid');
-		$this->setDefaultSort('order_number', 'desc');
+//		$this->_headerText = Mage::helper('palorus')->__('Litle Subscription Home');
+//		echo ($this->_headerText);
+		$this->setDefaultSort('subscription_id', 'desc');
 		$this->setUseAjax(true);
-		$this->setPagerVisibility(false);
 		$this->setFilterVisibility(false);
 	}
-
+	
 	protected function _prepareCollection()
 	{
 
 		$collection = Mage::getModel('palorus/subscription')
 			->getCollection();
-			
+		foreach ($collection as $order){
+			$productId = $order->getData();
+			$productName = $productId['product_id'];
+			$product = Mage::getModel('catalog/product')->load($productName);
+			$name = $product->getName();
+			$order->setData('name', $name);
+		}
 		$this->setCollection($collection);
 		return parent::_prepareCollection();
 	}
@@ -81,7 +86,18 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
                 'index'     => 'product_id',
                 'sortable'		=> false,
 		));
-
+		$this->addColumn('name', array(
+		               'header'    => 'Product Name',
+		               'width'     => '100',
+		               'index'     => 'name',
+		               'sortable'		=> false,
+		));
+		$this->addColumn('amount', array(
+		    	        'header'    => 'Price',
+			            'width'     => '100',
+		                'index'     => 'amount',
+		                'sortable'		=> false,
+		));
 		$this->addColumn('start_date', array(
 				'header'    => 'Start Date',
 				'width'     => '100',
@@ -105,55 +121,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	
 	public function getRowUrl($row)
 	{
-		return $this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('order_id' => $row->getOrderId()));
+		return $this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $row->getSubscriptionId()));
 	}
 	
-	public function getGridUrl()
-	{
-// 		Mage::log("Get grid url");
-// 		return $this->getUrl('*/*/orders', array('_current' => true));
-	}
-
-	/**
-	 * Retrieve the label used for the tab relating to this block
-	 *
-	 * @return string
-	 */
-	public function getTabLabel()
-	{
-		return $this->__('Litle & Co. Subscription');
-	}
-
-	/**
-	 * Retrieve the title used by this tab
-	 *
-	 * @return string
-	 */
-	public function getTabTitle()
-	{
-		return $this->__('Click here to view Litle & Co. Subscription');
-	}
-
-	/**
-	 * Determines whether to display the tab
-	 * Add logic here to decide whether you want the tab to display
-	 *
-	 * @return bool
-	 */
-	public function canShowTab()
-	{
-		return true;
-	}
-
-	/**
-	 * Stops the tab being hidden
-	 *
-	 * @return bool
-	 */
-	public function isHidden()
-	{
-		return false;
-	}
-
-
 }

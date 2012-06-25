@@ -153,6 +153,26 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			{
 				// TODO :  Notify the merchant about this case !
 				Mage::log("In that if statement");
+				
+				$emailTemplate  = Mage::getModel('core/email_template')
+				->loadDefault('custom_email_template1');
+				
+				//Create an array of variables to assign to template
+				$emailTemplateVariables = array();
+				$emailTemplateVariables['myvar1'] = $originalOrderId;
+				$emailTemplateVariables['myvar2'] = $customerId;
+				$emailTemplateVariables['myvar3'] = $productId;
+				$emailTemplateVariables['myvar4'] = $subscriptionId;
+				
+				$emailTemplate->setSenderName('Test Mail');
+				$emailTemplate->setSenderEmail('a@litle.com');
+				$emailTemplate->setTemplateSubject('Invalid Subscription Status');
+				$ret = $collectionItem->getConfigData('email_id');
+				Mage::log($ret);
+				
+				$emailTemplate->send($ret,'', $emailTemplateVariables);
+				
+				//Mage::log("Sent Email");
 				continue;
 					
 			}
@@ -368,5 +388,14 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		 							"to_run_date" => $nextRunDate		
 								);
 		$recyclingModel->setData($recyclingItemData)->save();
+	}
+	
+	public function getConfigData($fieldToLookFor, $store = NULL)
+	{
+		$returnFromThisModel = Mage::getStoreConfig('payment/Subscription/' . $fieldToLookFor);
+		if( $returnFromThisModel == NULL )
+		$returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
+		Mage::log($returnFromThisModel);
+		return $returnFromThisModel;
 	}
 }
