@@ -73,23 +73,15 @@
 									Period:</label>
 							</td>
 							<td class="value"><select
-							<?php $cycleArray = array('Daily','Weekly','Monthly','Yearly');?>
-							<?php foreach ($cycleArray as $key => $value): ?>
-							<?php if($this->getIterationLength() != $key): ?><option>
-										<?php echo $cycleArray[$key].$this->getIterationLength(); ?>
-									</option>
-
-									<?php endif; ?>
-									<?php if($this->getIterationLength() == $key): ?>
-									<option>
-										<?php echo $cycleArray[$key];; ?>
-									</option>
-									<?php endif; ?>
-
-
-
-									<?php endforeach ?>
-							</select>
+									<?php $cycleArray = array('Daily','Weekly','Monthly','Yearly');?>
+<?php foreach ($cycleArray as $key => $value): ?>
+<?php if($this->getIterationLength() !== $value): ?>
+	<option><?php echo $value; ?></option>
+<?php endif; ?>
+<?php if($this->getIterationLength() === $value): ?>
+                <option selected><?php echo $value; ?></option>
+<?php endif; ?>
+<?php endforeach ?></select>
 							</td>
 						</tr>
 						<tr>
