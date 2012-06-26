@@ -164,8 +164,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$emailTemplateVariables['myvar3'] = $productId;
 				$emailTemplateVariables['myvar4'] = $subscriptionId;
 				
-				$emailTemplate->setSenderName('Test Mail');
-				$emailTemplate->setSenderEmail('a@litle.com');
+				$emailTemplate->setSenderName('Litle & Co.');
+				$emailTemplate->setSenderEmail('sdksupport@litle.com');
 				$emailTemplate->setTemplateSubject('Invalid Subscription Status');
 				$ret = $collectionItem->getConfigData('email_id');
 				Mage::log($ret);
