@@ -37,15 +37,23 @@
 	<br>
     <?php echo "Product Name : " . $this->getSubscriptionName()?>
 	<br>
-    <?php echo "Date Started : " . $this->getSubscriptionData('start_date')?>
+    <?php echo "Date Started : " . $this->getStartDate()?>
 	<br>
-    <?php echo "Initial Fees :" . $this->getSubscriptionData('initial_fees')?>
+    <?php echo "Initial Fees :" . $this->getInitialFees()?>
 	<br>
-    <?php echo "Recurring Fees : " . $this->getSubscriptionData('amount')?>
+    <?php echo "Recurring Fees : " . $this->getSubscriptionAmount()?>
+	<br>
+	<?php echo "Billing Cycle Period : " . $this->getIterationLength()?>
+	<br>
+	<?php echo "Total # of Billing Cycles : " . $this->getNumOfIterations()?>
+	<br>
+	<?php echo "# of Billing Cycles Over : " . $this->getNumOfIterationsRan()?>
+	<br>
+	<?php echo "Next Bill Date : " . $this->getNextBillDate()?>
 	<br>
     <?php echo "Is Recycling? : " . $this->getIsRecycling()?>
 	<br>
-    <?php echo "Next Recycling Attempt : " . $this->getRecyclingData('to_run_date')?>
+    <?php echo "Next Recycling Attempt : " . $this->getNextRecycleAttempt()?>
 
     <?php $_iterator = 0; ?>
     <?php if(count($addressCollection)): ?>

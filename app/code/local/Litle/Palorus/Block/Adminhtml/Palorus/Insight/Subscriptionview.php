@@ -88,6 +88,49 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      		return "No";
      	}
      }
+     
+     public function getNextRecycleAttempt(){
+     	if($this->getIsRecycling()==="No")
+     		return "N/A";
+     	else
+     		return $this->getRecyclingData('to_run_date');
+     }
+     
+     public function getInitialFees(){
+     	$initialFees = $this->getSubscriptionData('initial_fees');
+     	return $this->dollarFormat($initialFees);
+     }
+     
+     public function getSubscriptionAmount(){
+     	$amount = $this->getSubscriptionData('amount');
+     	return $this->dollarFormat($amount);
+     }
+     
+     public function getStartDate(){
+     	$date = $this->getSubscriptionData('start_date');
+     	return $date;
+     	//return date("F j, Y, g:i a", $date in date format);
+     }
+     
+     public function getIterationLength(){
+     	return $this->getSubscriptionData('iteration_length');
+     }
+     
+     public function getNumOfIterations(){
+     	return $this->getSubscriptionData('num_of_iterations');
+     }
+     
+     public function getNumOfIterationsRan(){
+     	return $this->getSubscriptionData('num_of_iterations_ran');
+     }
+     
+     public function getNextBillDate(){
+     	return $this->getSubscriptionData('next_bill_date');
+     }
+     
+     public function dollarFormat($num){
+     	return "$".money_format('%i', $num/100);
+     }
 
     /**
      * Check block is readonly.
