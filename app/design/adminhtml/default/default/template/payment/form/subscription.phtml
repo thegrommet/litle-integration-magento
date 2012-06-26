@@ -128,12 +128,31 @@
 			</div>
 		</td>
 	</tr>
-	<div align="right">
-		<button onClick="window.location.reload()" type="button">Save
-			Subscription Details</button>
-		<button onClick="alert('Are You sure you want to Cancel?')"
-			type="button">Cancel Subscription</button>
-	</div>
+<div align="right">
+	<button id="saveButton" type="button">Save Subscription Details</button>
+	<button id="cancelButton" onClick="alert('Are You sure you want to Cancel?')" type="button">Cancel Subscription</button>
+</div>
+<script type="text/javascript">
+	var saveButton=document.getElementById("saveButton");
+	saveButton.onclick=function(){
+		<?php $this->setNumOfIterations('1234545');?>
+		window.location.href=window.location.href;		
+	}
+		//var selectmenu=document.getElementById("<?php echo $_code ?>_cc_vaulted");
+		//selectmenu.onchange=function(){
+		//	var chosenoption=this.options[this.selectedIndex]
+		//	if (chosenoption.value!= 0){
+		//		$('creditcard_cc_cid').show();
+		//		$('creditcard_cc_cid_label').show();
+		//		$('creditcard_cc_cid').value="";
+				
+		//	}
+		//	if (chosenoption.value == 0){
+		//		$('creditcard_cc_cid').hide();
+		//		$('creditcard_cc_cid_label').hide();
+		//	}
+		//}
+</script>
 </table>
 <br>
 <div>
