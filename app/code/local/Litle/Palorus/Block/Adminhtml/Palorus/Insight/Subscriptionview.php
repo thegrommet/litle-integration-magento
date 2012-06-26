@@ -39,6 +39,21 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
         $this->setTemplate('payment/form/subscription.phtml');
     }
     
+    public function getMessageColor(){
+    	$recycling = $this->getIsRecycling();
+    	if($recycling === "No"){
+    		return "Green";
+    	}
+    	else{
+    		$nextBill = strtotime($this->getNextBillDate());
+    		$nextRecycle = strtotime($this->getRecyclingData('to_run_date'));
+    		if($nextBill < $nextRecycle)
+    			return "Red";
+    		else
+    			return "Yellow";
+    	}
+    }
+    
     private function getSubcriptionRow(){
     	$subscriptionId = $this->getSubscriptionId();
     	return Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
