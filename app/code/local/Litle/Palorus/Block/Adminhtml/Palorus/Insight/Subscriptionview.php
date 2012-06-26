@@ -41,7 +41,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     
     private function getSubcriptionRow(){
     	$subscriptionId = $this->getSubscriptionId();
-    	return Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
+    	return Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
     }
 
     private function getSubscriptionData(string $field)
@@ -52,6 +52,28 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     		return $row[$field];
     	}
     }
+    
+    private function getSubcriptionHistory(){
+    	$subscriptionId = $this->getSubscriptionId();
+    	return Mage::getModel('palorus/subscriptionHistory')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
+    }
+    
+    private function getSubscriptionHistoryTable()
+    {
+     	$collection = $this->getSubcriptionHistory();
+     	$index=0;
+     	foreach ($collection as $order){
+     		$row = $order->getData();
+     		$table[$index] = $row;
+     		$index = $index+1;
+     	}
+     		return $table;
+    }
+    
+//     public function setBlah(){
+//     	$boo = Mage::getModel('palorus/subscriptionHistory');
+//      	$boo->setSubscriptionId('2')->save();
+//     }
     
     private function getRecyclingRow(){
     	$subscriptionId = $this->getSubscriptionId();
@@ -169,15 +191,13 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      	}
      }
      
+     public function getCronId(){
+     	return $this->getSubscriptionData('next_bill_date');
+     }
+     
      public function dollarFormat($num){
      	return money_format('%i', $num/100);
      }
-//      public function setSubscriptionAmount($amount){
-//      	$collection = $this->getSubcriptionRow();
-//      	foreach ($collection as $order){
-//      		$order->setAmount($amount)->save();
-//      	}
-//      }
 
     /**
      * Check block is readonly.
@@ -188,5 +208,4 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     {
     	return false;
     }
-
 }
