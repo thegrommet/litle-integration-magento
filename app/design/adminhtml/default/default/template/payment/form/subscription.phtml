@@ -64,7 +64,7 @@
 							<td class="label"><label for="recurring_fees">Recurring Fees:</label>
 							</td>
 							<td class="value"><input id="recurring_fees"
-								class="required-entry input-type required-entry" type="text"
+								class="input-type required-entry" type="text"
 								value=<?php echo $this->getSubscriptionAmount()?>></input>
 							</td>
 						</tr>
@@ -72,7 +72,7 @@
 							<td class="label"><label for="billing_cycle_period">Billing Cycle
 									Period:</label>
 							</td>
-							<td class="value"><select
+							<td class="value"><select id="billing_period"
 							<?php $cycleArray = array('Daily','Weekly','Bi-Weekly','Semi-Monthly','Monthly','Semi-Annually','Annually');?>
 							<?php foreach ($cycleArray as $key => $value): ?>
 							<?php if($this->getIterationLength() !== $value): ?><option>
@@ -93,7 +93,7 @@
 									Number of Billing Cycles:</label>
 							</td>
 							<td class="value"><input id="total_number_of_billing_cycles"
-								class="required-entry input-type required-entry" type="text"
+								class="input-type required-entry" type="text"
 								value=<?php echo $this->getNumOfIterations()?>></input>
 							</td>
 						</tr>
@@ -107,7 +107,7 @@
 							<td class="label"><label for="next_bill_date">Next Bill Date:</label>
 							</td>
 							<td class="value"><input id="next_bill_date"
-								class="required-entry input-type required-entry" type="text"
+								class="input-type required-entry" type="text"
 								value=<?php echo $this->getNextBillDate()?>></input>
 							</td>
 						</tr>
@@ -130,28 +130,28 @@
 	</tr>
 <div align="right">
 	<button id="saveButton" type="button">Save Subscription Details</button>
-	<button id="cancelButton" onClick="alert('Are You sure you want to Cancel?')" type="button">Cancel Subscription</button>
+	<button id="cancelButton" type="button">Cancel Subscription</button>
 </div>
 <script type="text/javascript">
 	var saveButton=document.getElementById("saveButton");
 	saveButton.onclick=function(){
-		<?php $this->setNumOfIterations('1234545');?>
+		<?php $this->setNumOfIterations('2');?>
+		alert(document.getElementById('recurring_fees').value);
+		alert(document.getElementById('billing_period').value);
+		alert(document.getElementById('total_number_of_billing_cycles').value);
+		alert(document.getElementById('next_bill_date').value);
 		window.location.href=window.location.href;		
 	}
-		//var selectmenu=document.getElementById("<?php echo $_code ?>_cc_vaulted");
-		//selectmenu.onchange=function(){
-		//	var chosenoption=this.options[this.selectedIndex]
-		//	if (chosenoption.value!= 0){
-		//		$('creditcard_cc_cid').show();
-		//		$('creditcard_cc_cid_label').show();
-		//		$('creditcard_cc_cid').value="";
-				
-		//	}
-		//	if (chosenoption.value == 0){
-		//		$('creditcard_cc_cid').hide();
-		//		$('creditcard_cc_cid_label').hide();
-		//	}
-		//}
+</script>
+<script type="text/javascript">
+	var cancelButton=document.getElementById("cancelButton");
+	cancelButton.onclick=function(){
+		var r = confirm('Are you sure you want to cancel this subscription?');
+		if(r==true){
+		<?php $this->setActive('0');?>
+		window.location.href=window.location.href;
+		}
+	}
 </script>
 </table>
 <br>
@@ -164,7 +164,7 @@
 	<?php $historyRow = $this->getSubscriptionHistoryTable();?>
 	<div>
 	<?php if($historyRow!==NULL):?>
-		<table cellspacing="0" border="1">
+		<table cellspacing="0" border="1" width=50% height=75>
 				<tr>
 					<th>Cron ID</th>
 					<th>Order ID</th>
