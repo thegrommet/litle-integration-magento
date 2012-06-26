@@ -177,7 +177,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 						 							"severity" => 1,
 						 							"date_added" => time(),
 						 							"title" => $notification,
-						 							"description" => $notification,
+						 							"description" => "the subscription has now become invalid",
+						 							//"url" => "www.litle.com",
 						 							"is_read" => false,
 						 							"is_remove" => false		
 				);
