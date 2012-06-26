@@ -65,7 +65,7 @@
 							</td>
 							<td class="value"><input id="recurring_fees"
 								class="required-entry input-type required-entry" type="text"
-								value=<?php echo $this->getInitialFees()?>></input>
+								value=<?php echo $this->getSubscriptionAmount()?>></input>
 							</td>
 						</tr>
 						<tr>
@@ -73,7 +73,7 @@
 									Period:</label>
 							</td>
 							<td class="value"><select
-									<?php $cycleArray = array('Daily','Weekly','Monthly','Yearly');?>
+									<?php $cycleArray = array('Daily','Weekly','Bi-Weekly','Semi-Monthly','Monthly','Semi-Annually','Annually');?>
 <?php foreach ($cycleArray as $key => $value): ?>
 <?php if($this->getIterationLength() !== $value): ?>
 	<option><?php echo $value; ?></option>
@@ -124,4 +124,10 @@
 			</div>
 		</td>
 	</tr>
+<div align="right">
+	<button onClick=type="button">Save Subscription Details</button>
+	<button onClick="alert('Are You sure you want to Cancel?')" type="button">Cancel Subscription</button>
+	
+</div>
+	
 </table>
