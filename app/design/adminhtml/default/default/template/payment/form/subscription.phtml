@@ -142,18 +142,27 @@
 			<?php echo Mage::helper('customer')->__('Subscription History:') ?>
 		</h3>
 	</div>
+	<?php $historyRow = $this->getSubscriptionHistoryTable();?>
 	<div>
-		<table cellspacing="0" border="1" cellpadding="10">
+	<?php if($historyRow!==NULL):?>
+		<table cellspacing="0" border="1">
 				<tr>
 					<th>Cron ID</th>
 					<th>Order ID</th>
 					<th>Sucessful</th>
 					<th>Run Date</th>
 				</tr>
+				<?php foreach ($historyRow as $key => $value): ?>
 				<tr>
-					<td><?php $g=$this->getSubscriptionHistoryTable();
-					echo $g[0]["cron_id"]?></td>
-					<td>Row 1: Col 2</td>
+					<td><?php echo $historyRow[$key]["cron_id"];?></td>
+					<td><?php echo $historyRow[$key]["order_id"];?></td>
+					<td><?php echo $historyRow[$key]["success"];?></td>
+					<td><?php echo $historyRow[$key]["run_date"];?></td>
 				</tr>
+				<?php endforeach ?>
 		</table>
+	<?php else: ?>
+	<td class="label"><label>This Subscription has no history.</label>
+	</td>
+	<?php endif ?>
 	</div>
