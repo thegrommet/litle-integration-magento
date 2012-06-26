@@ -152,27 +152,36 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			)
 			{
 				// TODO :  Notify the merchant about this case !
-				Mage::log("In that if statement");
 				
-				$emailTemplate  = Mage::getModel('core/email_template')
-				->loadDefault('custom_email_template1');
+// 				$emailTemplate  = Mage::getModel('core/email_template')
+// 				->loadDefault('custom_email_template1');
 				
-				//Create an array of variables to assign to template
-				$emailTemplateVariables = array();
-				$emailTemplateVariables['myvar1'] = $originalOrderId;
-				$emailTemplateVariables['myvar2'] = $customerId;
-				$emailTemplateVariables['myvar3'] = $productId;
-				$emailTemplateVariables['myvar4'] = $subscriptionId;
+// 				//Create an array of variables to assign to template
+// 				$emailTemplateVariables = array();
+// 				$emailTemplateVariables['myvar1'] = $originalOrderId;
+// 				$emailTemplateVariables['myvar2'] = $customerId;
+// 				$emailTemplateVariables['myvar3'] = $productId;
+// 				$emailTemplateVariables['myvar4'] = $subscriptionId;
 				
-				$emailTemplate->setSenderName('Litle & Co.');
-				$emailTemplate->setSenderEmail('sdksupport@litle.com');
-				$emailTemplate->setTemplateSubject('Invalid Subscription Status');
-				$ret = $collectionItem->getConfigData('email_id');
-				Mage::log($ret);
+// 				$emailTemplate->setSenderName('Litle & Co.');
+// 				$emailTemplate->setSenderEmail('sdksupport@litle.com');
+// 				$emailTemplate->setTemplateSubject('Invalid Subscription Status');
+// 				$ret = $collectionItem->getConfigData('email_id');
+// 				Mage::log($ret);
 				
-				$emailTemplate->send($ret,'', $emailTemplateVariables);
+// 				$emailTemplate->send($ret,'', $emailTemplateVariables);
 				
-				//Mage::log("Sent Email");
+				$notificationModel = Mage::getModel('adminnotification/inbox');
+				$notification="Invalid subscription Email";
+				$notificationItemData = array(
+						 							"severity" => 1,
+						 							"date_added" => time(),
+						 							"title" => $notification,
+						 							"description" => $notification,
+						 							"is_read" => false,
+						 							"is_remove" => false		
+				);
+				$notificationModel->setData($notificationItemData)->save();
 				continue;
 					
 			}
