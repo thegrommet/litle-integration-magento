@@ -76,9 +76,20 @@
 								<td class="label"><label for="billing_cycle_period">Billing
 										Cycle Period:</label>
 								</td>
-								<td class="value"><input id="billing_cycle_period"
-									class="required-entry input-type required-entry" type="text"
-									value=<?php echo $this->getIterationLength()?>></input>
+								<td class="value"><select
+									<?php $cycleArray = array('Daily','Weekly','Monthly','Yearly');?>
+<?php foreach ($cycleArray as $key => $value): ?>
+<?php if($this->getIterationLength() != $key): ?>
+	<option><?php echo $cycleArray[$key].$this->getIterationLength(); ?></option>
+               
+<?php endif; ?>
+<?php if($this->getIterationLength() == $key): ?>
+                <option><?php echo $cycleArray[$key];; ?></option>
+<?php endif; ?>
+
+
+
+<?php endforeach ?></select>
 								</td>
 							</tr>
 							<tr>
