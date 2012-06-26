@@ -38,22 +38,29 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
         parent::__construct();
         $this->setTemplate('payment/form/subscription.phtml');
     }
-
-
-    public function getSubscriptionData(string $field)
-    {
+    
+    private function getSubcriptionRow(){
     	$subscriptionId = $this->getSubscriptionId();
-    	$collection = Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
+    	return Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
+    }
+
+    private function getSubscriptionData(string $field)
+    {
+    	$collection = $this->getSubcriptionRow();
     	foreach ($collection as $order){
     		$row = $order->getData();
     		return $row[$field];
     	}
     }
     
+    private function getRecyclingRow(){
+    	$subscriptionId = $this->getSubscriptionId();
+    	return Mage::getModel('palorus/recycling')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
+    }
+    
     public function getSubscriptionName()
     {
-    	$subscriptionId = $this->getSubscriptionId();
-    	$collection = Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
+    	$collection = $this->getSubcriptionRow();
     	foreach ($collection as $order){
     		$row = $order->getData();
     		$productName = $row['product_id'];
@@ -71,8 +78,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      }
      
      public function getRecyclingData(string $field){
-     	$subscriptionId = $this->getSubscriptionId();
-    	$collection = Mage::getModel('palorus/recycling')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
+    	$collection =$this->getRecyclingRow();
     	foreach ($collection as $order){
     		$row = $order->getData();
     		return $row[$field];
@@ -86,6 +92,13 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      		return "Yes";
      	}else{
      		return "No";
+     	}
+     }
+     
+     public function setActive($active){
+     	$collection = $this->getSubcriptionRow();
+     	foreach ($collection as $order){
+     		$order->setActive($active)->save();
      	}
      }
      
@@ -106,6 +119,13 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      	return $this->dollarFormat($amount);
      }
      
+     public function setSubscriptionAmount($amount){
+     	$collection = $this->getSubcriptionRow();
+     	foreach ($collection as $order){
+     		$order->setAmount($amount*100)->save();
+     	}
+     }
+     
      public function getStartDate(){
      	$date = $this->getSubscriptionData('start_date');
      	return $date;
@@ -116,8 +136,22 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      	return $this->getSubscriptionData('iteration_length');
      }
      
+     public function setIterationLength($period){
+     	$collection = $this->getSubcriptionRow();
+     	foreach ($collection as $order){
+     		$order->setIterationLength($period)->save();
+     	}
+     }
+     
      public function getNumOfIterations(){
      	return $this->getSubscriptionData('num_of_iterations');
+     }
+     
+     public function setNumOfIterations($num){
+     	$collection = $this->getSubcriptionRow();
+     	foreach ($collection as $order){
+     		$order->setNumOfIterations($num)->save();
+     	}
      }
      
      public function getNumOfIterationsRan(){
@@ -128,9 +162,22 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      	return $this->getSubscriptionData('next_bill_date');
      }
      
-     public function dollarFormat($num){
-     	return "$".money_format('%i', $num/100);
+     public function setNextBillDate($date){
+     	$collection = $this->getSubcriptionRow();
+     	foreach ($collection as $order){
+     		$order->setNextBillDate($date)->save();
+     	}
      }
+     
+     public function dollarFormat($num){
+     	return money_format('%i', $num/100);
+     }
+//      public function setSubscriptionAmount($amount){
+//      	$collection = $this->getSubcriptionRow();
+//      	foreach ($collection as $order){
+//      		$order->setAmount($amount)->save();
+//      	}
+//      }
 
     /**
      * Check block is readonly.
