@@ -73,15 +73,19 @@
 									Period:</label>
 							</td>
 							<td class="value"><select
-									<?php $cycleArray = array('Daily','Weekly','Bi-Weekly','Semi-Monthly','Monthly','Semi-Annually','Annually');?>
-<?php foreach ($cycleArray as $key => $value): ?>
-<?php if($this->getIterationLength() !== $value): ?>
-	<option><?php echo $value; ?></option>
-<?php endif; ?>
-<?php if($this->getIterationLength() === $value): ?>
-                <option selected><?php echo $value; ?></option>
-<?php endif; ?>
-<?php endforeach ?></select>
+							<?php $cycleArray = array('Daily','Weekly','Bi-Weekly','Semi-Monthly','Monthly','Semi-Annually','Annually');?>
+							<?php foreach ($cycleArray as $key => $value): ?>
+							<?php if($this->getIterationLength() !== $value): ?><option>
+										<?php echo $value; ?>
+									</option>
+									<?php endif; ?>
+									<?php if($this->getIterationLength() === $value): ?>
+									<option selected>
+										<?php echo $value; ?>
+									</option>
+									<?php endif; ?>
+									<?php endforeach ?>
+							</select>
 							</td>
 						</tr>
 						<tr>
@@ -124,8 +128,32 @@
 			</div>
 		</td>
 	</tr>
-<div align="right">
-	<button onClick="window.location.reload()" type="button">Save Subscription Details</button>
-	<button onClick="alert('Are You sure you want to Cancel?')" type="button">Cancel Subscription</button>
-</div>
+	<div align="right">
+		<button onClick="window.location.reload()" type="button">Save
+			Subscription Details</button>
+		<button onClick="alert('Are You sure you want to Cancel?')"
+			type="button">Cancel Subscription</button>
+	</div>
 </table>
+<br>
+<div>
+	<div class="content-header">
+		<h3 class="icon-head head-sales-order">
+			<?php echo Mage::helper('customer')->__('Subscription History:') ?>
+		</h3>
+	</div>
+	<div>
+		<table cellspacing="0" border="1" cellpadding="10">
+				<tr>
+					<th>Cron ID</th>
+					<th>Order ID</th>
+					<th>Sucessful</th>
+					<th>Run Date</th>
+				</tr>
+				<tr>
+					<td><?php $g=$this->getSubscriptionHistoryTable();
+					echo $g[0]["cron_id"]?></td>
+					<td>Row 1: Col 2</td>
+				</tr>
+		</table>
+	</div>
