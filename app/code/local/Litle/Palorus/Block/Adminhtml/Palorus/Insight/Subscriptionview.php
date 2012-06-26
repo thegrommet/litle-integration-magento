@@ -37,6 +37,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     {
         parent::__construct();
         $this->setTemplate('payment/form/subscription.phtml');
+       // echo $this->getMessageColor();
     }
     
     public function getMessageColor(){
