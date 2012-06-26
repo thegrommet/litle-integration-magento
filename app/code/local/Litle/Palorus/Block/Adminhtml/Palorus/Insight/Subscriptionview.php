@@ -53,12 +53,19 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	}
     }
     
+    public function updateSubscription($amount, $period, $billingCycles, $nextBill){
+    	$this->setSubscriptionAmount($amount);
+    	$this->setIterationLength($period);
+    	$this->setNumOfIterations($billingCycles);
+    	$this->setNextBillDate($nextBill);
+    }
+    
     private function getSubcriptionHistory(){
     	$subscriptionId = $this->getSubscriptionId();
     	return Mage::getModel('palorus/subscriptionHistory')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
     }
     
-    private function getSubscriptionHistoryTable()
+    public function getSubscriptionHistoryTable()
     {
      	$collection = $this->getSubcriptionHistory();
      	$index=0;
@@ -69,11 +76,6 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      	}
      		return $table;
     }
-    
-//     public function setBlah(){
-//     	$boo = Mage::getModel('palorus/subscriptionHistory');
-//      	$boo->setSubscriptionId('2')->save();
-//     }
     
     private function getRecyclingRow(){
     	$subscriptionId = $this->getSubscriptionId();
@@ -90,7 +92,6 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     		return $product->getName();
     	}
     }
-    
     
      public function getSubscriptionId(){
      	$url = $this->helper("core/url")->getCurrentUrl();
