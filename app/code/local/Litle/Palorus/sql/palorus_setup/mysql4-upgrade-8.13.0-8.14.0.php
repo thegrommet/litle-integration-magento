@@ -131,18 +131,6 @@ $max++;
 (`entity_type_id`, `attribute_set_id`, `attribute_group_id`, `attribute_id`, `sort_order`)
 VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')), (SELECT attribute_set_id from eav_attribute_set where entity_type_id = (SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')) AND attribute_set_name = 'Default'), (SELECT attribute_group_id from eav_attribute_group where attribute_set_id = (SELECT attribute_set_id from eav_attribute_set where entity_type_id = (SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')) AND attribute_set_name = 'Default') and default_id = 1), (select attribute_id from eav_attribute where attribute_code = 'litle_subs_num_of_itrs'), $max)");
     
-    #Add litle_subs_amount_for_trial attribute
-    $installer->run("INSERT INTO `eav_attribute`
-    (`entity_type_id`, `attribute_code`, `backend_model`, `backend_type`, `frontend_input`, `frontend_label`, `source_model`, `is_required`, `is_user_defined`, `default_value`, `is_unique`)
-    VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')), 'litle_subs_amount_for_trial', NULL, 'decimal', 'price', 'Litle Subscription Amount For Trial Period', 'catalog/product_attribute_source_msrp_type_price', 0, 1, 0, 0)");
-    $installer->run("INSERT INTO `catalog_eav_attribute`
-    (`attribute_id`, `is_global`, `is_searchable`, `is_filterable`, `is_comparable`, `is_visible_on_front`, `is_html_allowed_on_front`, `is_filterable_in_search`, `used_in_product_listing`, `used_for_sort_by`, `is_configurable`, `apply_to`, `is_visible_in_advanced_search`, `is_used_for_promo_rules`)
-    VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subs_amount_for_trial'), 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, NULL, 0, 0)");
-    $max++;
-    $installer->run("INSERT INTO `eav_entity_attribute`
-    (`entity_type_id`, `attribute_set_id`, `attribute_group_id`, `attribute_id`, `sort_order`)
-    VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')), (SELECT attribute_set_id from eav_attribute_set where entity_type_id = (SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')) AND attribute_set_name = 'Default'), (SELECT attribute_group_id from eav_attribute_group where attribute_set_id = (SELECT attribute_set_id from eav_attribute_set where entity_type_id = (SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')) AND attribute_set_name = 'Default') and default_id = 1), (select attribute_id from eav_attribute where attribute_code = 'litle_subs_amount_for_trial'), $max)");
-    
     #Add litle_subs_days_for_trial attribute
     $installer->run("INSERT INTO `eav_attribute`
     (`entity_type_id`, `attribute_code`, `backend_model`, `backend_type`, `frontend_input`, `frontend_label`, `source_model`, `is_required`, `is_user_defined`, `default_value`, `is_unique`)
