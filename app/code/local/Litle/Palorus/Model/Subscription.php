@@ -249,12 +249,16 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			try{
 				$product1 = Mage::getModel('catalog/product')->load($productId);
 				$buyInfo1 = array('qty' => "1");
-					
+
+				$orderModel = Mage::getModel("sales/order");
+				$initialOrderObj = $orderModel->load($initialOrderId);
+				Mage::log("Shipping method from initialOrder is: " . $initialOrderObj->getShippingMethod());
+				
 				$quote->addProduct($product1, new Varien_Object($buyInfo1));
 				$billingAddress = $quote->getBillingAddress()->addData($customer->getPrimaryBillingAddress()->getData());
 				$shippingAddress = $quote->getShippingAddress()->addData($customer->getPrimaryShippingAddress()->getData());
 				$shippingAddress->setCollectShippingRates(true)->collectShippingRates()
-				->setShippingMethod('flatrate_flatrate') //TODO Make based on original order id
+				->setShippingMethod($initialOrderObj->getShippingMethod())
 				->setPaymentMethod('litlesubscription');
 				$quote->getPayment()->importData(array(
  				 											'method' => 'litlesubscription', 
