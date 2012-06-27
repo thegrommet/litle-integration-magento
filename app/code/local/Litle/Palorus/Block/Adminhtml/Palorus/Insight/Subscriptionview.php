@@ -36,7 +36,17 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     public function __construct()
     {
         parent::__construct();
+        //$this->suspendSubscription(17);
         $this->setTemplate('payment/form/subscription.phtml');
+    }
+    
+    public function suspendSubscription($skips){
+    	$nextDate = $this->getNextBillDate();
+    	for($i=1; $i<=$skips; $i++){
+    		echo $nextDate . "     ";
+    		$nextDate = Mage::getModel('palorus/subscription')->getNextBillDate($this->getIterationLength(), $nextDate);
+    	}
+    	$this->setNextBillDate($nextDate);
     }
     
     public function getSubscriptionStatusMessage(){
@@ -78,7 +88,6 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	$this->setSubscriptionAmount($amount);
     	$this->setIterationLength($period);
     	$this->setNumOfIterations($billingCycles);
-    	$this->setNextBillDate($nextBill);
     }
     
     private function getSubcriptionHistory(){

@@ -161,6 +161,7 @@
 	<div align="right">
 		<?php if($active !== "0"): ?>
 		<button id="saveButton" type="button">Save Subscription Details</button>
+		<button id="suspendButton" type="button">Suspend Subscription</button>
 		<button id="cancelButton" type="button">Cancel Subscription</button>
 		<?php endif ?>
 
@@ -183,6 +184,23 @@
 		if(r==true){
 		<?php $this->setActive('0');?>
 		window.location.href=window.location.href;
+		}
+	}
+</script>
+</script>
+	<script type="text/javascript">
+	var suspendButton=document.getElementById("suspendButton");
+	suspendButton.onclick=function(){
+		var skips = prompt('How many iterations would you like to skip?');
+		if(skips!=null){
+			if(skips>0 && skips%1===0){
+				var r = confirm('Are you sure you want to suspend to subscription for ' + skips + ' iterations?');
+				if(r==true){
+					<?php $this->setActive('0');?>
+					window.location.href=window.location.href;
+				}
+			}
+			else alert("Enter a valid number of iterations to skip");
 		}
 	}
 </script>
