@@ -34,7 +34,7 @@
 * @author     Litle & Co <sdksupport@litle.com> www.litle.com/developers
 */
 class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscription
-extends Mage_Adminhtml_Block_Widget_Grid
+extends Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionparent
 implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 
 	/**
@@ -46,9 +46,9 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	{
 		parent::_construct();
 		$this->setId('litle_customer_orders_grid');
-		$this->setDefaultSort('order_number', 'desc');
-		$this->setUseAjax(true);
-		$this->setFilterVisibility(false);
+// 		$this->setDefaultSort('order_number', 'desc');
+// 		$this->setUseAjax(true);
+// 		$this->setFilterVisibility(false);
 	}
 
 	protected function _prepareCollection()
@@ -68,64 +68,6 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 		}
 		$this->setCollection($collection);
 		return parent::_prepareCollection();
-	}
-	
-	protected function _prepareColumns()
-	{
-		$this->addColumn('subscription_id', array(
-                'header'    => 'Subscription ID',
-                'width'     => '100',
-                'index'     => 'subscription_id',
-                'sortable'		=> false,
-		));
-		$this->addColumn('product_id', array(
-    	        'header'    => 'Product Id',
-	            'width'     => '100',
-                'index'     => 'product_id',
-                'sortable'		=> false,
-		));
-		$this->addColumn('name', array(
-               'header'    => 'Product Name',
-               'width'     => '100',
-               'index'     => 'name',
-               'sortable'		=> false,
-		));
-		$this->addColumn('price', array(
-		    	        'header'    => 'Price',
-			            'width'     => '100',
-		                'index'     => 'price',
-		                'sortable'		=> false,
-		));
-		$this->addColumn('start_date', array(
-				'header'    => 'Start Date',
-				'width'     => '100',
-				'index'     => 'start_date',
-				'sortable'		=> false,
-		));
-		$this->addColumn('iteration_length', array(
-               'header'    => 'Billing Cycle Period',
-               'width'     => '100',
-               'index'     => 'iteration_length',
-               'sortable'		=> false,
-		));
-		$this->addColumn('next_bill_date', array(
-               'header'    => 'Next Bill Date',
-               'width'     => '100',
-               'index'     => 'next_bill_date',
-               'sortable'		=> false,
-		));
-		return parent::_prepareColumns();
-	}
-	
-	public function getRowUrl($row)
-	{
-		return $this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $row->getSubscriptionId()));
-	}
-	
-	public function getGridUrl()
-	{
-// 		Mage::log("Get grid url");
-// 		return $this->getUrl('*/*/orders', array('_current' => true));
 	}
 
 	/**
