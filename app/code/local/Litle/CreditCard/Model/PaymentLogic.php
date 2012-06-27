@@ -355,6 +355,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	}
 	
 	public function getProductAttribute($productId, $attributeName) {
+		Mage::log("product id is " .$productId . "Attribute name is " . $attributeName);
 		$product = Mage::helper("catalog/product")->getProduct($productId, null);
 		$attributeValue = $product->getAttributeText($attributeName);
 		return $attributeValue;
@@ -721,7 +722,6 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			}
 			if($this->getProductAttribute($productId, 'litle_subscription') === "Yes") {
 				for($j = 0; $j < $qty; $j++) {
-					$now = date_create();
 					$data = array(
 								'product_id' => $productId,
 								'initial_order_id' => $payment->getOrder()->getId(),
@@ -730,13 +730,24 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 								'initial_fees' => $unitPrice*100,
 								'num_of_iterations' => $product->getLitleSubsNumOfItrs(),
 								'iteration_length' => $litleSubscriptionItrLengthValue,
-								'start_date' => date_timestamp_get($now), //TODO make based on length of trial period
-								'next_bill_date' => date_timestamp_get($now), // TODO needs to be the same as start_date
-								'active' => true //always false -- trial periods are handled by start_date. will be set to true on next cron if startdate is today.
+								'start_date' => time(),
+								'next_bill_date' => $this->getNextBillDateAddBasedOnTrial($productId), 
+								'active' => true 
 					);
 					Mage::getModel('palorus/subscription')->setData($data)->save();
 				}
 			}
 		}
+	}
+	
+	public function getNextBillDateAddBasedOnTrial($productId)
+	{
+		
+		$numOfTrialDays = $this->getProductAttribute($productId, 'litle_subs_days_for_trial');
+		Mage::log("Here");
+		Mage::log("the number of trial days " . $numOfTrialDays);
+		$nextDate =  time() + ($numOfTrialDays * 24 * 60 * 60);
+		Mage::log("The next date is " . (date("Y-m-d",($nextDate))));
+		return $nextDate;
 	}
 }
