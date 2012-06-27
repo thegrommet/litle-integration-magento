@@ -134,6 +134,10 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      	}
      }
      
+     public function getActive(){
+     	return $this->getSubscriptionData('active');	
+     }
+     
      public function setActive($active){
      	$collection = $this->getSubcriptionRow();
      	foreach ($collection as $order){

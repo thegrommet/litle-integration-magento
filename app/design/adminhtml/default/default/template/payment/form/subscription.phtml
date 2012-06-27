@@ -129,8 +129,11 @@
 		</td>
 	</tr>
 <div align="right">
+<?php if($this->getActive() !== "0"): ?>
 	<button id="saveButton" type="button">Save Subscription Details</button>
 	<button id="cancelButton" type="button">Cancel Subscription</button>
+<?php endif ?>
+	
 </div>
 <script type="text/javascript">
 	var saveButton=document.getElementById("saveButton");
