@@ -67,12 +67,12 @@ extends Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionparent{
 
 	protected function _prepareColumns()
 	{
-		$this->addColumn('customer_id', array(
+		$this->addColumnAfter('customer_id', array(
 				'header'    => 'Customer ID',
 				'width'     => '100',
 				'index'     => 'customer_id',
 				'sortable'		=> false,
-		));
+		), 'subscription_id');
 		return parent::_prepareColumns();
 	}
 
