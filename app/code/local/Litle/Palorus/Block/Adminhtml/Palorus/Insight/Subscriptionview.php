@@ -37,22 +37,27 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     {
         parent::__construct();
         $this->setTemplate('payment/form/subscription.phtml');
-       // echo $this->getMessageColor();
     }
     
-    public function getMessageColor(){
+    public function getSubscriptionStatusMessage(){
     	$recycling = $this->getIsRecycling();
     	if($recycling === "No"){
-    		return "Green";
+    		$message[0] = "success-msg";
+    		$message[1] = "Subscription is in good condition.";
     	}
     	else{
     		$nextBill = strtotime($this->getNextBillDate());
     		$nextRecycle = strtotime($this->getRecyclingData('to_run_date'));
-    		if($nextBill < $nextRecycle)
-    			return "Red";
-    		else
-    			return "Yellow";
+    		if($nextBill < $nextRecycle){
+    			$message[0] = "error-msg";
+    			$message[1] = "Subscription is in bad condition.";
+    		}
+    		else{
+    			$message[0] = "warning-msg";
+    			$message[1] = "Subscription is in recycling";
+    		}
     	}
+    	return $message;
     }
     
     private function getSubcriptionRow(){
