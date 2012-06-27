@@ -25,6 +25,7 @@
  */
 ?>
 <!-- Addresses list -->
+<?php $active = $this->getActive();?>
 <table cellspacing="0" class="form-edit">
 	<tr>
 		<td class="address-list">
@@ -34,7 +35,7 @@
 				</h3>
 			</div>
 			<ul class="messages">
-				<?php if ($this->getActive() == 0):?>
+				<?php if ($active == 0):?>
 				<ul>
 					<li><span>Subscription is not active.</span>
 					</li>
@@ -79,16 +80,23 @@
 						<tr>
 							<td class="label"><label for="recurring_fees">Recurring Fees:</label>
 							</td>
-							<td class="value"><input id="recurring_fees"
+							<td class="value">
+							<?php if ($active == 1):?>
+							<input id="recurring_fees"
 								class="input-type required-entry" type="text"
 								value=<?php echo $this->getSubscriptionAmount()?>></input>
+								<?php else:?>
+								<?php echo $this->getSubscriptionAmount()?>
+								<?php endif;?>
 							</td>
 						</tr>
 						<tr>
 							<td class="label"><label for="billing_cycle_period">Billing Cycle
 									Period:</label>
 							</td>
-							<td class="value"><select id="billing_period"
+							<td class="value">
+							<?php if ($active == 1):?>
+							<select id="billing_period"
 							<?php $cycleArray = array('Daily','Weekly','Bi-Weekly','Semi-Monthly','Monthly','Semi-Annually','Annually');?>
 							<?php foreach ($cycleArray as $key => $value): ?>
 							<?php if($this->getIterationLength() !== $value): ?><option>
@@ -102,15 +110,23 @@
 									<?php endif; ?>
 									<?php endforeach ?>
 							</select>
+							<?php else:?>
+								<?php echo $this->getIterationLength()?>
+								<?php endif;?>
 							</td>
 						</tr>
 						<tr>
 							<td class="label"><label for="total_number_of_billing_cycles">Total
 									Number of Billing Cycles:</label>
 							</td>
-							<td class="value"><input id="total_number_of_billing_cycles"
+							<td class="value">
+							<?php if ($active == 1):?>
+							<input id="total_number_of_billing_cycles"
 								class="input-type required-entry" type="text"
 								value=<?php echo $this->getNumOfIterations()?>></input>
+								<?php else:?>
+								<?php echo $this->getNumOfIterations()?>
+								<?php endif;?>
 							</td>
 						</tr>
 						<tr>
@@ -120,11 +136,9 @@
 							</td>
 						</tr>
 						<tr>
-							<td class="label"><label for="next_bill_date">Next Bill Date:</label>
+							<td class="label"><label>Next Bill Date:</label>
 							</td>
-							<td class="value"><input id="next_bill_date"
-								class="input-type required-entry" type="text"
-								value=<?php echo $this->getNextBillDate()?>></input>
+							<td class="value"><?php echo $this->getNextBillDate()?>
 							</td>
 						</tr>
 						<tr>
@@ -145,7 +159,7 @@
 		</td>
 	</tr>
 	<div align="right">
-		<?php if($this->getActive() !== "0"): ?>
+		<?php if($active !== "0"): ?>
 		<button id="saveButton" type="button">Save Subscription Details</button>
 		<button id="cancelButton" type="button">Cancel Subscription</button>
 		<?php endif ?>
