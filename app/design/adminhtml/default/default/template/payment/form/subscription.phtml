@@ -33,6 +33,35 @@
 					<?php echo Mage::helper('customer')->__('Subscription Details') ?>
 				</h3>
 			</div>
+			<?php if ($this->getMessageColor() === "Green"):?>
+			<ul class="messages">
+				<li class="success-msg">
+					<ul>
+						<li><span>Subscription is in good condition.</span>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			<?php elseif ($this->getMessageColor() === "Red"):?>
+			<ul class="messages">
+				<li class="failure-msg">
+					<ul>
+						<li><span>Subscription is in bad condition.</span>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			<?php else:?>
+			<ul class="messages">
+				<li class="success-msg">
+					<ul>
+						<li><span>Subscription is in OK condition.</span>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			<?php endif;?>
+
 			<div class="hor-scroll">
 				<table class="form-list" cellspacing="0">
 					<tbody>
@@ -128,14 +157,14 @@
 			</div>
 		</td>
 	</tr>
-<div align="right">
-<?php if($this->getActive() !== "0"): ?>
-	<button id="saveButton" type="button">Save Subscription Details</button>
-	<button id="cancelButton" type="button">Cancel Subscription</button>
-<?php endif ?>
-	
-</div>
-<script type="text/javascript">
+	<div align="right">
+		<?php if($this->getActive() !== "0"): ?>
+		<button id="saveButton" type="button">Save Subscription Details</button>
+		<button id="cancelButton" type="button">Cancel Subscription</button>
+		<?php endif ?>
+
+	</div>
+	<script type="text/javascript">
 	var saveButton=document.getElementById("saveButton");
 	saveButton.onclick=function(){
 		<?php $this->setNumOfIterations('2');?>
@@ -146,7 +175,7 @@
 		window.location.href=window.location.href;		
 	}
 </script>
-<script type="text/javascript">
+	<script type="text/javascript">
 	var cancelButton=document.getElementById("cancelButton");
 	cancelButton.onclick=function(){
 		var r = confirm('Are you sure you want to cancel this subscription?');
@@ -166,25 +195,25 @@
 	</div>
 	<?php $historyRow = $this->getSubscriptionHistoryTable();?>
 	<div>
-	<?php if($historyRow!==NULL):?>
+		<?php if($historyRow!==NULL):?>
 		<table cellspacing="0" border="1" width=50% height=75>
-				<tr>
-					<th>Cron ID</th>
-					<th>Order ID</th>
-					<th>Sucessful</th>
-					<th>Run Date</th>
-				</tr>
-				<?php foreach ($historyRow as $key => $value): ?>
-				<tr>
-					<td><?php echo $historyRow[$key]["cron_id"];?></td>
-					<td><?php echo $historyRow[$key]["order_id"];?></td>
-					<td><?php echo $historyRow[$key]["success"];?></td>
-					<td><?php echo $historyRow[$key]["run_date"];?></td>
-				</tr>
-				<?php endforeach ?>
+			<tr>
+				<th>Cron ID</th>
+				<th>Order ID</th>
+				<th>Sucessful</th>
+				<th>Run Date</th>
+			</tr>
+			<?php foreach ($historyRow as $key => $value): ?>
+			<tr>
+				<td><?php echo $historyRow[$key]["cron_id"];?></td>
+				<td><?php echo $historyRow[$key]["order_id"];?></td>
+				<td><?php echo $historyRow[$key]["success"];?></td>
+				<td><?php echo $historyRow[$key]["run_date"];?></td>
+			</tr>
+			<?php endforeach ?>
 		</table>
-	<?php else: ?>
-	<td class="label"><label>This Subscription has no history.</label>
-	</td>
-	<?php endif ?>
+		<?php else: ?>
+		<td class="label"><label>This Subscription has no history.</label>
+		</td>
+		<?php endif ?>
 	</div>
