@@ -108,7 +108,7 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 			}
 			else
 			{
-				$subscriptionItem->setActive(false);
+				//$subscriptionItem->setActive(false);
 				$subscriptionItem->save();
 			}
 		}
