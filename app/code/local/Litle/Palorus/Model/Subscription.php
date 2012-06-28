@@ -97,8 +97,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$recyclingModel = Mage::getModel('palorus/recycling');
 		$recyclingModel->callFromCron($cronId);
 		
-		
-		
 		// Get all items from Subscription Suspend where turn_on_date is between now and 2 days ago.
 		// 2 days is a buffer in the unlikely scenario that the cron jobs didn't run.
 		$subscriptionSuspendCollection = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
@@ -151,40 +149,10 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			( is_null($turnOnDate) || (!is_null($turnOnDate) && (strtotime($turnOnDate) < time())) )
 			)
 			{
-				// TODO :  Notify the merchant about this case !
-				
-// 				$emailTemplate  = Mage::getModel('core/email_template')
-// 				->loadDefault('custom_email_template1');
-				
-// 				//Create an array of variables to assign to template
-// 				$emailTemplateVariables = array();
-// 				$emailTemplateVariables['myvar1'] = $originalOrderId;
-// 				$emailTemplateVariables['myvar2'] = $customerId;
-// 				$emailTemplateVariables['myvar3'] = $productId;
-// 				$emailTemplateVariables['myvar4'] = $subscriptionId;
-				
-// 				$emailTemplate->setSenderName('Litle & Co.');
-// 				$emailTemplate->setSenderEmail('sdksupport@litle.com');
-// 				$emailTemplate->setTemplateSubject('Invalid Subscription Status');
-// 				$ret = $collectionItem->getConfigData('email_id');
-// 				Mage::log($ret);
-				
-// 				$emailTemplate->send($ret,'', $emailTemplateVariables);
-				
-				$notificationModel = Mage::getModel('adminnotification/inbox');
-				$notification="Invalid subscription Email";
-				$notificationItemData = array(
-						 							"severity" => 1,
-						 							"date_added" => time(),
-						 							"title" => $notification,
-						 							"description" => "the subscription has now become invalid",
-						 							//"url" => "www.litle.com",
-						 							"is_read" => false,
-						 							"is_remove" => false		
-				);
-				$notificationModel->setData($notificationItemData)->save();
+				$recipientEmail = $collectionItem->getConfigData('email_id');
+				$description = "This subscription has now become invalid."
+				$this->notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description);
 				continue;
-					
 			}
 
 			//################################################################
@@ -244,6 +212,9 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		if( empty($vaultRecord) )
 		{
 			Mage::log("Payment information could not be retrieved for intial order id: " . $initialOrderId . " and customer id: " . $customerId);
+			$recipientEmail = $collectionItem->getConfigData('email_id');
+			$description = "No payment information found for this transaction."
+			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description);
 		}
 		else{
 			try{
@@ -411,5 +382,38 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
 		Mage::log($returnFromThisModel);
 		return $returnFromThisModel;
+	}
+	
+	public function notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $addressToSendTo, $description)
+	{
+//		$emailTemplate  = Mage::getModel('core/email_template')->loadDefault('custom_email_template1');
+				
+// 		//Create an array of variables to assign to template
+// 		$emailTemplateVariables = array();
+// 		$emailTemplateVariables['myvar1'] = $originalOrderId;
+// 		$emailTemplateVariables['myvar2'] = $customerId;
+// 		$emailTemplateVariables['myvar3'] = $productId;
+// 		$emailTemplateVariables['myvar4'] = $subscriptionId;
+				
+// 		$emailTemplate->setSenderName('Litle & Co.');
+// 		$emailTemplate->setSenderEmail('sdksupport@litle.com');
+// 		$emailTemplate->setTemplateSubject('Invalid Subscription Status');
+// 		//$ret = $collectionItem->getConfigData('email_id');
+// 		//Mage::log($ret);
+				
+// 		$emailTemplate->send($addressToSendTo,'', $emailTemplateVariables);
+				
+		$notificationModel = Mage::getModel('adminnotification/inbox');
+		$notification="Invalid subscription Email";
+		$notificationItemData = array(
+			 							"severity" => 2,
+			 							"date_added" => time(),
+			 							"title" => $notification,
+			 							"description" => $description,//"the subscription has now become invalid",
+			 							//"url" => "www.litle.com",
+			 							"is_read" => false,
+			 							"is_remove" => false		
+									);
+		$notificationModel->setData($notificationItemData)->save();
 	}
 }
