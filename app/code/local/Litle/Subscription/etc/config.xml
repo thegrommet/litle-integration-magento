@@ -15,6 +15,11 @@
 			<litlesubscription>
 				<class>Litle_Subscription_Model</class>
 			</litlesubscription>
+			<catalog>
+				<rewrite>
+					<product>Litle_Subscription_Model_Product</product>
+				</rewrite>
+			</catalog>
 		</models>
 		<resources>
 			<litlesubscription_setup>
