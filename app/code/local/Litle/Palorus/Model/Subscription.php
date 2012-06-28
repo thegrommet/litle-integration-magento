@@ -151,7 +151,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			{
 				$recipientEmail = $collectionItem->getConfigData('email_id');
 				$description = "This subscription has now become invalid.";
-				$this->notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description);
+				$title = "Invalid subscription";
+				$this->notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
 				continue;
 			}
 
@@ -212,15 +213,15 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		if( empty($vaultRecord) )
 		{
 			Mage::log("Payment information could not be retrieved for intial order id: " . $initialOrderId . " and customer id: " . $customerId);
-			$recipientEmail = $collectionItem->getConfigData('email_id');
+			$recipientEmail= Mage::getStoreConfig('payment/Subscription/email_id');
 			$description = "No payment information found for this transaction.";
-			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description);
+			$title = "Payment information missing";
+			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
 		}
 		else{
 			try{
 				$product1 = Mage::getModel('catalog/product')->load($productId);
 				$buyInfo1 = array('qty' => "1");
-
 				$orderModel = Mage::getModel("sales/order");
 				$initialOrderObj = $orderModel->load($initialOrderId);
 				
@@ -364,7 +365,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$status = "cancelled";
 			$recipientEmail = $collectionItem->getConfigData('email_id');
 			$description = "All payment recycle patterns have been exhausted and the customer still has not been successfully charged.";
-			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description);
+			$title = "Recycle payment unsuccessful";
+			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
 		}
 		
 		$recyclingItemData = array(
@@ -386,7 +388,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		return $returnFromThisModel;
 	}
 	
-	public function notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $addressToSendTo, $description)
+	public function notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $addressToSendTo, $description,$title)
 	{
 //		$emailTemplate  = Mage::getModel('core/email_template')->loadDefault('custom_email_template1');
 				
@@ -399,7 +401,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				
 // 		$emailTemplate->setSenderName('Litle & Co.');
 // 		$emailTemplate->setSenderEmail('sdksupport@litle.com');
-// 		$emailTemplate->setTemplateSubject('Invalid Subscription Status');
+// 		$emailTemplate->setTemplateSubject($title);
 // 		//$ret = $collectionItem->getConfigData('email_id');
 // 		//Mage::log($ret);
 				
@@ -410,8 +412,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$notificationItemData = array(
 			 							"severity" => 2,
 			 							"date_added" => time(),
-			 							"title" => $notification,
-			 							"description" => $description,//"the subscription has now become invalid",
+			 							"title" => $title,
+			 							"description" => $description,
 			 							//"url" => "www.litle.com",
 			 							"is_read" => false,
 			 							"is_remove" => false		
