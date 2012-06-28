@@ -101,7 +101,7 @@ DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription')};
 				VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')), 'litle_subscription', NULL, 'int', 'boolean', 'Litle Subscription Allowed', 'eav/entity_attribute_source_boolean', 0, 1, 0, 0)");
     $installer->run("INSERT INTO `catalog_eav_attribute`
 					(`attribute_id`, `is_global`, `is_searchable`, `is_filterable`, `is_comparable`, `is_visible_on_front`, `is_html_allowed_on_front`, `is_filterable_in_search`, `used_in_product_listing`, `used_for_sort_by`, `is_configurable`, `apply_to`, `is_visible_in_advanced_search`, `is_used_for_promo_rules`)
-					VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subscription'), 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, NULL, 0, 0)");
+					VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subscription'), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, 0, 0)");
 					$max++;
     $installer->run("INSERT INTO `eav_entity_attribute`
 					(`entity_type_id`, `attribute_set_id`, `attribute_group_id`, `attribute_id`, `sort_order`)
@@ -113,7 +113,7 @@ DROP TABLE IF EXISTS {$installer->getTable('palorus/subscription')};
 VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')), 'litle_subs_amount_per_itr', NULL, 'decimal', 'price', 'Litle Subscription Amount Per Iteration', 'catalog/product_attribute_source_msrp_type_price', 0, 1, 0, 0)");
     $installer->run("INSERT INTO `catalog_eav_attribute`
 (`attribute_id`, `is_global`, `is_searchable`, `is_filterable`, `is_comparable`, `is_visible_on_front`, `is_html_allowed_on_front`, `is_filterable_in_search`, `used_in_product_listing`, `used_for_sort_by`, `is_configurable`, `apply_to`, `is_visible_in_advanced_search`, `is_used_for_promo_rules`)
-VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subs_amount_per_itr'), 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, NULL, 0, 0)");
+VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subs_amount_per_itr'), 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, NULL, 0, 0)");
 $max++;
     $installer->run("INSERT INTO `eav_entity_attribute`
 (`entity_type_id`, `attribute_set_id`, `attribute_group_id`, `attribute_id`, `sort_order`)
@@ -125,7 +125,7 @@ VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`
 VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')), 'litle_subs_num_of_itrs', NULL, 'int', 'text', 'Litle Subscription Number of Iterations', 'catalog/product_attribute_source_msrp_type_price', 0, 1, 0, 0)");
     $installer->run("INSERT INTO `catalog_eav_attribute`
 (`attribute_id`, `is_global`, `is_searchable`, `is_filterable`, `is_comparable`, `is_visible_on_front`, `is_html_allowed_on_front`, `is_filterable_in_search`, `used_in_product_listing`, `used_for_sort_by`, `is_configurable`, `apply_to`, `is_visible_in_advanced_search`, `is_used_for_promo_rules`)
-VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subs_num_of_itrs'), 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, NULL, 0, 0)");
+VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subs_num_of_itrs'), 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, NULL, 0, 0)");
 $max++;
     $installer->run("INSERT INTO `eav_entity_attribute`
 (`entity_type_id`, `attribute_set_id`, `attribute_group_id`, `attribute_id`, `sort_order`)
@@ -137,7 +137,7 @@ VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`
     VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')), 'litle_subs_days_for_trial', NULL, 'int', 'text', 'Litle Subscription Days For Trial', 'catalog/product_attribute_source_msrp_type_price', 0, 1, 0, 0)");
         $installer->run("INSERT INTO `catalog_eav_attribute`
     (`attribute_id`, `is_global`, `is_searchable`, `is_filterable`, `is_comparable`, `is_visible_on_front`, `is_html_allowed_on_front`, `is_filterable_in_search`, `used_in_product_listing`, `used_for_sort_by`, `is_configurable`, `apply_to`, `is_visible_in_advanced_search`, `is_used_for_promo_rules`)
-    VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subs_days_for_trial'), 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, NULL, 0, 0)");
+    VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subs_days_for_trial'), 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, NULL, 0, 0)");
     $max++;
     $installer->run("INSERT INTO `eav_entity_attribute`
     (`entity_type_id`, `attribute_set_id`, `attribute_group_id`, `attribute_id`, `sort_order`)
@@ -149,7 +149,7 @@ VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`
 VALUES ((SELECT entity_type_id FROM `eav_entity_type` WHERE (`eav_entity_type`.`entity_type_code`='catalog_product')), 'litle_subs_itr_len', NULL, 'int', 'select', 'Litle Subscription Iteration Length', 'eav/entity_attribute_source_table', 0, 1, 3, 0)");
     $installer->run("INSERT INTO `catalog_eav_attribute`
 (`attribute_id`, `is_global`, `is_searchable`, `is_filterable`, `is_comparable`, `is_visible_on_front`, `is_html_allowed_on_front`, `is_filterable_in_search`, `used_in_product_listing`, `used_for_sort_by`, `is_configurable`, `apply_to`, `is_visible_in_advanced_search`, `is_used_for_promo_rules`)
-VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subs_itr_len'), 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, NULL, 0, 0)");
+VALUES ((select attribute_id from eav_attribute where attribute_code = 'litle_subs_itr_len'), 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, NULL, 0, 0)");
 $max++;
     $installer->run("INSERT INTO `eav_entity_attribute`
 (`entity_type_id`, `attribute_set_id`, `attribute_group_id`, `attribute_id`, `sort_order`)
