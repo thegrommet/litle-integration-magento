@@ -150,7 +150,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			)
 			{
 				$recipientEmail = $collectionItem->getConfigData('email_id');
-				$description = "This subscription has now become invalid."
+				$description = "This subscription has now become invalid.";
 				$this->notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description);
 				continue;
 			}
@@ -213,7 +213,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		{
 			Mage::log("Payment information could not be retrieved for intial order id: " . $initialOrderId . " and customer id: " . $customerId);
 			$recipientEmail = $collectionItem->getConfigData('email_id');
-			$description = "No payment information found for this transaction."
+			$description = "No payment information found for this transaction.";
 			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description);
 		}
 		else{
