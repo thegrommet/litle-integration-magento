@@ -360,7 +360,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$recyclingModel = Mage::getModel('palorus/recycling');
 		$status = "waiting";
 		if( $this->recycleAdviceEnd && $nextRunDate == "" ){
-			// TODO :  Set subscription as inactive !
+			// TODO :  Set subscription as inactive ! 
 			$status = "cancelled";
 			$recipientEmail = $collectionItem->getConfigData('email_id');
 			$description = "All payment recycle patterns have been exhausted and the customer still has not been successfully charged.";
