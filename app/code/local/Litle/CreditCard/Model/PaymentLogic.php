@@ -355,7 +355,6 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	}
 	
 	public function getProductAttribute($productId, $attributeName) {
-		Mage::log("product id is " .$productId . "Attribute name is " . $attributeName);
 		$product = Mage::helper("catalog/product")->getProduct($productId, null);
 		$attributeValue = $product->getAttributeText($attributeName);
 		return $attributeValue;
