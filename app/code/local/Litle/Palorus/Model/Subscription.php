@@ -223,7 +223,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 
 				$orderModel = Mage::getModel("sales/order");
 				$initialOrderObj = $orderModel->load($initialOrderId);
-				Mage::log("Shipping method from initialOrder is: " . $initialOrderObj->getShippingMethod());
 				
 				$quote->addProduct($product1, new Varien_Object($buyInfo1));
 				$billingAddress = $quote->getBillingAddress()->addData($customer->getPrimaryBillingAddress()->getData());
@@ -238,8 +237,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
  				 											'litletokenexpdate' => $vaultRecord['expdate'],
  				 											'ordersource' => 'recurring',
  				 											'subscriptionid' => $subscriptionId
-				)
-				);
+														)
+												);
 					
 				$quote->collectTotals()->save();
 				$service = Mage::getModel('sales/service_quote', $quote);
@@ -252,7 +251,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$success = false;
 				
 				if( $this->shouldRecycleDateBeRead )
-					$this->saveDataInSubscriptionHistory($subscriptionId);
+					$this->saveDataInSubscriptionHistory($initialOrderId, $customerId, $productId, $subscriptionId);
 				
 				$this->setShouldRecycleDateBeRead( false );
 			}
@@ -336,12 +335,12 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$nextDate = (date("Y-m-d", ($date)) . " +1 year");
 				break;
 		}
-		//	return $nextDate;
-		return date("Y-m-d"); // TODO : Do not export for testing purposes only.
+		return $nextDate;
+		//return date("Y-m-d"); // TODO : Do not export for testing purposes only.
 	}
 
 	
-	public function saveDataInSubscriptionHistory($subscriptionId, $nextRunDate = "")
+	public function saveDataInSubscriptionHistory($initialOrderId, $customerId, $productId, $subscriptionId, $nextRunDate = "")
 	{
 		if( $nextRunDate === "" )
 		{
@@ -361,8 +360,11 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$recyclingModel = Mage::getModel('palorus/recycling');
 		$status = "waiting";
 		if( $this->recycleAdviceEnd && $nextRunDate == "" ){
-			// TODO :  Notify the merchant about this case !
+			// TODO :  Set subscription as inactive !
 			$status = "cancelled";
+			$recipientEmail = $collectionItem->getConfigData('email_id');
+			$description = "All payment recycle patterns have been exhausted and the customer still has not been successfully charged.";
+			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description);
 		}
 		
 		$recyclingItemData = array(
