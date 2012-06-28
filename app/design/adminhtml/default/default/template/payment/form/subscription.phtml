@@ -167,44 +167,9 @@
 
 
 	</div>
-	<script type="text/javascript">
-	var saveButton=document.getElementById("saveButton");
-	saveButton.onclick=function(){
-		<?php $this->setNumOfIterations('2');?>
-		alert(document.getElementById('recurring_fees').value);
-		alert(document.getElementById('billing_period').value);
-		alert(document.getElementById('total_number_of_billing_cycles').value);
-		alert(document.getElementById('next_bill_date').value);
-		window.location.href=window.location.href;		
-	}
-</script>
-	<script type="text/javascript">
-	var cancelButton=document.getElementById("cancelButton");
-	cancelButton.onclick=function(){
-		var r = confirm('Are you sure you want to cancel this subscription?');
-		if(r==true){
-		<?php $this->setActive('0');?>
-		window.location.href=window.location.href;
-		}
-	}
-</script>
-</script>
-	<script type="text/javascript">
-	var suspendButton=document.getElementById("suspendButton");
-	suspendButton.onclick=function(){
-		var skips = prompt('How many iterations would you like to skip?');
-		if(skips!=null){
-			if(skips>0 && skips%1===0){
-				var r = confirm('Are you sure you want to suspend to subscription for ' + skips + ' iterations?');
-				if(r==true){
-					<?php $this->setActive('0');?>
-					window.location.href=window.location.href;
-				}
-			}
-			else alert("Enter a valid number of iterations to skip");
-		}
-	}
-</script>
+	
+	
+	
 </table>
 <br>
 <div>
