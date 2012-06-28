@@ -83,6 +83,9 @@ class Litle_CreditCard_Model_Validatehttp extends Mage_Core_Model_Config_Data
 				curl_close($ch);
 			}
 			
+			if( $this->getSubscriptionConfigData('active') && !$this->getFieldsetDataValue('active') )
+				Mage::throwException('Litle Subscription can not be enabled without Litle Credit Card.');
+			
 			return parent::save();
 		}
 	}

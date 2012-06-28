@@ -118,7 +118,9 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
     {
     	$this->loadLayout();
     	$block = $this->getLayout()->createBlock('palorus/adminhtml_palorus_insight_subscriptionview');
+    	$var = $this->getRequest()->getParam('active');
     	$this->getLayout()->getBlock('content')->append($block);
+    	$block->setActive($var);
     	$this->renderLayout();
     }
 }

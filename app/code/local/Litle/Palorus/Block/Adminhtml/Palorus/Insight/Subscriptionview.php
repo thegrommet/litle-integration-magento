@@ -45,7 +45,11 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	->setData(array(
                     'id'      => 'cancel_button',
                     'label'   => Mage::helper('sales')->__('Cancel Subscription'),
-                    'class'   => 'save'
+                    'class'   => 'save',
+                    'onclick' => 'var r = confirm(\'Are you sure you want to cancel this subscription?\');
+					if(r==true){
+                    setLocation(\''.$this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $this->getSubscriptionId(),'active'=>'0')).'\')
+                    }'
     	));
     	$this->setChild('cancel_button', $cancelButton);
     	
@@ -162,7 +166,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      public function getSubscriptionId(){
      	$url = $this->helper("core/url")->getCurrentUrl();
      	$stringAfterSubscriptionId = explode('subscription_id/', $url);
-     	$stringBeforeKey = explode('/key', $stringAfterSubscriptionId[1]);
+     	$stringBeforeKey = explode('/', $stringAfterSubscriptionId[1]);
      	return $stringBeforeKey[0];
      }
      
