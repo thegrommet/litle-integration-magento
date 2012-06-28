@@ -58,9 +58,28 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	                    'id'      => 'save_button',
     	                    'label'   => Mage::helper('sales')->__('Save Subscription Details'),
     	                    'class'   => 'save',
-    	                  //  'onclick' => setLocation(\''.$this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $this->getSubscriptionId(), 'cycles'=> . '$.recurring_fees' . )).'\')
+    	                 	'onclick' => 
+    				'
+    				var amount = document.getElementById(\'recurring_fees\').value;
+    				var billingDetails = document.getElementById(\'billing_period\').value;
+    				var billingCycles = document.getElementById(\'total_number_of_billing_cycles\').value;
+    				pathArray = document.URL.split( \'amount\' );
+					host = pathArray[0];
+					host = host.split( \'key\' )[0];
+    				pathArray = document.URL.split( \'key\' );
+    				alert(host+\'amount/\'+amount+\'/billingDetails/\'+billingDetails+\'/billingCycles/\'+billingCycles+\'/key\'+pathArray[1])
+    			    setLocation(host+\'amount/\'+amount+\'/billingDetails/\'+billingDetails+\'/billingCycles/\'+billingCycles+\'/key\'+pathArray[1])'		
     	));
     	$this->setChild('save_button', $saveButton);
+    	
+    	$resumeButton = $this->getLayout()->createBlock('adminhtml/widget_button')
+    	->setData(array(
+    	    	                    'id'      => 'resume_button',
+    	    	                    'label'   => Mage::helper('sales')->__('Resume Subscription'),
+    	    	                    'class'   => 'save',
+    	));
+    	$this->setChild('resume_button', $resumeButton);
+    	 
     	
     	$suspendButton = $this->getLayout()->createBlock('adminhtml/widget_button')
     	->setData(array(
@@ -74,6 +93,8 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     			if(r==true){
     				pathArray = document.URL.split( \'skips\' );
 					host = pathArray[0];
+					host = host.split( \'key\' )[0];
+					alert(host);
     				pathArray = document.URL.split( \'key\' );
     			    setLocation(host+\'skips/\'+skips+\'/key\'+pathArray[1])		
     					}
