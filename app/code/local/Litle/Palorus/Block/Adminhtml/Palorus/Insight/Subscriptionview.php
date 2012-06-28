@@ -69,12 +69,12 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	                    'class'   => 'save',
     	'onclick' => 'var skips = prompt(\'How many iterations would you like to skip?\');
     	if(skips!=null){
-    		if(skips>0 && skips%1===0){
+    		if(skips>0 && skips%1===0  && skips<1000){
     			var r = confirm(\'Are you sure you want to suspend to subscription for \' + skips + \' iterations?\');
     			if(r==true){
-    				pathArray = document.URL.split( \'key\' );
+    				pathArray = document.URL.split( \'skips\' );
 					host = pathArray[0];
-    			    alert(host+\'skips/\'+skips+\'/key\'+pathArray[1]);
+    				pathArray = document.URL.split( \'key\' );
     			    setLocation(host+\'skips/\'+skips+\'/key\'+pathArray[1])		
     					}
     				}
