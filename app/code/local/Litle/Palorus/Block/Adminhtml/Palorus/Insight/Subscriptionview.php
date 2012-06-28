@@ -52,20 +52,13 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
                     }'
     	));
     	$this->setChild('cancel_button', $cancelButton);
-    	
-    	$activateButton = $this->getLayout()->createBlock('adminhtml/widget_button')
-    	->setData(array(
-    	                    'id'      => 'activate_button',
-    	                    'label'   => Mage::helper('sales')->__('Reactivate Subsctiption'),
-    	                    'class'   => 'save'
-    	));
-    	$this->setChild('activate_button', $activateButton);
-    	
+    	 	
     	$saveButton = $this->getLayout()->createBlock('adminhtml/widget_button')
     	->setData(array(
     	                    'id'      => 'save_button',
     	                    'label'   => Mage::helper('sales')->__('Save Subscription Details'),
-    	                    'class'   => 'save'
+    	                    'class'   => 'save',
+    	                  //  'onclick' => setLocation(\''.$this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $this->getSubscriptionId(), 'cycles'=> . '$.recurring_fees' . )).'\')
     	));
     	$this->setChild('save_button', $saveButton);
     	
@@ -73,7 +66,21 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	->setData(array(
     	                    'id'      => 'suspend_button',
     	                    'label'   => Mage::helper('sales')->__('Suspend Subscription'),
-    	                    'class'   => 'save'
+    	                    'class'   => 'save',
+    	'onclick' => 'var skips = prompt(\'How many iterations would you like to skip?\');
+    	if(skips!=null){
+    		if(skips>0 && skips%1===0){
+    			var r = confirm(\'Are you sure you want to suspend to subscription for \' + skips + \' iterations?\');
+    			if(r==true){
+    				pathArray = document.URL.split( \'key\' );
+					host = pathArray[0];
+    			    alert(host+\'skips/\'+skips+\'/key\'+pathArray[1]);
+    			    setLocation(host+\'skips/\'+skips+\'/key\'+pathArray[1])		
+    					}
+    				}
+    				else alert(\'Enter a valid number of iterations to skip\');
+    			}'
+    	                    
     	));
     	$this->setChild('suspend_button', $suspendButton);
     	
