@@ -44,11 +44,41 @@ class Litle_Subscription_Block_Product_View extends Mage_Catalog_Block_Product_V
 		$parentRet = parent::getTierPriceHtml($product);
 		$product1 = $this->getProduct();
 		$litle_subscription = $product1->getAttributeText("litle_subscription");
-		$litle_subs_amount_per_itr = $product1->getLitleSubsAmountPerItr();
-		$litle_subs_num_of_itrs = $product1->getLitleSubsNumOfItrs();
-		$litle_subs_itr_len = $product1->getAttributeText("litle_subs_itr_len");
-		$litleAdditions = "Subscription amount: " . $litle_subs_amount_per_itr . " per " . $litle_subs_itr_len . " for " . $litle_subs_num_of_itrs;
-
-		return $litleAdditions . $parentRet;
+		if($litle_subscription === "Yes")
+		{
+			$litle_subs_amount_per_itr = $product1->getLitleSubsAmountPerItr();
+			$litle_subs_num_of_itrs = $product1->getLitleSubsNumOfItrs();
+			$litle_subs_itr_len = $product1->getAttributeText("litle_subs_itr_len");
+			$iterationUnit = "";
+			if($litle_subs_itr_len === "Daily")
+			{
+				$iterationUnit = "$litle_subs_num_of_itrs days";
+			}else if($litle_subs_itr_len === "Weekly")
+			{
+				$iterationUnit = "$litle_subs_num_of_itrs weeks";
+			}else if($litle_subs_itr_len === "Bi-Weekly")
+			{
+				$iterationUnit = $litle_subs_num_of_itrs*2 . " weeks";
+			}else if($litle_subs_itr_len === "Semi-Monthly")
+			{
+				$iterationUnit = $litle_subs_num_of_itrs/2 . " months";
+			}else if($litle_subs_itr_len === "Monthly")
+			{
+				$iterationUnit = "$litle_subs_num_of_itrs months";
+			}else if($litle_subs_itr_len === "Semi-Annually")
+			{
+				$iterationUnit = $litle_subs_num_of_itrs/2 . " years";
+			}else if($litle_subs_itr_len === "Annually"){
+				$iterationUnit = "$litle_subs_num_of_itrs years";
+			}else
+			{
+				$iterationUnit = $litle_subs_num_of_itrs;
+			}
+			
+			
+			$litleAdditions = "Subscription amount: $" . round($litle_subs_amount_per_itr,2). " " . $litle_subs_itr_len . " for " . $iterationUnit;
+			return $litleAdditions . $parentRet;	
+		}
+		return $parentRet;
 	}
 }
