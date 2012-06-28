@@ -39,6 +39,44 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
         $this->setTemplate('payment/form/subscription.phtml');
     }
     
+    protected function _prepareLayout()
+    {
+    	$cancelButton = $this->getLayout()->createBlock('adminhtml/widget_button')
+    	->setData(array(
+                    'id'      => 'cancel_button',
+                    'label'   => Mage::helper('sales')->__('Cancel Subscription'),
+                    'class'   => 'save'
+    	));
+    	$this->setChild('cancel_button', $cancelButton);
+    	
+    	$activateButton = $this->getLayout()->createBlock('adminhtml/widget_button')
+    	->setData(array(
+    	                    'id'      => 'activate_button',
+    	                    'label'   => Mage::helper('sales')->__('Reactivate Subsctiption'),
+    	                    'class'   => 'save'
+    	));
+    	$this->setChild('activate_button', $activateButton);
+    	
+    	$saveButton = $this->getLayout()->createBlock('adminhtml/widget_button')
+    	->setData(array(
+    	                    'id'      => 'save_button',
+    	                    'label'   => Mage::helper('sales')->__('Save Subscription Details'),
+    	                    'class'   => 'save'
+    	));
+    	$this->setChild('save_button', $saveButton);
+    	
+    	$suspendButton = $this->getLayout()->createBlock('adminhtml/widget_button')
+    	->setData(array(
+    	                    'id'      => 'suspend_button',
+    	                    'label'   => Mage::helper('sales')->__('Suspend Subscription'),
+    	                    'class'   => 'save'
+    	));
+    	$this->setChild('suspend_button', $suspendButton);
+    	
+    
+    	return parent::_prepareLayout();
+    }
+    
     public function suspendSubscription($skips){
     	for($i=1; $i<=$skips; $i++){
     		$nextDate = $this->getNextBillDate();

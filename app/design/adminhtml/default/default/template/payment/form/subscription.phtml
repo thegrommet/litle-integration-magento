@@ -159,11 +159,12 @@
 		</td>
 	</tr>
 	<div align="right">
-		<?php if($active !== "0"): ?>
-		<button id="saveButton" type="button">Save Subscription Details</button>
-		<button id="suspendButton" type="button">Suspend Subscription</button>
-		<button id="cancelButton" type="button">Cancel Subscription</button>
-		<?php endif ?>
+		
+<?php echo $this->getChildHtml('cancel_button') ?> |
+<?php echo $this->getChildHtml('suspend_button') ?> |
+<?php echo $this->getChildHtml('save_button') ?> |
+<?php echo $this->getChildHtml('activate_button') ?> |		
+
 
 	</div>
 	<script type="text/javascript">
