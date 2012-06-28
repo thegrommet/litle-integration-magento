@@ -719,6 +719,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 					$litleSubscriptionItrLengthValue = $attribute->getValue();
 				}
 			}
+			
 			if($this->getProductAttribute($productId, 'litle_subscription') === "Yes") {
 				for($j = 0; $j < $qty; $j++) {
 					$data = array(
@@ -741,12 +742,10 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	
 	public function getNextBillDateAddBasedOnTrial($productId)
 	{
-		
-		$numOfTrialDays = $this->getProductAttribute($productId, 'litle_subs_days_for_trial');
-		Mage::log("Here");
-		Mage::log("the number of trial days " . $numOfTrialDays);
+		$product = Mage::helper("catalog/product")->getProduct($productId, null);
+		//$numOfTrialDays = $this->getProductAttribute($productId, 'litle_subs_days_for_trial');
+		$numOfTrialDays = $product->getLitleSubsDaysForTrial();
 		$nextDate =  time() + ($numOfTrialDays * 24 * 60 * 60);
-		Mage::log("The next date is " . (date("Y-m-d",($nextDate))));
 		return $nextDate;
 	}
 }
