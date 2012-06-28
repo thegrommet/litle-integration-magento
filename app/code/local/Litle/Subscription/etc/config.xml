@@ -7,7 +7,7 @@
 	</modules>
 	<global>
 		<helpers>
-	    	<litlesubscription>
+			<litlesubscription>
 				<class>Litle_Subscription_Helper</class>
 			</litlesubscription>
 		</helpers>
@@ -15,11 +15,6 @@
 			<litlesubscription>
 				<class>Litle_Subscription_Model</class>
 			</litlesubscription>
-			<catalog>
-				<rewrite>
-					<product>Litle_Subscription_Model_Product</product>
-				</rewrite>
-			</catalog>
 		</models>
 		<resources>
 			<litlesubscription_setup>
@@ -56,8 +51,19 @@
 				</rewrite>
 			</checkout>
 		</blocks>
+		<events>
+			<catalog_block_product_list_collection>
+				<observers>
+					<remove_subscription_products_if_required>
+						<type>singleton</type>
+						<class>litlesubscription/paymentLogic</class>
+						<method>cleanseProductList</method>
+					</remove_subscription_products_if_required>
+				</observers>
+			</catalog_block_product_list_collection>
+		</events>
 	</global>
-	
+
 	<default>
 		<payment>
 			<litlesubscription>

@@ -51,7 +51,7 @@ class Litle_Subscription_Model_PaymentLogic extends Litle_CreditCard_Model_Payme
 	 * show this method on the checkout page
 	 */
 	protected $_canUseCheckout          = false;
-
+	
 	public function getConfigData($fieldToLookFor, $store = NULL)
 	{
 		$returnFromThisModel = Mage::getStoreConfig('payment/Subscription/' . $fieldToLookFor);
@@ -75,7 +75,8 @@ class Litle_Subscription_Model_PaymentLogic extends Litle_CreditCard_Model_Payme
 		return parent::assignData($data);
 	}
 	
-	public function creditCardOrPaypageOrToken($payment){
+	public function creditCardOrPaypageOrToken($payment)
+	{
 		$info = $this->getInfoInstance();
 		$payment_hash = array();
 		
@@ -88,5 +89,19 @@ class Litle_Subscription_Model_PaymentLogic extends Litle_CreditCard_Model_Payme
 		}
 		
 		return $payment_hash;
+	}
+	
+	public function cleanseProductList($observer)
+	{
+		if(Mage::getStoreConfig('payment/Subscription/active') == 0)
+		{
+			foreach($observer->getEvent()->getCollection()->getItems() as $key=>$item)
+			{
+				$product = Mage::helper("catalog/product")->getProduct($item->getId(), null);
+				$attributeValue = $product->getAttributeText('litle_subscription');        	
+				if( $attributeValue === "Yes" )
+					$observer->getEvent()->getCollection()->removeItemBykey($key);
+			}	
+		}
 	}
 }
