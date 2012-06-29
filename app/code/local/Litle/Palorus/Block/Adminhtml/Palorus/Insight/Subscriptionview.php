@@ -83,6 +83,12 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	return parent::_prepareLayout();
     }
     
+    public function showResumeButton(){
+    	$run = $this->getSubscriptionData('run_next_iteration');
+    	$status = $this->getRecyclingData('status');
+    	return (!$run && ($status === 'cancelled' || $status === Null));
+    }
+    
     public function doNextIteration(){
     	$this->setRunNext('1');
     }
@@ -97,11 +103,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     
     public function getSubscriptionStatusMessage(){
     	$recycling = $this->getIsRecycling();
-    	if($recycling === "No"){
-    		$message[0] = "success-msg";
-    		$message[1] = "Subscription is in good condition.";
-    	}
-    	else{
+    	if($recycling === "Yes"){
     		$nextBill = strtotime($this->getNextBillDate());
     		$nextRecycle = strtotime($this->getRecyclingData('to_run_date'));
     		if($nextBill < $nextRecycle){
@@ -111,6 +113,16 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     		else{
     			$message[0] = "warning-msg";
     			$message[1] = "Subscription is in recycling";
+    			}
+    		}
+    	else{
+    		if($this->getSubscriptionData('run_next_iteration')){
+	    		$message[0] = "success-msg";
+	    		$message[1] = "Subscription is in good condition.";
+    		}
+    		else{
+    			$message[0] = "error-msg";
+    			$message[1] = "Last Transaction Failed.";
     		}
     	}
     	return $message;
@@ -195,7 +207,8 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      public function getIsRecycling(){
      	$runNextIteration = $this->getSubscriptionData('run_next_iteration');
      	$active = $this->getSubscriptionData('active');
-     	if(!$runNextIteration && $active){
+     	$recycleStatus = $this->getRecyclingData('status');
+     	if(!$runNextIteration && $active && $recycleStatus !== Null){
      		return "Yes";
      	}else{
      		return "No";

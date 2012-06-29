@@ -160,10 +160,12 @@
 	</tr>
 	<div align="right">
 <?php if ($active === '1'):?>
-<?php echo $this->getChildHtml('cancel_button') ?> &nbsp
-<?php echo $this->getChildHtml('suspend_button') ?> &nbsp
-<?php echo $this->getChildHtml('save_button') ?> &nbsp
-<?php echo $this->getChildHtml('resume_button') ?>
+	<?php echo $this->getChildHtml('cancel_button') ?> &nbsp
+	<?php echo $this->getChildHtml('suspend_button') ?> &nbsp
+	<?php echo $this->getChildHtml('save_button') ?> &nbsp
+	<?php if ($this->showResumeButton()): ?>
+		<?php echo $this->getChildHtml('resume_button') ?>
+	<?php endif?>
 <?php endif?>
 	</div>
 	
