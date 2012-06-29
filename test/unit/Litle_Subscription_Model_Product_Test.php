@@ -44,12 +44,12 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 		$newproduct = new Litle_Subscription_Model_Product();
  		$newproduct->setTypeId('simple');
  		$newproduct->setAttributeSetId(4);
-		$newproduct->setLitleSubscription(false); #Make it not a subscription product
-		$newproduct->setStatus(NULL); #Null initial status
- 		$store->setConfig("payment/Subscription/active",0); #Make subscription active
+		$newproduct->setLitleSubscription(false);
+		$newproduct->setStatus(NULL);
+ 		$store->setConfig("payment/Subscription/active",0);
 		$newproduct->save();
 		
- 		$result = $newproduct->getStatus(); #Get the status
+ 		$result = $newproduct->getStatus();
 		$newproduct->delete();
  		$this->assertEquals(Mage_Catalog_Model_Product_Status::STATUS_ENABLED, $result);
 	}
@@ -80,7 +80,7 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 		$store->setConfig("payment/Subscription/active",1);
 		$newproduct->save();
 	
-		$result = $newproduct->getStatus(); #Get the status
+		$result = $newproduct->getStatus();
 		$newproduct->delete();
 		$this->assertEquals(false, $result);
 	}
