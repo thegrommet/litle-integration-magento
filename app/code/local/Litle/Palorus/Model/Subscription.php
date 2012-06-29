@@ -100,6 +100,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$collection = Mage::getModel('palorus/subscription')->getCollection()
 							->addFieldToFilter("active", array("in", array(true)));
 
+		
 		// Get all the subscription items from the subscription table where next_run_date < current time and
 		// active flag is true
 		foreach($collection as $collectionItem)
