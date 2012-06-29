@@ -117,7 +117,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	public function assignData($data)
 	{
 		$info = $this->getInfoInstance();
-		if( $this->getConfigData('paypage_enabled') == "1")
+		if( $this->getConfigData('paypage_enable') == "1")
 		{
 			if (!($data instanceof Varien_Object)) {
 				$data = new Varien_Object($data);

@@ -46,7 +46,7 @@ class Litle_Palorus_Helper_Data extends Mage_Core_Helper_Abstract
 						'order_id' => $payment->getOrder()->getId(),
 						'affluence' => Litle_Palorus_Helper_Data::formatAffluence(XMLParser::getNode($litleResponse,"affluence")),
 						'last' => $last4,
-						'order_amount' => Litle_Palorus_Helper_Data::formatAvailableBalance($amount),
+						'order_amount' => Litle_Palorus_Helper_Data::formatAvailableBalance($amount*100),
 						'affluence' => Litle_Palorus_Helper_Data::formatAffluence(XMLParser::getNode($litleResponse,"affluence")),
 						'issuing_country' => XMLParser::getNode($litleResponse, 'issuerCountry'),
 						'prepaid_card_type' => Litle_Palorus_Helper_Data::formatPrepaidCardType(XMLParser::getNode($litleResponse, 'prepaidCardType')),
