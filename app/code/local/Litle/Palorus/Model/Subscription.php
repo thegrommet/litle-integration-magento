@@ -96,30 +96,12 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 
 		$recyclingModel = Mage::getModel('palorus/recycling');
 		$recyclingModel->callFromCron($cronId);
-		
-		// Get all items from Subscription Suspend where turn_on_date is between now and 2 days ago.
-		// 2 days is a buffer in the unlikely scenario that the cron jobs didn't run.
-		$subscriptionSuspendCollection = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
-		$subscriptionSuspendCollection->addFieldToFilter('turn_on_date', array(
-		    														'from' => date('d F Y', ( time()-(2 * 24 * 60 * 60) ) ),
-		    														'to' => date('d F Y'),
-				    												'date' => true,
-		));
 
-		// For each record grabbed from above, turn the run_next_iteration flag in the subscription table to true
-		foreach($subscriptionSuspendCollection as $suspendRecord)
-		{
-			Mage::log("########## Subscription id: " . $suspendRecord['subscription_id'] . " ##########");
-			$tempRecord = Mage::getModel('palorus/subscription');
-			$tempRecord->load($suspendRecord['subscription_id']);
-			$tempRecord->setRunNextIteration(true);
-			$tempRecord->save();
-		}
+		$collection = Mage::getModel('palorus/subscription')->getCollection()
+							->addFieldToFilter("active", array("in", array(true)));
 
 		// Get all the subscription items from the subscription table where next_run_date < current time and
 		// active flag is true
-		$collection = Mage::getModel('palorus/subscription')->getCollection();
-
 		foreach($collection as $collectionItem)
 		{
 			//Get the original order for that subscription
@@ -128,26 +110,13 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$productId = $collectionItem['product_id'];
 			$subscriptionId = $collectionItem['subscription_id'];
 				
-				
-			$subscriptionSuspendCollectionForSubsId = Mage::getModel('palorus/subscriptionSuspend')->getCollection();
-			$subscriptionSuspendCollectionForSubsId->addFieldToFilter("subscription_id", array("in", array($collectionItem['subscription_id'])));
-			$subscriptionSuspendCollectionForSubsId->addFieldToFilter("turn_on_date", array("from", date('d F Y', ( time()-(30 * 24 * 60 * 60) ) )));
-				
-			$subscriptionSuspendCollectionForSubsId->addAttributeToSort('turn_on_date','ASC');
-			$turnOnDate = NULL;
-			foreach ($subscriptionSuspendCollectionForSubsId as $suspendedItem)
-			{
-				$turnOnDate = $suspendedItem['turn_on_date'];
-			}
-				
 			//Notify merchant that the previous transcation has not gone through yet and it is time for
 			//next charge.
 			//Subscription is Active, and run_next_iteration is false (which mean it's in recycling OR suspended)
 			//and next_bill_date is in the past, AND subscription is not suspended as per subscriptionSuspend.
 			if( $collectionItem['active'] && !$collectionItem['run_next_iteration'] &&
-			(strtotime($collectionItem['next_bill_date']) < time()) &&
-			( is_null($turnOnDate) || (!is_null($turnOnDate) && (strtotime($turnOnDate) < time())) )
-			)
+				(strtotime($collectionItem['next_bill_date']) < time())
+			  )
 			{
 				$recipientEmail = $collectionItem->getConfigData('email_id');
 				$description = "This subscription has now become invalid.";
@@ -165,14 +134,13 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$recyclingItem->setStatus('cancelled');
 				$recyclingItem->save();
 				
-				
 				continue;
 			}
 
 			//################################################################
 			//############ Implement last ran for each subscription ##########
 			//############ so that same subscription does not get run every single cron job..... (see the if statement below!)
-			if(		$collectionItem['active'] && $collectionItem['run_next_iteration'] &&
+			if(	$collectionItem['active'] && $collectionItem['run_next_iteration'] &&
 			($collectionItem['num_of_iterations_ran'] < $collectionItem['num_of_iterations'] )&&
 			(strtotime($collectionItem['next_bill_date']) < time())
 			)
