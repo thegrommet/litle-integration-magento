@@ -122,6 +122,10 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
     	if ($var !==Null){
     		$block->setActive($var);
     	}
+    	$var = $this->getRequest()->getParam('doNext');
+    	if ($var === '1'){
+    		$block->doNextIteration();
+    	}
     	$amount = $this->getRequest()->getParam('amount');
     	$period = $this->getRequest()->getParam('billingPeriod');
     	$cycles = $this->getRequest()->getParam('billingCycles');

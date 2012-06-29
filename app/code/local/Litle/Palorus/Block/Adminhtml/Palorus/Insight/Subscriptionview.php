@@ -76,9 +76,13 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	
     	$resumeButton = $this->getLayout()->createBlock('adminhtml/widget_button')
     	->setData(array(
-    	    	                    'id'      => 'resume_button',
-    	    	                    'label'   => Mage::helper('sales')->__('Resume Subscription'),
-    	    	                    'class'   => 'save',
+    	    	            'id'      => 'resume_button',
+    	    	            'label'   => Mage::helper('sales')->__('Resume Subscription'),
+    	    	            'class'   => 'save',
+    						'onclick' => 'var r = confirm(\'Are you sure you want to run the next iteration?\');
+    						if(r==true){
+    	                    setLocation(\''.$this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $this->getSubscriptionId(),'doNext'=>'1')).'\')
+    	                    }'
     	));
     	$this->setChild('resume_button', $resumeButton);
     	 
@@ -108,6 +112,10 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	
     
     	return parent::_prepareLayout();
+    }
+    
+    public function doNextIteration(){
+    	$this->setRunNext('1');
     }
     
     public function suspendSubscription($skips){
@@ -305,6 +313,13 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      
      public function getCronId(){
      	return $this->getSubscriptionData('next_bill_date');
+     }
+     
+     public function setRunNext($var){
+     	$collection = $this->getSubcriptionRow();
+     	foreach ($collection as $order){
+     		$order->setRunNextIteration($var)->save();
+     	}
      }
      
      public function dollarFormat($num){
