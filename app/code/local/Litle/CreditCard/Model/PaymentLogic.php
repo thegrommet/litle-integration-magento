@@ -456,7 +456,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			if( isset($litleResponse))
 			{
 				$litleResponseCode = XMLParser::getNode($litleResponse,'response');
-				if($litleResponseCode != "000")
+				if($litleResponseCode = "000")
 				{
 					if(($litleResponseCode === "362") && Mage::helper("creditcard")->isStateOfOrderEqualTo($payment->getOrder(), Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE))
 					{
@@ -478,11 +478,14 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						
 						if( $ordersource === "recurring" )
 						{
+							$nextRecycleTime = XMLParser::getNode($litleResponse,'nextRecycleTime');
+							$recycleAdviceEnd = XMLParser::getNode($litleResponse,'recycleAdviceEnd');
+							//$shouldRecycleDateBeRead = (empty($nextRecycleTime) && empty($recycleAdviceEnd)) ? false : true;
 							$subscriptionSingleton = Mage::getSingleton('palorus/subscription');
 							//$subscriptionSingleton->setRecycleNextRunDate((time()+(2 * 24 * 60 * 60)));
 							$subscriptionSingleton->setRecycleNextRunDate(XMLParser::getNode($litleResponse,'nextRecycleTime'));
 							$subscriptionSingleton->setRecycleAdviceEnd(XMLParser::getNode($litleResponse,'recycleAdviceEnd'));
-							$subscriptionSingleton->setShouldRecycleDateBeRead(true);
+							$subscriptionSingleton->setShouldRecycleDateBeRead(false);
 						}
 						
 						if($isSale)
