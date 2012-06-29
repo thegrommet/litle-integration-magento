@@ -13,7 +13,6 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionhome extends Mag
 	}
 
 	private function getSubcription(){
-		$subscriptionId = $this->getSubscriptionId();
 		return Mage::getModel('palorus/subscription')->getCollection();
 	}
 
