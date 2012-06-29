@@ -175,7 +175,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     
     private function getRecyclingRow(){
     	$subscriptionId = $this->getSubscriptionId();
-    	return Mage::getModel('palorus/recycling')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
+    	return Mage::getModel('palorus/recycling')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId)->addAttributeToSort('recycling_id', 'DESC');
     }
     
     public function getSubscriptionName()
@@ -197,7 +197,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      }
      
      public function getRecyclingData(string $field){
-    	$collection =$this->getRecyclingRow();
+    	$collection = $this->getRecyclingRow();
     	foreach ($collection as $order){
     		$row = $order->getData();
     		return $row[$field];
@@ -208,7 +208,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      	$runNextIteration = $this->getSubscriptionData('run_next_iteration');
      	$active = $this->getSubscriptionData('active');
      	$recycleStatus = $this->getRecyclingData('status');
-     	if(!$runNextIteration && $active && $recycleStatus !== Null){
+     	if(!$runNextIteration && $active && $recycleStatus === "waiting"){
      		return "Yes";
      	}else{
      		return "No";

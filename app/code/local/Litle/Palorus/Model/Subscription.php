@@ -349,7 +349,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$recyclingModel = Mage::getModel('palorus/recycling');
 		$status = "waiting";
 		if( $this->recycleAdviceEnd && $nextRunDate == "" ){
-			// TODO :  Set subscription as inactive ! 
 			$status = "cancelled";
 			$recipientEmail = $collectionItem->getConfigData('email_id');
 			$description = "All payment recycle patterns have been exhausted and the customer still has not been successfully charged.";
@@ -388,45 +387,41 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	
 	public function notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $addressToSendTo, $description,$title)
 	{
-// 		$emailTemplate  = Mage::getModel('core/email_template')->loadDefault('custom_email_template1');
+		$emailTemplate  = Mage::getModel('core/email_template')->loadDefault('custom_email_template1');
 				
-// 		//Create an array of variables to assign to template
+		//Create an array of variables to assign to template
 // 		$emailTemplateVariables = array();
 // 		$emailTemplateVariables['myvar1'] = $originalOrderId;
 // 		$emailTemplateVariables['myvar2'] = $customerId;
 // 		$emailTemplateVariables['myvar3'] = $productId;
 // 		$emailTemplateVariables['myvar4'] = $subscriptionId;
-				
-// 		$emailTemplate->setSenderName('Litle & Co.');
-// 		$emailTemplate->setSenderEmail('sdksupport@litle.com');
-// 		$emailTemplate->setTemplateSubject($title);
-// 		//$ret = $collectionItem->getConfigData('email_id');
-// 		//Mage::log($ret);
-				
-		$emailTemplate->send($addressToSendTo,'Admin', $emailTemplateVariables);
-				
-		$notificationModel = Mage::getModel('adminnotification/inbox');
-		$i =0;
-		while ( $i < 25 )
-		{
-		$notification="Invalid subscription Email";
-		$notificationItemData = array(
-			 							"severity" => 2,
-			 							"date_added" => time(),
-			 							"title" => $title,
-			 							"description" => $description,
-			 							"url" => getRowUrl($subscriptionId),
-			 							"is_read" => false,
-			 							"is_remove" => false		
-									);
-		$i++;
-		$notificationModel->setData($notificationItemData)->save();
-		}
+// 		$link = Mage::helper("adminhtml")->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $subscriptionId));
+// 		$emailTemplateVariables['myvar5'] = $link;
+// 		$storeId = Mage::getStoreConfig('trans_email/ident_general/email');
+// 		$senderName = Mage::getStoreConfig('trans_email/ident_general/name');;
 		
-	}
-	
-	public function getRowUrl($subscriptionId)
-	{
-		return $this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $subscriptionId));
+		$orderModel = Mage::getModel("sales/order");
+		$initialOrderObj = $orderModel->load($originalOrderId);
+		$orderId = $initialOrderObj['increment_id'];
+		Mage::log(Mage::helper("adminhtml")->getUrl('sales_order_/view', array('order_id' => $orderId)));
+		
+// 		$emailTemplate->setSenderName($senderName);
+// 		$emailTemplate->setSenderEmail($storeId);
+// 		$emailTemplate->setTemplateSubject($title);		
+// 		$emailTemplate->send($addressToSendTo,'Admin', $emailTemplateVariables);
+		
+// 		$notificationModel = Mage::getModel('adminnotification/inbox');
+// 		$notification="Invalid subscription Email";
+// 		$notificationItemData = array(
+// 			 							"severity" => 2,
+// 			 							"date_added" => time(),
+// 			 							"title" => $title,
+// 			 							"description" => $description,
+// 			 							"url" => $this->getUrl('palorus/adminhtml_myform/subscriptionview/'),
+// 			 							"is_read" => false,
+// 			 							"is_remove" => false		
+// 									);
+// 		$notificationModel->setData($notificationItemData)->save();
+		
 	}
 }
