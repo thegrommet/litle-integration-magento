@@ -192,11 +192,14 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		$purchases = Mage::helper('creditcard')->uniqueCreditCard(Mage::helper('customer')->getCustomer()->getEntityId());
 
 		$retArray = array();
-		$retArray["type"] = $purchases[$vaultIndex - 1]['type'];
-		$retArray["litleToken"] = $purchases[$vaultIndex - 1]['token'];
-		$retArray["cardValidationNum"] = $payment->getCcCid();
-		$payment->setCcLast4(substr($retArray["litleToken"], -4));
-		$payment->setCcType($retArray["type"]);
+		if( $purchases[$vaultIndex - 1]['token'] != NULL )
+		{
+			$retArray["type"] = $purchases[$vaultIndex - 1]['type'];
+			$retArray["litleToken"] = $purchases[$vaultIndex - 1]['token'];
+			$retArray["cardValidationNum"] = $payment->getCcCid();
+			$payment->setCcLast4(substr($retArray["litleToken"], -4));
+			$payment->setCcType($retArray["type"]);
+		}
 		return $retArray;
 	}
 	
