@@ -39,7 +39,7 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 	}
 	
 	public function testGetStatus_NullInitialStatus_SubscriptionPaymentInactive_NotASubscriptionProduct() {
- 		$store = Mage::getModel("core/store")->load(1);
+ 		$store = Mage::getModel("core/store")->load(Mage_Core_Model_App::ADMIN_STORE_ID);
 		
 		$newproduct = new Litle_Subscription_Model_Product();
  		$newproduct->setTypeId('simple');
@@ -55,7 +55,7 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 	}
 	
 	public function testGetStatus_SubscriptionPaymentActive_NotASubscriptionProduct() {
-		$store = Mage::getModel("core/store")->load(1);
+		$store = Mage::getModel("core/store")->load(Mage_Core_Model_App::ADMIN_STORE_ID);
 	
 		$newproduct = new Litle_Subscription_Model_Product();
 		$newproduct->setTypeId('simple');
@@ -71,7 +71,7 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 	}
 	
 	public function testGetStatus_SubscriptionPaymentActive_YesASubscriptionProduct() {
-		$store = Mage::getModel("core/store")->load(1);
+		$store = Mage::getModel("core/store")->load(Mage_Core_Model_App::ADMIN_STORE_ID);
 	
 		$newproduct = new Litle_Subscription_Model_Product();
 		$newproduct->setTypeId('simple');
