@@ -24,7 +24,7 @@
 		<resources>
 			<litlesubscription_setup>
 				<setup>
-					<module>Litle_LEcheck</module>
+					<module>Litle_Subscription_Module</module>
 				</setup>
 				<connection>
 					<use>core_setup</use>

@@ -189,11 +189,18 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	}
     }
     
+    protected function setSubscriptionId($id){
+    	$this->subscriptionId = $id;
+    }
+    
      public function getSubscriptionId(){
-     	$url = $this->helper("core/url")->getCurrentUrl();
-     	$stringAfterSubscriptionId = explode('subscription_id/', $url);
-     	$stringBeforeKey = explode('/', $stringAfterSubscriptionId[1]);
-     	return $stringBeforeKey[0];
+     	if ($this->subscriptionId === Null){
+     		$url = $this->helper("core/url")->getCurrentUrl();
+     		$stringAfterSubscriptionId = explode('subscription_id/', $url);
+     		$stringBeforeKey = explode('/', $stringAfterSubscriptionId[1]);
+     		return $stringBeforeKey[0];
+     	}else 
+     		return $this->subscriptionId;
      }
      
      public function getRecyclingData(string $field){

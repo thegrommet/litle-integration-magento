@@ -32,7 +32,7 @@ require_once(getenv('MAGENTO_HOME')."/app/code/core/Mage/Adminhtml/Block/Templat
 require_once(getenv('MAGENTO_HOME')."/app/code/core/Mage/Adminhtml/Block/Widget/Container.php");
 require_once(getenv('MAGENTO_HOME')."/app/code/core/Mage/Adminhtml/Block/Sales/Transactions/Detail.php");
 require_once(getenv('MAGENTO_HOME')."/app/code/local/Litle/Palorus/Block/Adminhtml/Transaction.php");
-require_once(getenv('MAGENTO_HOME')."/app/code/local/Litle/Palorus/Block/Adminhtml/palorus/Insight/Subscriptionview.php");
+require_once(getenv('MAGENTO_HOME')."/app/code/local/Litle/Palorus/Block/Adminhtml/Palorus/Insight/Subscriptionview.php");
 
 class SubscriptionViewTest extends PHPUnit_Framework_TestCase
 {
@@ -40,14 +40,82 @@ class SubscriptionViewTest extends PHPUnit_Framework_TestCase
 	
 	protected function setUp()
 	{
+		Mage::app('default');
 	}
 		
+	protected function tearDown(){
+	}
 		
-
-	public function testAccountUpdater1()
-	{
+	public function testDollarFormat(){
+		$subView = new Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview();
+		$this->assertEquals($subView->dollarFormat(1000),10.00);
 	}
 	
+	public function testSetRunNext(){
+		$subView = new Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview();
+		$subscription = Mage::getModel('palorus/subscription')->setRunNextIteration('2')->save();
+		$subView->setSubscriptionId($subscription->getId());
+		$subView->setRunNext('3');
+		$this->assertEquals('3',Mage::getModel('palorus/subscription')->load($subscription->getId())->getRunNextIteration());
+	}
+	
+// 	public function testSetNextBillDate(){
+// 		$subView = new Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview();
+// 		$subscription = Mage::getModel('palorus/subscription')->setNextBillDate('2015-15-15 00:00:00')->save();
+// 		$subView->setSubscriptionId($subscription->getId());
+// 		$subView->setNextBillDate('2015-16-16 00:00:00');
+// 		$temp = $subView->getNextBillDate();
+// 		//echo Mage::getModel('palorus/subscription')->load($subscription->getId())->getNextBillDate();
+// 		//$this->assertEquals('2015-16-16 00:00:00',Mage::getModel('palorus/subscription')->load($subscription->getId())->getNextBillDate());
+// 	}
+	
+// 	public function testGetNumberOfIterations(){
+// 		$subView = new Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview();
+// 		$subscription = Mage::getModel('palorus/subscription')->setNumOfIterationsRan('2')->save();
+// 		echo $subscription->getNumOfIterationsRan();
+// 		$subView->setSubscriptionId($subscription->getId());
+// 		echo $subView->getNumOfIterationsRan();
+// 		//$this->assertEquals('3',Mage::getModel('palorus/subscription')->load($subscription->getId())->getRunNextIteration());
+// 	}
+
+	
+	
+//	public function testSuspendSubscription()
+//	{
+		//Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
+//		$subView = new Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview();
+//// 		Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
+// 		$element = $subView->suspendSubscription(5);
+		
+// 		echo $element;
+	//}
+	
+// 	public function testSuspendSubscription2()
+// 	{
+// 		//Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
+// 		$subView = new Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview();
+// 		Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
+// 		$element = $subView->suspendSubscription(5);
+	
+// 		echo $element;
+// 	}
+//  	public function testShowResumeButton(){
+// 		$subView = new Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview();
+// 		$subscription = Mage::getModel('palorus/subscription')->setRunNextIteration('1')->save();
+// 		$subView->setSubscriptionId($subscription->getId());
+// 		$this->assertEquals('3',Mage::getModel('palorus/subscription')->load($subscription->getId())->getRunNextIteration());
+    	
+// 		$run = $this->getSubscriptionData('run_next_iteration');
+//     	$status = $this->getRecyclingData('status');
+//     	return (!$run && ($status === 'cancelled' || $status === Null));
+//     }
+    
+	public function testDoNextIteration(){
+		$subView = new Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview();
+		$subscription = Mage::getModel('palorus/subscription')->setRunNextIteration('1')->save();
+		$subView->setSubscriptionId($subscription->getId());
+		$this->setRunNext('1');
+	}
 	
 	
 }

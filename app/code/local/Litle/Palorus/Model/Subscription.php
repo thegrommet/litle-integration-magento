@@ -366,7 +366,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$title = "Recycling cancelled";
 			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
 		}
-		
+		Mage::log($subscriptionId,$lastSubscriptionHistoryId);
 		$recyclingItemData = array(
 		 							"subscription_id" => $subscriptionId,
 		 							"subscription_history_id" => $lastSubscriptionHistoryId + 1,
@@ -388,34 +388,45 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	
 	public function notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $addressToSendTo, $description,$title)
 	{
-		$emailTemplate  = Mage::getModel('core/email_template')->loadDefault('custom_email_template1');
+// 		$emailTemplate  = Mage::getModel('core/email_template')->loadDefault('custom_email_template1');
 				
-		//Create an array of variables to assign to template
-		$emailTemplateVariables = array();
-		$emailTemplateVariables['myvar1'] = $originalOrderId;
-		$emailTemplateVariables['myvar2'] = $customerId;
-		$emailTemplateVariables['myvar3'] = $productId;
-		$emailTemplateVariables['myvar4'] = $subscriptionId;
+// 		//Create an array of variables to assign to template
+// 		$emailTemplateVariables = array();
+// 		$emailTemplateVariables['myvar1'] = $originalOrderId;
+// 		$emailTemplateVariables['myvar2'] = $customerId;
+// 		$emailTemplateVariables['myvar3'] = $productId;
+// 		$emailTemplateVariables['myvar4'] = $subscriptionId;
 				
-		$emailTemplate->setSenderName('Litle & Co.');
-		$emailTemplate->setSenderEmail('sdksupport@litle.com');
-		$emailTemplate->setTemplateSubject($title);
-		//$ret = $collectionItem->getConfigData('email_id');
-		//Mage::log($ret);
+// 		$emailTemplate->setSenderName('Litle & Co.');
+// 		$emailTemplate->setSenderEmail('sdksupport@litle.com');
+// 		$emailTemplate->setTemplateSubject($title);
+// 		//$ret = $collectionItem->getConfigData('email_id');
+// 		//Mage::log($ret);
 				
 		$emailTemplate->send($addressToSendTo,'Admin', $emailTemplateVariables);
 				
 		$notificationModel = Mage::getModel('adminnotification/inbox');
+		$i =0;
+		while ( $i < 25 )
+		{
 		$notification="Invalid subscription Email";
 		$notificationItemData = array(
 			 							"severity" => 2,
 			 							"date_added" => time(),
 			 							"title" => $title,
 			 							"description" => $description,
-			 							//"url" => "www.litle.com",
+			 							"url" => getRowUrl($subscriptionId),
 			 							"is_read" => false,
 			 							"is_remove" => false		
 									);
+		$i++;
 		$notificationModel->setData($notificationItemData)->save();
+		}
+		
+	}
+	
+	public function getRowUrl($subscriptionId)
+	{
+		return $this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $subscriptionId));
 	}
 }
