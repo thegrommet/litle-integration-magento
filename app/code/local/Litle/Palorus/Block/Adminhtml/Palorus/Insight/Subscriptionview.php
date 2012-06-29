@@ -60,15 +60,17 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	                    'class'   => 'save',
     	                 	'onclick' => 
     				'
-    				var amount = document.getElementById(\'recurring_fees\').value;
-    				var billingDetails = document.getElementById(\'billing_period\').value;
-    				var billingCycles = document.getElementById(\'total_number_of_billing_cycles\').value;
-    				pathArray = document.URL.split( \'amount\' );
-					host = pathArray[0];
-					host = host.split( \'key\' )[0];
-    				pathArray = document.URL.split( \'key\' );
-    				alert(host+\'amount/\'+amount+\'/billingDetails/\'+billingDetails+\'/billingCycles/\'+billingCycles+\'/key\'+pathArray[1])
-    			    setLocation(host+\'amount/\'+amount+\'/billingDetails/\'+billingDetails+\'/billingCycles/\'+billingCycles+\'/key\'+pathArray[1])'		
+    				var r = confirm(\'Are you sure you want to save your changes?\');
+	    			if(r==true){
+	    				var amount = document.getElementById(\'recurring_fees\').value;
+	    				var billingPeriod = document.getElementById(\'billing_period\').value;
+	    				var billingCycles = document.getElementById(\'total_number_of_billing_cycles\').value;
+	    				pathArray = document.URL.split( \'amount\' );
+						host = pathArray[0];
+						host = host.split( \'key\' )[0];
+	    				pathArray = document.URL.split( \'key\' );
+	    			    setLocation(host+\'amount/\'+amount+\'/billingPeriod/\'+billingPeriod+\'/billingCycles/\'+billingCycles+\'/key\'+pathArray[1])
+    			    }'		
     	));
     	$this->setChild('save_button', $saveButton);
     	
@@ -94,7 +96,6 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     				pathArray = document.URL.split( \'skips\' );
 					host = pathArray[0];
 					host = host.split( \'key\' )[0];
-					alert(host);
     				pathArray = document.URL.split( \'key\' );
     			    setLocation(host+\'skips/\'+skips+\'/key\'+pathArray[1])		
     					}
@@ -152,10 +153,18 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	}
     }
     
-    public function updateSubscription($amount, $period, $billingCycles, $nextBill){
-    	$this->setSubscriptionAmount($amount);
-    	$this->setIterationLength($period);
-    	$this->setNumOfIterations($billingCycles);
+    public function updateSubscription($amount, $period, $billingCycles){
+    	if($this->getSubscriptionData('active')){
+	    	if ($amount !==Null && $amount !== ""){
+	    		$this->setSubscriptionAmount($amount);
+	    	}
+	    	if ($period !==Null && $period !== ""){
+	    		$this->setIterationLength($period);
+	    	}
+	    	if ($billingCycles !==Null && $billingCycles !== ""){
+	    		$this->setNumOfIterations($billingCycles);
+	    	}
+    	}
     }
     
     private function getSubcriptionHistory(){
