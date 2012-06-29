@@ -169,35 +169,12 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 				
 				$subscriptionSingleton = Mage::getSingleton('palorus/subscription');
 				if( $subscriptionSingleton->getShouldRecycleDateBeRead() )
-					$subscriptionSingleton->saveDataInSubscriptionHistory($subscriptionId);
+					$subscriptionSingleton->saveDataInSubscriptionHistory($initialOrderId, $customerId, $productId, $subscriptionId);
 				
 				$subscriptionSingleton->setShouldRecycleDateBeRead( false );
 			}
 		}
 		return array("success" => $success, "order_id" => $orderId);
-	}
-	
-	public function saveDataInSubscriptionHistory($subscriptionId, $nextRunDate)
-	{
-		$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
-		$subsHistoryForLastSubsHistIdCollection = $subscriptionHistoryModel->getCollection();
-		$subsHistoryForLastSubsHistIdCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(subscription_history_id) as subscription_history_id');
-			
-		$lastSubscriptionHistoryId = 0;
-		foreach($subsHistoryForLastSubsHistIdCollection as $subscriptionHistoryCollectionItem)
-		{
-			$lastSubscriptionHistoryId = $subscriptionHistoryCollectionItem['subscription_history_id'];
-		}
-	
-		$recyclingModel = Mage::getModel('palorus/recycling');
-		$recyclingItemData = array(
-							 							"subscription_id" => $subscriptionId,
-							 							"subscription_history_id" => $lastSubscriptionHistoryId,
-							 							"successful" => false,
-							 							"status" => "waiting",
-							 							"to_run_date" => $nextRunDate		
-		);
-		$recyclingModel->setData($recyclingItemData)->save();
 	}
 	
 	public function syncSubscriptionIdWithHistory()
