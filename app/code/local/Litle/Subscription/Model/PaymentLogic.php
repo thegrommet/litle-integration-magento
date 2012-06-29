@@ -99,8 +99,9 @@ class Litle_Subscription_Model_PaymentLogic extends Litle_CreditCard_Model_Payme
 			{
 				$product = Mage::helper("catalog/product")->getProduct($item->getId(), null);
 				$attributeValue = $product->getAttributeText('litle_subscription');        	
-				if( $attributeValue === "Yes" )
+				if( $attributeValue === "Yes" ) {
 					$observer->getEvent()->getCollection()->removeItemBykey($key);
+				}
 			}	
 		}
 	}

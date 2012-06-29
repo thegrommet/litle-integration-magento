@@ -98,7 +98,7 @@
 				<cctypes>AE,VI,MC,DI</cctypes>
 				<payment_action>authorize</payment_action>
 				<allowspecific>0</allowspecific>
-				<paypage_enabled>1</paypage_enabled>
+				<paypage_enable>1</paypage_enable>
 			</creditcard>
 		</payment>
 	</default>

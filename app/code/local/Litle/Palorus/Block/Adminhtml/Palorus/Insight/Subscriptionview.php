@@ -133,7 +133,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	return Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
     }
 
-    private function getSubscriptionData(string $field)
+    private function getSubscriptionData($field)
     {
     	$collection = $this->getSubcriptionRow();
     	foreach ($collection as $order){
@@ -158,7 +158,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     
     private function getSubcriptionHistory(){
     	$subscriptionId = $this->getSubscriptionId();
-    	return Mage::getModel('palorus/subscriptionHistory')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId)->addAttributeToSort('subscription_history_id', 'DESC');
+    	return Mage::getModel('palorus/subscriptionHistory')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
     }
     
     public function getSubscriptionHistoryTable()
@@ -175,7 +175,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     
     private function getRecyclingRow(){
     	$subscriptionId = $this->getSubscriptionId();
-    	return Mage::getModel('palorus/recycling')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId)->addAttributeToSort('recycling_id', 'DESC');
+    	return Mage::getModel('palorus/recycling')->getCollection()->addFieldToFilter('subscription_id',$subscriptionId);
     }
     
     public function getSubscriptionName()
@@ -189,15 +189,22 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	}
     }
     
+    protected function setSubscriptionId($id){
+    	$this->subscriptionId = $id;
+    }
+    
      public function getSubscriptionId(){
-     	$url = $this->helper("core/url")->getCurrentUrl();
-     	$stringAfterSubscriptionId = explode('subscription_id/', $url);
-     	$stringBeforeKey = explode('/', $stringAfterSubscriptionId[1]);
-     	return $stringBeforeKey[0];
+     	if ($this->subscriptionId === Null){
+     		$url = $this->helper("core/url")->getCurrentUrl();
+     		$stringAfterSubscriptionId = explode('subscription_id/', $url);
+     		$stringBeforeKey = explode('/', $stringAfterSubscriptionId[1]);
+     		return $stringBeforeKey[0];
+     	}else 
+     		return $this->subscriptionId;
      }
      
-     public function getRecyclingData(string $field){
-    	$collection = $this->getRecyclingRow();
+     public function getRecyclingData($field){
+    	$collection =$this->getRecyclingRow();
     	foreach ($collection as $order){
     		$row = $order->getData();
     		return $row[$field];
@@ -208,7 +215,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      	$runNextIteration = $this->getSubscriptionData('run_next_iteration');
      	$active = $this->getSubscriptionData('active');
      	$recycleStatus = $this->getRecyclingData('status');
-     	if(!$runNextIteration && $active && $recycleStatus === "waiting"){
+     	if(!$runNextIteration && $active && $recycleStatus !== Null){
      		return "Yes";
      	}else{
      		return "No";

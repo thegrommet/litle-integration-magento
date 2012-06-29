@@ -117,14 +117,14 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	public function assignData($data)
 	{
 		$info = $this->getInfoInstance();
-		if( $this->getConfigData('paypage_enabled') == "1")
+		if( $this->getConfigData('paypage_enable') == "1")
 		{
 			if (!($data instanceof Varien_Object)) {
 				$data = new Varien_Object($data);
 			}
 
 			
-			$info->setAdditionalInformation('paypage_enabled', $data->getPaypageEnabled());
+			$info->setAdditionalInformation('paypage_enable', $data->getPaypageEnabled());
 			$info->setAdditionalInformation('paypage_registration_id', $data->getPaypageRegistrationId());
 			$info->setAdditionalInformation('paypage_order_id', $data->getOrderId());
 			$info->setAdditionalInformation('cc_vaulted', $data->getCcVaulted());
@@ -192,11 +192,14 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		$purchases = Mage::helper('creditcard')->uniqueCreditCard(Mage::helper('customer')->getCustomer()->getEntityId());
 
 		$retArray = array();
-		$retArray["type"] = $purchases[$vaultIndex - 1]['type'];
-		$retArray["litleToken"] = $purchases[$vaultIndex - 1]['token'];
-		$retArray["cardValidationNum"] = $payment->getCcCid();
-		$payment->setCcLast4(substr($retArray["litleToken"], -4));
-		$payment->setCcType($retArray["type"]);
+		if( $purchases[$vaultIndex - 1]['token'] != NULL )
+		{
+			$retArray["type"] = $purchases[$vaultIndex - 1]['type'];
+			$retArray["litleToken"] = $purchases[$vaultIndex - 1]['token'];
+			$retArray["cardValidationNum"] = $payment->getCcCid();
+			$payment->setCcLast4(substr($retArray["litleToken"], -4));
+			$payment->setCcType($retArray["type"]);
+		}
 		return $retArray;
 	}
 	
@@ -207,7 +210,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		if ($vaultIndex > 0){
 			$payment_hash['token'] = $this->getTokenInfo($payment);
 		}
-		elseif ($info->getAdditionalInformation('paypage_enabled') == "1" ){
+		elseif ($info->getAdditionalInformation('paypage_enable') == "1" ){
 			$payment_hash['paypage'] = $this->getPaypageInfo($payment);
 		}
 		else{
@@ -456,7 +459,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			if( isset($litleResponse))
 			{
 				$litleResponseCode = XMLParser::getNode($litleResponse,'response');
-				if($litleResponseCode = "000")
+				if($litleResponseCode !== "000")
 				{
 					if(($litleResponseCode === "362") && Mage::helper("creditcard")->isStateOfOrderEqualTo($payment->getOrder(), Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE))
 					{
