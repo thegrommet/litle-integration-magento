@@ -54,7 +54,7 @@ class Litle_Subscription_Model_PaymentLogic_Test extends PHPUnit_Framework_TestC
 		$this->assertEquals("1",$cut->getConfigData("active"));
 	}
 	
-	public function testassignData() {
+	public function testAssignData() {
 		$cut = new Litle_Subscription_Model_PaymentLogic();
 		$data = new Varien_Object();
 		$data->setLitletoken("a");
@@ -69,5 +69,42 @@ class Litle_Subscription_Model_PaymentLogic_Test extends PHPUnit_Framework_TestC
 		$this->assertEquals("b",$info->getAdditionalInformation("litletokentype"));
 		$this->assertEquals("c",$info->getAdditionalInformation("litletokenexpdate"));
 		$this->assertEquals("d",$info->getAdditionalInformation("litleissubscription"));
+	}
+	
+	public function testCreditCardOrPaypageOrToken_TokenSet() {
+		$cut = new Litle_Subscription_Model_PaymentLogic();
+		$data = new Varien_Object();
+		$data->setLitletoken("1234567890123456");
+		$data->setLitletokentype("VI");
+		$data->setLitletokenexpdate("0415");
+		$info = new Mage_Payment_Model_Info();
+		$cut['info_instance'] = $info;
+		$info = $cut->getInfoInstance();
+		$cut->assignData($data);
+		
+		$payment = new Mage_Sales_Model_Order_Payment();
+		$paymentHash = $cut->creditCardOrPaypageOrToken($payment);
+		$this->assertEquals("1234567890123456",$paymentHash['token']['litleToken']);
+		$this->assertEquals("VI",$paymentHash['token']['type']);
+		$this->assertEquals("0415",$paymentHash['token']['expDate']);
+		$this->assertEquals("3456",$payment->getCcLast4());
+		$this->assertEquals("VI",$payment->getCcType());
+	}
+	
+	public function testCreditCardOrPaypageOrToken_TokenNotSet() {
+		$cut = new Litle_Subscription_Model_PaymentLogic();
+		$data = new Varien_Object();
+		$info = new Mage_Payment_Model_Info();
+		$cut['info_instance'] = $info;
+		$info = $cut->getInfoInstance();
+		$cut->assignData($data);
+		
+		$payment = new Mage_Sales_Model_Order_Payment();
+		$paymentHash = $cut->creditCardOrPaypageOrToken($payment);
+		$this->assertNull($paymentHash['token']['litleToken']);
+		$this->assertNull($paymentHash['token']['type']);
+		$this->assertNull($paymentHash['token']['expDate']);
+		$this->assertNull($payment->getCcLast4());
+		$this->assertNull($payment->getCcType());
 	}
 }
