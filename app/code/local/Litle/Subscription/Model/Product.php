@@ -36,13 +36,10 @@ class Litle_Subscription_Model_Product extends Mage_Catalog_Model_Product
             $this->setData('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         }
         
-        //Mage::log("Subscription Payment Model: " . Mage::getStoreConfig('payment/Subscription/active'));
         if(Mage::getStoreConfig('payment/Subscription/active') == 0)
         {
 			$product = Mage::helper("catalog/product")->getProduct($this->getId(), null);
 			$attributeValue = $product->getAttributeText('litle_subscription');        	
-	        //Mage::log("Product ID: " . $this->getId());
-			//Mage::log("litle subscription value: " . $attributeValue);
 			if( $attributeValue === "Yes" )
 				return false;
         }

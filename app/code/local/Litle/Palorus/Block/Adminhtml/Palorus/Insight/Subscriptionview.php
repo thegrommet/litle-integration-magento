@@ -133,7 +133,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	return Mage::getModel('palorus/subscription')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
     }
 
-    private function getSubscriptionData(string $field)
+    private function getSubscriptionData($field)
     {
     	$collection = $this->getSubcriptionRow();
     	foreach ($collection as $order){
@@ -203,7 +203,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      		return $this->subscriptionId;
      }
      
-     public function getRecyclingData(string $field){
+     public function getRecyclingData($field){
     	$collection =$this->getRecyclingRow();
     	foreach ($collection as $order){
     		$row = $order->getData();
