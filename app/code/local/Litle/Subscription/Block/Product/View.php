@@ -43,12 +43,16 @@ class Litle_Subscription_Block_Product_View extends Mage_Catalog_Block_Product_V
 	{
 		$parentRet = parent::getTierPriceHtml($product);
 		$product1 = $this->getProduct();
-		$litle_subscription = $product1->getAttributeText("litle_subscription");
+		return Litle_Subscription_Block_Product_View::_getTierPriceHtml($product1, $parentRet);
+	}
+	
+	static function _getTierPriceHtml($product, $parentRet) {
+		$litle_subscription = $product->getAttributeText("litle_subscription");
 		if($litle_subscription === "Yes")
 		{
-			$litle_subs_amount_per_itr = $product1->getLitleSubsAmountPerItr();
-			$litle_subs_num_of_itrs = $product1->getLitleSubsNumOfItrs();
-			$litle_subs_itr_len = $product1->getAttributeText("litle_subs_itr_len");
+			$litle_subs_amount_per_itr = $product->getLitleSubsAmountPerItr();
+			$litle_subs_num_of_itrs = $product->getLitleSubsNumOfItrs();
+			$litle_subs_itr_len = $product->getAttributeText("litle_subs_itr_len");
 			$iterationUnit = "";
 			if($litle_subs_itr_len === "Daily")
 			{
@@ -74,10 +78,9 @@ class Litle_Subscription_Block_Product_View extends Mage_Catalog_Block_Product_V
 			{
 				$iterationUnit = $litle_subs_num_of_itrs;
 			}
-			
-			
+				
 			$litleAdditions = "Subscription amount: $" . round($litle_subs_amount_per_itr,2). " " . $litle_subs_itr_len . " for " . $iterationUnit;
-			return $litleAdditions . $parentRet;	
+			return $litleAdditions . $parentRet;
 		}
 		return $parentRet;
 	}
