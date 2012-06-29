@@ -456,7 +456,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			if( isset($litleResponse))
 			{
 				$litleResponseCode = XMLParser::getNode($litleResponse,'response');
-				if($litleResponseCode === "000")
+				if($litleResponseCode != "000")
 				{
 					if(($litleResponseCode === "362") && Mage::helper("creditcard")->isStateOfOrderEqualTo($payment->getOrder(), Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE))
 					{
@@ -478,26 +478,11 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						
 						if( $ordersource === "recurring" )
 						{
-							$nextRecycleTime = XMLParser::getNode($litleResponse,'nextRecycleTime');
-							$recycleAdviceEnd = XMLParser::getNode($litleResponse,'recycleAdviceEnd');
-							//$shouldRecycleDateBeRead = (empty($nextRecycleTime) && empty($recycleAdviceEnd)) ? false : true;
-							$shouldRecycleDateBeRead = false;
 							$subscriptionSingleton = Mage::getSingleton('palorus/subscription');
 							//$subscriptionSingleton->setRecycleNextRunDate((time()+(2 * 24 * 60 * 60)));
-							$subscriptionSingleton->setRecycleNextRunDate($nextRecycleTime);
-							$subscriptionSingleton->setRecycleAdviceEnd($recycleAdviceEnd);
-							$subscriptionSingleton->setShouldRecycleDateBeRead($shouldRecycleDateBeRead);
-							if($shouldRecycleDateBeRead === false)
-							{
-								$product = Mage::getModel('catalog/product')->load($productId);
-								$subscriptionModel = Mage::getModel('palorus/subscription');
-								$subscriptionItem = $subscriptionModel->load($subscriptionId);
-								$recipientEmail = $subscriptionItem->getSubConfigData('email_id');
-								$description = "You have a failed Txn, and Recycling is disabled for you.";
-								$title = "Failed Txn.";
-								$this->notifyMerchant($payment->getOrder()->getId(), $payment->getOrder()->getCustomerId(), $product, $subscriptionItem, $recipientEmail, $description,$title);
-								Mage::log("sent the notification");
-							}
+							$subscriptionSingleton->setRecycleNextRunDate(XMLParser::getNode($litleResponse,'nextRecycleTime'));
+							$subscriptionSingleton->setRecycleAdviceEnd(XMLParser::getNode($litleResponse,'recycleAdviceEnd'));
+							$subscriptionSingleton->setShouldRecycleDateBeRead(true);
 						}
 						
 						if($isSale)
@@ -574,7 +559,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 				if( $ordersource != "recurring" )
 					$this->populateSubscription($payment);
 				
-				Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse);
+				Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse, $amount);
 				Mage::helper("palorus")->saveVault($payment, $litleResponse, $this->getTokenInfo($payment));
 			}
 		}
@@ -651,7 +636,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			if( $ordersource != "recurring" )
 				$this->populateSubscription($payment);
 			
-			Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse);
+			Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse, $amount);
 			Mage::helper("palorus")->saveVault($payment, $litleResponse);
 		}
 		
@@ -765,47 +750,5 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		$numOfTrialDays = $product->getLitleSubsDaysForTrial();
 		$nextDate =  time() + ($numOfTrialDays * 24 * 60 * 60);
 		return $nextDate;
-	}
-	
-	public function notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $addressToSendTo, $description,$title)
-	{
-// 				$emailTemplate  = Mage::getModel('core/email_template')->loadDefault('custom_email_template1');
-	
-// 				//Create an array of variables to assign to template
-// 				$emailTemplateVariables = array();
-// 				$emailTemplateVariables['myvar1'] = $originalOrderId;
-// 				$emailTemplateVariables['myvar2'] = $customerId;
-// 				$emailTemplateVariables['myvar3'] = $productId;
-// 				$emailTemplateVariables['myvar4'] = $subscriptionId;
-	
-// 				$emailTemplate->setSenderName('Litle & Co.');
-// 				$emailTemplate->setSenderEmail('sdksupport@litle.com');
-// 				$emailTemplate->setTemplateSubject($title);
-// 				//$ret = $collectionItem->getConfigData('email_id');
-// 				//Mage::log($ret);
-	
-// 				$emailTemplate->send('avig@litle.com','Amit Vig', $emailTemplateVariables);
-		Mage::log("inside notify merchant");
-		$notificationModel = Mage::getModel('adminnotification/inbox');
-		$notification="Failed Transaction";
-		$notificationItemData = array(
-				 							"severity" => 2,
-				 							"date_added" => time(),
-				 							"title" => $title,
-				 							"description" => $description,
-		//"url" => "www.litle.com",
-				 							"is_read" => false,
-				 							"is_remove" => false		
-		);
-		$notificationModel->setData($notificationItemData)->save();
-	}
-	
-	public function getSubConfigData($fieldToLookFor, $store = NULL)
-	{
-		$returnFromThisModel = Mage::getStoreConfig('payment/Subscription/' . $fieldToLookFor);
-		if( $returnFromThisModel == NULL )
-		$returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
-		Mage::log($returnFromThisModel);
-		return $returnFromThisModel;
 	}
 }

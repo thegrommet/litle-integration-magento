@@ -37,7 +37,7 @@
 class Litle_Palorus_Helper_Data extends Mage_Core_Helper_Abstract
 {
 
-	public function saveCustomerInsight($payment, $litleResponse) {
+	public function saveCustomerInsight($payment, $litleResponse, $amount) {
 		preg_match('/.*(\d\d\d\d)/', $payment->getCcNumber(), $matches);
 		$last4 = $matches[1];
 		$data = array(
@@ -46,7 +46,7 @@ class Litle_Palorus_Helper_Data extends Mage_Core_Helper_Abstract
 						'order_id' => $payment->getOrder()->getId(),
 						'affluence' => Litle_Palorus_Helper_Data::formatAffluence(XMLParser::getNode($litleResponse,"affluence")),
 						'last' => $last4,
-						'order_amount' => Litle_Palorus_Helper_Data::formatAvailableBalance($amountToPass),
+						'order_amount' => Litle_Palorus_Helper_Data::formatAvailableBalance($amount),
 						'affluence' => Litle_Palorus_Helper_Data::formatAffluence(XMLParser::getNode($litleResponse,"affluence")),
 						'issuing_country' => XMLParser::getNode($litleResponse, 'issuerCountry'),
 						'prepaid_card_type' => Litle_Palorus_Helper_Data::formatPrepaidCardType(XMLParser::getNode($litleResponse, 'prepaidCardType')),

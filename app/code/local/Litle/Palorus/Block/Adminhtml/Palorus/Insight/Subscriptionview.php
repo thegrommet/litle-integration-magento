@@ -52,28 +52,57 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
                     }'
     	));
     	$this->setChild('cancel_button', $cancelButton);
-    	
-    	$activateButton = $this->getLayout()->createBlock('adminhtml/widget_button')
-    	->setData(array(
-    	                    'id'      => 'activate_button',
-    	                    'label'   => Mage::helper('sales')->__('Reactivate Subsctiption'),
-    	                    'class'   => 'save'
-    	));
-    	$this->setChild('activate_button', $activateButton);
-    	
+    	 	
     	$saveButton = $this->getLayout()->createBlock('adminhtml/widget_button')
     	->setData(array(
     	                    'id'      => 'save_button',
     	                    'label'   => Mage::helper('sales')->__('Save Subscription Details'),
-    	                    'class'   => 'save'
+    	                    'class'   => 'save',
+    	                 	'onclick' => 
+    				'
+    				var r = confirm(\'Are you sure you want to save your changes?\');
+	    			if(r==true){
+	    				var amount = document.getElementById(\'recurring_fees\').value;
+	    				var billingPeriod = document.getElementById(\'billing_period\').value;
+	    				var billingCycles = document.getElementById(\'total_number_of_billing_cycles\').value;
+	    				pathArray = document.URL.split( \'amount\' );
+						host = pathArray[0];
+						host = host.split( \'key\' )[0];
+	    				pathArray = document.URL.split( \'key\' );
+	    			    setLocation(host+\'amount/\'+amount+\'/billingPeriod/\'+billingPeriod+\'/billingCycles/\'+billingCycles+\'/key\'+pathArray[1])
+    			    }'		
     	));
     	$this->setChild('save_button', $saveButton);
+    	
+    	$resumeButton = $this->getLayout()->createBlock('adminhtml/widget_button')
+    	->setData(array(
+    	    	                    'id'      => 'resume_button',
+    	    	                    'label'   => Mage::helper('sales')->__('Resume Subscription'),
+    	    	                    'class'   => 'save',
+    	));
+    	$this->setChild('resume_button', $resumeButton);
+    	 
     	
     	$suspendButton = $this->getLayout()->createBlock('adminhtml/widget_button')
     	->setData(array(
     	                    'id'      => 'suspend_button',
     	                    'label'   => Mage::helper('sales')->__('Suspend Subscription'),
-    	                    'class'   => 'save'
+    	                    'class'   => 'save',
+    	'onclick' => 'var skips = prompt(\'How many iterations would you like to skip?\');
+    	if(skips!=null){
+    		if(skips>0 && skips%1===0  && skips<1000){
+    			var r = confirm(\'Are you sure you want to suspend to subscription for \' + skips + \' iterations?\');
+    			if(r==true){
+    				pathArray = document.URL.split( \'skips\' );
+					host = pathArray[0];
+					host = host.split( \'key\' )[0];
+    				pathArray = document.URL.split( \'key\' );
+    			    setLocation(host+\'skips/\'+skips+\'/key\'+pathArray[1])		
+    					}
+    				}
+    				else alert(\'Enter a valid number of iterations to skip\');
+    			}'
+    	                    
     	));
     	$this->setChild('suspend_button', $suspendButton);
     	
@@ -124,10 +153,18 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	}
     }
     
-    public function updateSubscription($amount, $period, $billingCycles, $nextBill){
-    	$this->setSubscriptionAmount($amount);
-    	$this->setIterationLength($period);
-    	$this->setNumOfIterations($billingCycles);
+    public function updateSubscription($amount, $period, $billingCycles){
+    	if($this->getSubscriptionData('active')){
+	    	if ($amount !==Null && $amount !== ""){
+	    		$this->setSubscriptionAmount($amount);
+	    	}
+	    	if ($period !==Null && $period !== ""){
+	    		$this->setIterationLength($period);
+	    	}
+	    	if ($billingCycles !==Null && $billingCycles !== ""){
+	    		$this->setNumOfIterations($billingCycles);
+	    	}
+    	}
     }
     
     private function getSubcriptionHistory(){
