@@ -39,23 +39,23 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 	}
 	
 	public function testGetStatus_NullInitialStatus_SubscriptionPaymentInactive_NotASubscriptionProduct() {
- 		$store = Mage::getModel("core/store")->load(1);
+ 		$store = Mage::getModel("core/store")->load(Mage_Core_Model_App::ADMIN_STORE_ID);
 		
 		$newproduct = new Litle_Subscription_Model_Product();
  		$newproduct->setTypeId('simple');
  		$newproduct->setAttributeSetId(4);
-		$newproduct->setLitleSubscription(false); #Make it not a subscription product
-		$newproduct->setStatus(NULL); #Null initial status
- 		$store->setConfig("payment/Subscription/active",0); #Make subscription active
+		$newproduct->setLitleSubscription(false);
+		$newproduct->setStatus(NULL);
+ 		$store->setConfig("payment/Subscription/active",0);
 		$newproduct->save();
 		
- 		$result = $newproduct->getStatus(); #Get the status
+ 		$result = $newproduct->getStatus();
 		$newproduct->delete();
  		$this->assertEquals(Mage_Catalog_Model_Product_Status::STATUS_ENABLED, $result);
 	}
 	
 	public function testGetStatus_SubscriptionPaymentActive_NotASubscriptionProduct() {
-		$store = Mage::getModel("core/store")->load(1);
+		$store = Mage::getModel("core/store")->load(Mage_Core_Model_App::ADMIN_STORE_ID);
 	
 		$newproduct = new Litle_Subscription_Model_Product();
 		$newproduct->setTypeId('simple');
@@ -71,7 +71,7 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 	}
 	
 	public function testGetStatus_SubscriptionPaymentActive_YesASubscriptionProduct() {
-		$store = Mage::getModel("core/store")->load(1);
+		$store = Mage::getModel("core/store")->load(Mage_Core_Model_App::ADMIN_STORE_ID);
 	
 		$newproduct = new Litle_Subscription_Model_Product();
 		$newproduct->setTypeId('simple');
@@ -80,7 +80,7 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 		$store->setConfig("payment/Subscription/active",1);
 		$newproduct->save();
 	
-		$result = $newproduct->getStatus(); #Get the status
+		$result = $newproduct->getStatus();
 		$newproduct->delete();
 		$this->assertEquals(false, $result);
 	}
