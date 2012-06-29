@@ -25,21 +25,25 @@
  */
 ?>
 <!-- Addresses list -->
+
 <?php $active = $this->getActive();?>
 <table cellspacing="0" class="form-edit">
 	<tr>
 		<td class="address-list">
 			<div class="content-header">
 				<h3 class="icon-head head-sales-order">
-					<?php echo Mage::helper('customer')->__('Subscription Details') ?>
+					
+				<?php echo Mage::helper('customer')->__('Subscription Details') ?>
 				</h3>
 			</div>
 			<ul class="messages">
-				<?php if ($active == 0):?>
+
+			<?php if ($active == 0):?>
 				<ul>
-					<li><span>Subscription is not active.</span>
-					</li>
+					<li><span>Subscription is not active.</span></li>
 				</ul>
+				
+				
 				<?php else: $messageInfo = $this->getSubscriptionStatusMessage();?>
 				<li class=<?php echo $messageInfo[0]?>>
 					<ul>
@@ -54,37 +58,30 @@
 				<table class="form-list" cellspacing="0">
 					<tbody>
 						<tr>
-							<td class="label"><label>Subscription ID:</label>
-							</td>
-							<td class="value"><?php echo $this->getSubscriptionId()?>
-							</td>
+							<td class="label"><label>Subscription ID:</label></td>
+							<td class="value"><?php echo $this->getSubscriptionId()?></td>
 						</tr>
 						<tr>
-							<td class="label"><label>Product Name:</label>
-							</td>
-							<td class="value"><?php echo $this->getSubscriptionName()?>
-							</td>
+							<td class="label"><label>Product Name:</label></td>
+							<td class="value"><?php echo $this->getSubscriptionName()?></td>
 						</tr>
 						<tr>
-							<td class="label"><label>Date Started:</label>
-							</td>
-							<td class="value"><?php echo $this->getStartDate()?>
-							</td>
+							<td class="label"><label>Date Started:</label></td>
+							<td class="value"><?php echo $this->getStartDate()?></td>
 						</tr>
 						<tr>
-							<td class="label"><label>Initial Fees:</label>
-							</td>
-							<td class="value"><?php echo $this->getInitialFees()?>
-							</td>
+							<td class="label"><label>Initial Fees:</label></td>
+							<td class="value"><?php echo $this->getInitialFees()?></td>
 						</tr>
 						<tr>
 							<td class="label"><label for="recurring_fees">Recurring Fees:</label>
 							</td>
 							<td class="value">
-							<?php if ($active == 1):?>
-							<input id="recurring_fees"
+							<?php if ($active == 1):?> <input id="recurring_fees"
 								class="input-type required-entry" type="text"
 								value=<?php echo $this->getSubscriptionAmount()?>></input>
+							
+							
 								<?php else:?>
 								<?php echo $this->getSubscriptionAmount()?>
 								<?php endif;?>
@@ -92,24 +89,25 @@
 						</tr>
 						<tr>
 							<td class="label"><label for="billing_cycle_period">Billing Cycle
-									Period:</label>
-							</td>
+									Period:</label></td>
 							<td class="value">
-							<?php if ($active == 1):?>
-							<select id="billing_period"
+							<?php if ($active == 1):?> <select id="billing_period"
+
 							<?php $cycleArray = array('Daily','Weekly','Bi-Weekly','Semi-Monthly','Monthly','Semi-Annually','Annually');?>
+
 							<?php foreach ($cycleArray as $key => $value): ?>
-							<?php if($this->getIterationLength() !== $value): ?><option>
+
+							<?php if($this->getIterationLength() !== $value): ?>
+								<option>
 										<?php echo $value; ?>
 									</option>
 									<?php endif; ?>
 									<?php if($this->getIterationLength() === $value): ?>
-									<option selected>
+								<option selected>
 										<?php echo $value; ?>
 									</option>
 									<?php endif; ?>
-									<?php endforeach ?>
-							</select>
+									<?php endforeach ?></select>
 							<?php else:?>
 								<?php echo $this->getIterationLength()?>
 								<?php endif;?>
@@ -160,11 +158,12 @@
 	</tr>
 	<div align="right">
 <?php if ($active === '1'):?>
-<?php echo $this->getChildHtml('cancel_button') ?> &nbsp
-<?php echo $this->getChildHtml('suspend_button') ?> &nbsp
-<?php echo $this->getChildHtml('save_button') ?> &nbsp
-<?php else:?>
-<?php echo $this->getChildHtml('resume_button') ?>
+	<?php echo $this->getChildHtml('cancel_button') ?> &nbsp
+	<?php echo $this->getChildHtml('suspend_button') ?> &nbsp
+	<?php echo $this->getChildHtml('save_button') ?> &nbsp
+	<?php if ($this->showResumeButton()): ?>
+		<?php echo $this->getChildHtml('resume_button') ?>
+	<?php endif?>
 <?php endif?>
 	</div>
 	
@@ -177,21 +176,23 @@
 		</h3>
 	</div>
 	<?php $historyRow = $this->getSubscriptionHistoryTable();?>
-	<div>
+	<div style="position:relative; height:200px; overflow:auto;">
 		<?php if($historyRow!==NULL):?>
-		<table cellspacing="0" border="1" width=50% height=75>
+		<table cellspacing="0" border="1" width=50%>
+			<thead>
 			<tr>
-				<th>Cron ID</th>
-				<th>Order ID</th>
-				<th>Sucessful</th>
-				<th>Run Date</th>
+				<th>&nbsp Cron ID</th>
+				<th>&nbsp Order ID</th>
+				<th>&nbsp Sucessful</th>
+				<th>&nbsp Run Date</th>
 			</tr>
+			</thead>
 			<?php foreach ($historyRow as $key => $value): ?>
 			<tr>
-				<td><?php echo $historyRow[$key]["cron_id"];?></td>
-				<td><?php echo $historyRow[$key]["order_id"];?></td>
-				<td><?php echo $historyRow[$key]["success"];?></td>
-				<td><?php echo $historyRow[$key]["run_date"];?></td>
+				<td align=center><?php echo $historyRow[$key]["cron_id"];?></td>
+				<td align=center><?php echo $historyRow[$key]["order_id"];?></td>
+				<td align=center><?php echo $historyRow[$key]["success"];?></td>
+				<td align=center><?php echo $historyRow[$key]["run_date"];?></td>
 			</tr>
 			<?php endforeach ?>
 		</table>
@@ -199,4 +200,4 @@
 		<td class="label"><label>This Subscription has no history.</label>
 		</td>
 		<?php endif ?>
-	</div>
+</div>

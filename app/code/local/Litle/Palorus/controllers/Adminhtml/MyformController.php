@@ -122,9 +122,18 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
     	if ($var !==Null){
     		$block->setActive($var);
     	}
+    	$var = $this->getRequest()->getParam('doNext');
+    	if ($var === '1'){
+    		$block->doNextIteration();
+    	}
+    	$amount = $this->getRequest()->getParam('amount');
+    	$period = $this->getRequest()->getParam('billingPeriod');
+    	$cycles = $this->getRequest()->getParam('billingCycles');
+    	$block->updateSubscription($amount, $period, $cycles);
     	$skips = $this->getRequest()->getParam('skips');
     	if ($skips !==Null){
     		$block->suspendSubscription($skips);
+    		$this->_redirectUrl($this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $this->getRequest()->getParam('subscription_id'))));
     	}
     	$this->getLayout()->getBlock('content')->append($block);
     	$this->renderLayout();

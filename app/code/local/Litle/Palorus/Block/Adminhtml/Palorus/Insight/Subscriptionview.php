@@ -1,36 +1,5 @@
 <?php
-/**
- * Magento
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@magentocommerce.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade Magento to newer
- * versions in the future. If you wish to customize Magento for your
- * needs please refer to http://www.magentocommerce.com for more information.
- *
- * @category    Mage
- * @package     Mage_Adminhtml
- * @copyright   Copyright (c) 2011 Magento Inc. (http://www.magentocommerce.com)
- * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- */
 
-/**
- * Customer addresses forms
- *
- * @category   Mage
- * @package    Mage_Adminhtml
- * @author      Magento Core Team <core@magentocommerce.com>
- */
 class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mage_Adminhtml_Block_Widget_Form
 {
     public function __construct()
@@ -60,23 +29,29 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	                    'class'   => 'save',
     	                 	'onclick' => 
     				'
-    				var amount = document.getElementById(\'recurring_fees\').value;
-    				var billingDetails = document.getElementById(\'billing_period\').value;
-    				var billingCycles = document.getElementById(\'total_number_of_billing_cycles\').value;
-    				pathArray = document.URL.split( \'amount\' );
-					host = pathArray[0];
-					host = host.split( \'key\' )[0];
-    				pathArray = document.URL.split( \'key\' );
-    				alert(host+\'amount/\'+amount+\'/billingDetails/\'+billingDetails+\'/billingCycles/\'+billingCycles+\'/key\'+pathArray[1])
-    			    setLocation(host+\'amount/\'+amount+\'/billingDetails/\'+billingDetails+\'/billingCycles/\'+billingCycles+\'/key\'+pathArray[1])'		
+    				var r = confirm(\'Are you sure you want to save your changes?\');
+	    			if(r==true){
+	    				var amount = document.getElementById(\'recurring_fees\').value;
+	    				var billingPeriod = document.getElementById(\'billing_period\').value;
+	    				var billingCycles = document.getElementById(\'total_number_of_billing_cycles\').value;
+	    				pathArray = document.URL.split( \'amount\' );
+						host = pathArray[0];
+						host = host.split( \'key\' )[0];
+	    				pathArray = document.URL.split( \'key\' );
+	    			    setLocation(host+\'amount/\'+amount+\'/billingPeriod/\'+billingPeriod+\'/billingCycles/\'+billingCycles+\'/key\'+pathArray[1])
+    			    }'		
     	));
     	$this->setChild('save_button', $saveButton);
     	
     	$resumeButton = $this->getLayout()->createBlock('adminhtml/widget_button')
     	->setData(array(
-    	    	                    'id'      => 'resume_button',
-    	    	                    'label'   => Mage::helper('sales')->__('Resume Subscription'),
-    	    	                    'class'   => 'save',
+    	    	            'id'      => 'resume_button',
+    	    	            'label'   => Mage::helper('sales')->__('Resume Subscription'),
+    	    	            'class'   => 'save',
+    						'onclick' => 'var r = confirm(\'Are you sure you want to run the next iteration?\');
+    						if(r==true){
+    	                    setLocation(\''.$this->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $this->getSubscriptionId(),'doNext'=>'1')).'\')
+    	                    }'
     	));
     	$this->setChild('resume_button', $resumeButton);
     	 
@@ -94,7 +69,6 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     				pathArray = document.URL.split( \'skips\' );
 					host = pathArray[0];
 					host = host.split( \'key\' )[0];
-					alert(host);
     				pathArray = document.URL.split( \'key\' );
     			    setLocation(host+\'skips/\'+skips+\'/key\'+pathArray[1])		
     					}
@@ -109,6 +83,16 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	return parent::_prepareLayout();
     }
     
+    public function showResumeButton(){
+    	$run = $this->getSubscriptionData('run_next_iteration');
+    	$status = $this->getRecyclingData('status');
+    	return (!$run && ($status === 'cancelled' || $status === Null));
+    }
+    
+    public function doNextIteration(){
+    	$this->setRunNext('1');
+    }
+    
     public function suspendSubscription($skips){
     	for($i=1; $i<=$skips; $i++){
     		$nextDate = $this->getNextBillDate();
@@ -119,11 +103,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     
     public function getSubscriptionStatusMessage(){
     	$recycling = $this->getIsRecycling();
-    	if($recycling === "No"){
-    		$message[0] = "success-msg";
-    		$message[1] = "Subscription is in good condition.";
-    	}
-    	else{
+    	if($recycling === "Yes"){
     		$nextBill = strtotime($this->getNextBillDate());
     		$nextRecycle = strtotime($this->getRecyclingData('to_run_date'));
     		if($nextBill < $nextRecycle){
@@ -133,6 +113,16 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     		else{
     			$message[0] = "warning-msg";
     			$message[1] = "Subscription is in recycling";
+    			}
+    		}
+    	else{
+    		if($this->getSubscriptionData('run_next_iteration')){
+	    		$message[0] = "success-msg";
+	    		$message[1] = "Subscription is in good condition.";
+    		}
+    		else{
+    			$message[0] = "error-msg";
+    			$message[1] = "Last Transaction Failed.";
     		}
     	}
     	return $message;
@@ -152,10 +142,18 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	}
     }
     
-    public function updateSubscription($amount, $period, $billingCycles, $nextBill){
-    	$this->setSubscriptionAmount($amount);
-    	$this->setIterationLength($period);
-    	$this->setNumOfIterations($billingCycles);
+    public function updateSubscription($amount, $period, $billingCycles){
+    	if($this->getSubscriptionData('active')){
+	    	if ($amount !==Null && $amount !== ""){
+	    		$this->setSubscriptionAmount($amount);
+	    	}
+	    	if ($period !==Null && $period !== ""){
+	    		$this->setIterationLength($period);
+	    	}
+	    	if ($billingCycles !==Null && $billingCycles !== ""){
+	    		$this->setNumOfIterations($billingCycles);
+	    	}
+    	}
     }
     
     private function getSubcriptionHistory(){
@@ -191,11 +189,18 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     	}
     }
     
+    protected function setSubscriptionId($id){
+    	$this->subscriptionId = $id;
+    }
+    
      public function getSubscriptionId(){
-     	$url = $this->helper("core/url")->getCurrentUrl();
-     	$stringAfterSubscriptionId = explode('subscription_id/', $url);
-     	$stringBeforeKey = explode('/', $stringAfterSubscriptionId[1]);
-     	return $stringBeforeKey[0];
+     	if ($this->subscriptionId === Null){
+     		$url = $this->helper("core/url")->getCurrentUrl();
+     		$stringAfterSubscriptionId = explode('subscription_id/', $url);
+     		$stringBeforeKey = explode('/', $stringAfterSubscriptionId[1]);
+     		return $stringBeforeKey[0];
+     	}else 
+     		return $this->subscriptionId;
      }
      
      public function getRecyclingData(string $field){
@@ -209,7 +214,8 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      public function getIsRecycling(){
      	$runNextIteration = $this->getSubscriptionData('run_next_iteration');
      	$active = $this->getSubscriptionData('active');
-     	if(!$runNextIteration && $active){
+     	$recycleStatus = $this->getRecyclingData('status');
+     	if(!$runNextIteration && $active && $recycleStatus !== Null){
      		return "Yes";
      	}else{
      		return "No";
@@ -296,6 +302,13 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      
      public function getCronId(){
      	return $this->getSubscriptionData('next_bill_date');
+     }
+     
+     public function setRunNext($var){
+     	$collection = $this->getSubcriptionRow();
+     	foreach ($collection as $order){
+     		$order->setRunNextIteration($var)->save();
+     	}
      }
      
      public function dollarFormat($num){
