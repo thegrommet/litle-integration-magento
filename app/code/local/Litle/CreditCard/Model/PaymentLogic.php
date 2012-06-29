@@ -559,7 +559,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 				if( $ordersource != "recurring" )
 					$this->populateSubscription($payment);
 				
-				Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse);
+				Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse, $amount);
 				Mage::helper("palorus")->saveVault($payment, $litleResponse, $this->getTokenInfo($payment));
 			}
 		}
@@ -636,7 +636,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			if( $ordersource != "recurring" )
 				$this->populateSubscription($payment);
 			
-			Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse);
+			Mage::helper("palorus")->saveCustomerInsight($payment, $litleResponse, $amount);
 			Mage::helper("palorus")->saveVault($payment, $litleResponse);
 		}
 		
