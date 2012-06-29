@@ -158,7 +158,7 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
     
     private function getSubcriptionHistory(){
     	$subscriptionId = $this->getSubscriptionId();
-    	return Mage::getModel('palorus/subscriptionHistory')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId);
+    	return Mage::getModel('palorus/subscriptionHistory')->getCollection()->addFieldToFilter('subscription_id', $subscriptionId)->addAttributeToSort('subscription_history_id', 'DESC');
     }
     
     public function getSubscriptionHistoryTable()
