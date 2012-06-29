@@ -36,6 +36,12 @@ class Litle_Subscription_Model_PaymentLogic_Test extends PHPUnit_Framework_TestC
 	}
 	
 	protected function tearDown() {
+		$collection = Mage::getModel("catalog/product")
+			->getCollection()
+			->addAttributeToFilter("name","Litle_Subscription_Model_PaymentLogic_Test");
+		foreach($collection as $productToDelete) {
+			$productToDelete->delete();
+		}
 	}
 	
 	public function testGetConfigData() {
@@ -107,4 +113,67 @@ class Litle_Subscription_Model_PaymentLogic_Test extends PHPUnit_Framework_TestC
 		$this->assertNull($payment->getCcLast4());
 		$this->assertNull($payment->getCcType());
 	}
+	
+	public function testCleanseProductList_InactiveSubscription() {
+		$store = Mage::getModel("core/store")->load(Mage_Core_Model_App::ADMIN_STORE_ID);
+		$store->setConfig("payment/Subscription/active","0"); #Inactive
+		
+		$newproduct1 = new Litle_Subscription_Model_Product();
+		$newproduct1->setTypeId('simple');
+		$newproduct1->setAttributeSetId(4);
+		$newproduct1->setLitleSubscription(true); #Subscription Product
+		$newproduct1->setName("Litle_Subscription_Model_PaymentLogic_Test");
+		$newproduct1->save();
+		
+		$newproduct2 = new Litle_Subscription_Model_Product();
+		$newproduct2->setTypeId('simple');
+		$newproduct2->setAttributeSetId(4);
+		$newproduct2->setLitleSubscription(false); #Not a Subscription Product
+		$newproduct2->setName("Litle_Subscription_Model_PaymentLogic_Test");
+		$newproduct2->save();
+
+		$cut = new Litle_Subscription_Model_PaymentLogic();
+		$observer = new Varien_Object();
+		$event = new Varien_Object();
+		$collection = new Varien_Data_Collection();
+		$collection->addItem($newproduct1);
+		$collection->addItem($newproduct2);
+		$this->assertEquals(2, count($collection->getAllIds()));
+		$event->setCollection($collection);
+		$observer->setEvent($event);
+		$cut->cleanseProductList($observer);
+		$this->assertEquals(1, count($collection->getAllIds()));
+	}
+	
+	public function testCleanseProductList_ActiveSubscription() {
+		$store = Mage::getModel("core/store")->load(Mage_Core_Model_App::ADMIN_STORE_ID);
+		$store->setConfig("payment/Subscription/active","1"); #Active
+	
+		$newproduct1 = new Litle_Subscription_Model_Product();
+		$newproduct1->setTypeId('simple');
+		$newproduct1->setAttributeSetId(4);
+		$newproduct1->setLitleSubscription(true); #Subscription Product
+		$newproduct1->setName("Litle_Subscription_Model_PaymentLogic_Test");
+		$newproduct1->save();
+	
+		$newproduct2 = new Litle_Subscription_Model_Product();
+		$newproduct2->setTypeId('simple');
+		$newproduct2->setAttributeSetId(4);
+		$newproduct2->setLitleSubscription(false); #Not a Subscription Product
+		$newproduct2->setName("Litle_Subscription_Model_PaymentLogic_Test");
+		$newproduct2->save();
+	
+		$cut = new Litle_Subscription_Model_PaymentLogic();
+		$observer = new Varien_Object();
+		$event = new Varien_Object();
+		$collection = new Varien_Data_Collection();
+		$collection->addItem($newproduct1);
+		$collection->addItem($newproduct2);
+		$this->assertEquals(2, count($collection->getAllIds()));
+		$event->setCollection($collection);
+		$observer->setEvent($event);
+		$cut->cleanseProductList($observer);
+		$this->assertEquals(2, count($collection->getAllIds()));
+	}
+	
 }
