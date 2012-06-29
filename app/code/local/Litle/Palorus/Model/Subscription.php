@@ -85,7 +85,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		
 		$cronId = $this->calculateTheCurrentRunCronId();
 
-		$this->recycle($cronId);
+		$this->recycle($cronId, Mage::getModel('palorus/recycling'));
 		
 		$this->createOrdersForAllActiveSubscriptions();
 		
@@ -110,13 +110,14 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		}
 	}
 	
-	protected function addRecordForCronRunToCronHistory() {
+	public function addRecordForCronRunToCronHistory() {
 		$subscriptionCronHistoryModel = Mage::getModel('palorus/subscriptionCronHistory');
 		$subscriptionCronHistoryData = array("time_ran" => date( 'Y-m-d H:i:s', time()) );
 		$subscriptionCronHistoryModel->setData($subscriptionCronHistoryData)->save();
 	}
 	
-	protected function calculateTheCurrentRunCronId() {
+	public function calculateTheCurrentRunCronId() {
+		$subscriptionCronHistoryModel = Mage::getModel('palorus/subscriptionCronHistory');
 		$subscriptionCronHistoryCollection = $subscriptionCronHistoryModel->getCollection();
 		$subscriptionCronHistoryCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(cron_history_id) as cron_id');
 		
@@ -128,12 +129,11 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		return $cronId;
 	}
 	
-	protected function recycle($cronId) {
-		$recyclingModel = Mage::getModel('palorus/recycling');
+	public function recycle($cronId, $recyclingModel) {
 		$recyclingModel->callFromCron($cronId);
 	}
 	
-	protected function createAnOrderForThis($subscription) {
+	public function createAnOrderForThis($subscription) {
 		//Get the original order for that subscription
 		$originalOrderId = $subscription['initial_order_id'];
 		$customerId = $subscription['customer_id'];
@@ -144,57 +144,53 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		//next charge.
 		//Subscription is Active, and run_next_iteration is false (which mean it's in recycling OR suspended)
 		//and next_bill_date is in the past, AND subscription is not suspended as per subscriptionSuspend.
-		if( $subscription['active'] && !$subscription['run_next_iteration'] &&
-						(strtotime($subscription['next_bill_date']) < time())
-					  )
-		{
-		$recipientEmail = $subscription->getConfigData('email_id');
-		$description = "This subscription has now become invalid.";
-						$title = "Invalid subscription";
-		$this->notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
-		$recyclingCollectionModel = Mage::getModel('palorus/recycling')->getCollection();
-						$recyclingCollectionModel->addFieldToFilter("subscription_id", array("in", array($subscription['subscription_id'])));
-		$recyclingCollectionModel->addAttributeToSort('recycling_id','ASC');
-		$recycleId=0;
-		$recyclingItem;
-						foreach($recyclingCollectionModel as $recyclingItem)
-		{
-		$recycleId = $recyclingItem['recycling_id'];
-		}
-		$recyclingItem->setStatus('cancelled');
-						$recyclingItem->save();
+		if( $subscription['active'] && !$subscription['run_next_iteration'] && 
+			(strtotime($subscription['next_bill_date']) < time())) {
+			
+			$recipientEmail = $subscription->getConfigData('email_id');
+			$description = "This subscription has now become invalid.";
+			$title = "Invalid subscription";
+			$this->notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
+			$recyclingCollectionModel = Mage::getModel('palorus/recycling')->getCollection();
+			$recyclingCollectionModel->addFieldToFilter("subscription_id", array("in", array($subscription['subscription_id'])));
+			$recyclingCollectionModel->addAttributeToSort('recycling_id','ASC');
+			$recycleId=0;
+			$recyclingItem;
+			foreach($recyclingCollectionModel as $recyclingItem) {
+				$recycleId = $recyclingItem['recycling_id'];
+			}
+			$recyclingItem->setStatus('cancelled');
+			$recyclingItem->save();
 		
-		continue;
+			continue;
 		}
 		
 		//################################################################
 		//############ Implement last ran for each subscription ##########
 		//############ so that same subscription does not get run every single cron job..... (see the if statement below!)
 		if(	$subscription['active'] && $subscription['run_next_iteration'] &&
-		($subscription['num_of_iterations_ran'] < $subscription['num_of_iterations'] )&&
-		(strtotime($subscription['next_bill_date']) < time())
-		)
-		{
-		$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
-						$subscriptionHistoryItemData = array("subscription_id" => $subscriptionId,
-															 "cron_id" => $cronId,
-		"run_date" => time());
-		$returnFromCreateOrder = $this->createOrder($productId, $customerId, $originalOrderId, $subscriptionId);
-						if( !$returnFromCreateOrder["success"] )
-		{
-		$subscription->setRunNextIteration(false);
-		}
-		else
-		{
-		$subscription->setNumOfIterationsRan($subscription['num_of_iterations_ran'] + 1);
-		if($subscription[num_of_iterations_ran] == $subscription['num_of_iterations'])
-		$subscription->setActive(false);
-						}
+			($subscription['num_of_iterations_ran'] < $subscription['num_of_iterations'] )&&
+			(strtotime($subscription['next_bill_date']) < time())) {
+				
+			$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
+			$subscriptionHistoryItemData = array("subscription_id" => $subscriptionId,
+												 "cron_id" => $cronId,
+												 "run_date" => time());
+			$returnFromCreateOrder = $this->createOrder($productId, $customerId, $originalOrderId, $subscriptionId);
+			if( !$returnFromCreateOrder["success"] ) {
+				$subscription->setRunNextIteration(false);
+			}
+			else {
+				$subscription->setNumOfIterationsRan($subscription['num_of_iterations_ran'] + 1);
+				if($subscription[num_of_iterations_ran] == $subscription['num_of_iterations']) {
+					$subscription->setActive(false);
+				}
+			}
 		
-						$subscription['next_bill_date'] = $this->getNextBillDate($subscription['iteration_length'], $collectionItem['next_bill_date']);
-		$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
-						$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();
-		$subscription->save();
+			$subscription['next_bill_date'] = $this->getNextBillDate($subscription['iteration_length'], $collectionItem['next_bill_date']);
+			$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
+			$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();
+			$subscription->save();
 		}
 		
 	}

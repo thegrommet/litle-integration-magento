@@ -38,6 +38,13 @@ class Litle_Palorus_Model_Subscription_Test extends PHPUnit_Framework_TestCase
 		foreach($collection as $subscription) {
 			$subscription->delete();
 		}
+		
+		$subscriptionCronHistory = Mage::getModel("palorus/subscriptionCronHistory")
+			->getCollection();
+		foreach($subscriptionCronHistory as $toDelete) {
+			$toDelete->delete();
+		}
+		
 	}
 
 	protected function tearDown() {
@@ -123,6 +130,41 @@ class Litle_Palorus_Model_Subscription_Test extends PHPUnit_Framework_TestCase
 		$cut = $this->getMock('Litle_Palorus_Model_Subscription', array('createAnOrderForThis'));
 		$cut->expects($this->exactly(2))->method('createAnOrderForThis');
 		$cut->createOrdersForAllActiveSubscriptions();
-		
+	}
+	
+	public function testAddRecordForCronRunToCronHistory() {
+		$collection = Mage::getModel('palorus/subscriptionCronHistory')->getCollection();
+		$this->assertEquals(0, $collection->getSize());
+		$cut = new Litle_Palorus_Model_Subscription();
+		$cut->addRecordForCronRunToCronHistory();
+		$collection = Mage::getModel('palorus/subscriptionCronHistory')->getCollection();
+		$this->assertEquals(1, $collection->getSize());
+ 		foreach($collection as $entry) {
+			$this->assertNotNull($entry->getTimeRan());
+ 		}
+	}
+	
+	public function testCalculateTheCurrentRunCronId() {
+		$first = Mage::getModel('palorus/subscriptionCronHistory')
+			->setTimeRan(time())
+			->save();
+		$second = Mage::getModel('palorus/subscriptionCronHistory')
+			->setTimeRan(time())
+			->save();
+		$third = Mage::getModel('palorus/subscriptionCronHistory')
+			->setTimeRan(time())
+			->save();
+		$cut = new Litle_Palorus_Model_Subscription();
+		$collection = Mage::getModel('palorus/subscriptionCronHistory')->getCollection();
+		$this->assertEquals(3, $collection->getSize());
+		$ret = $cut->calculateTheCurrentRunCronId();
+		$this->assertEquals($third->getId(), $ret);
+	}
+	
+	public function testRecycle() {
+		$cut = new Litle_Palorus_Model_Subscription();
+		$mock = $this->getMock('Litle_Palorus_Model_Recycling', array('callFromCron'));
+		$mock->expects($this->once())->method('callFromCron')->with($this->equalTo(2));
+		$cut->recycle(2, $mock);
 	}
 }
