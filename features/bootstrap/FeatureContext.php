@@ -474,6 +474,33 @@ EOD;
     }
     
     /**
+    * @Given /^I click on subscribed thing$/
+    */
+    public function iClickOnSubscribedThing()
+    {
+    	$session = $this->getMink()->getSession('sahi');
+    	$page = $session->getPage();
+    
+    	$rows = $session->getDriver()->find('/html/body/div/div[3]/div/div[3]/div/div[2]/div/table/tbody/tr');
+    	
+    	$rowToClick = NULL;
+    	for($i = 1; $i <= count($rows); $i++) {
+    		$row = $session->getDriver()->find("/html/body/div/div[3]/div/div[3]/div/div[2]/div/table/tbody/tr[$i]/td[3]");
+    		
+    		$actualName = $row[0]->getText();
+    		if( preg_match("/.*?".'subscribed thing'.".*?/", $actualName) ) {
+    			$rowToClick = $row[0];
+    		}
+    	}
+    	if($rowToClick !== NULL) {
+    		$rowToClick->click();
+    	}
+    	else {
+    		throw new Exception("Could not find product named " . $expectedName);
+    	}
+    }
+    
+    /**
     * @Given /^I click on the top row in Orders$/
     */
     public function iClickOnTheTopRowInOrders()
@@ -483,6 +510,19 @@ EOD;
     
     	$topRow = $session->getDriver()->find('/html/body/div/div[3]/div/div[3]/div/div[2]/div/table/tbody/tr[1]');
     	$session->visit($topRow[0]->getAttribute("title"));
+    }
+    
+    /**
+    * @Given /^I click on the top row in Subscriptions$/
+    */
+    public function iClickOnTheTopRowInSubscriptions()
+    {
+    	$session = $this->getMink()->getSession('sahi');
+    	$page = $session->getPage();
+    
+    	$tmp = $session->getDriver()->find('/html/body/div/div[3]/div/table/tbody/tr/td/div[3]/div/div/table/tbody/tr/td[1]');
+    	$link = $tmp[0];
+    	$link->click();
     }
     
     /**
@@ -531,6 +571,42 @@ EOD;
     	$page = $session->getPage();
     	 
     	$tmp = $session->getDriver()->find('/html/body/div/div[3]/div/form/div[12]/div[6]/div[2]/div/button[2]');
+    	$tmp[0]->click();
+    }
+    
+    /**
+    * @Given /^I click on save$/
+    */
+    public function iClickOnSave()
+    {
+    	$session = $this->getMink()->getSession('sahi');
+    	$page = $session->getPage();
+    
+    	$tmp = $session->getDriver()->find('/html/body/div/div[3]/div/div/div[2]/div/div[2]/div/p/button[5]');
+    	$tmp[0]->click();
+    }
+    
+    /**
+    * @Given /^I click on save subscription$/
+    */
+    public function iClickOnSaveSubscription()
+    {
+    	$session = $this->getMink()->getSession('sahi');
+    	$page = $session->getPage();
+    
+    	$tmp = $session->getDriver()->find('/html/body/div[2]/div[3]/div/div[2]/button[3]');
+    	$tmp[0]->click();
+    }
+    
+    /**
+    * @Given /^I click on cancel subscription$/
+    */
+    public function iClickOnCancelSubscription()
+    {
+    	$session = $this->getMink()->getSession('sahi');
+    	$page = $session->getPage();
+    
+    	$tmp = $session->getDriver()->find('/html/body/div[2]/div[3]/div/div[2]/button[1]');
     	$tmp[0]->click();
     }
     
@@ -675,6 +751,24 @@ EOD;
     		$session->executeScript($script);
     	}
     	
+    }
+    
+    /**
+    * @Given /^I write in "([^"]*)" with "([^"]*)"$/
+    */
+    public function iWriteInWith($name, $value)
+    {
+    	$session = $this->getMink()->getSession('sahi');
+    	$page = $session->getPage();
+    	if($name === 'Recurring Fees') {
+    		$script = 'document.getElementById("recurring_fees").value=' . '"' . $value . '"';
+    		$session->executeScript($script);
+    	}
+    	if($name == 'Total Number of Billing Cycles'){
+    		$script = 'document.getElementById("total_number_of_billing_cycles").value=' . '"' . $value . '"';
+    		$session->executeScript($script);
+    	}
+    	 
     }
     
     /**

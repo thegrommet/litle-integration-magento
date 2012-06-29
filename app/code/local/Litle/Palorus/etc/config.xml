@@ -155,7 +155,7 @@
         		                <action>palorus/adminhtml_myform/summary</action>
         		            </summary>
         		             <subscription translate="title" module="palorus">
-        		                <title>Litle Subscription</title>
+        		                <title>Subscriptions</title>
         		                <action>palorus/adminhtml_myform/litlesubscription</action>
         		            </subscription>
 		                    <chargebacks translate="title" module="palorus">
