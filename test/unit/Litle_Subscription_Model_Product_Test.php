@@ -29,13 +29,18 @@ require_once(getenv('MAGENTO_HOME')."/app/Mage.php");
 
 class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 {
-	
 	protected function setUp() {
 		Mage::app('default');
 		Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
 	}
 	
 	protected function tearDown() {
+		$collection = Mage::getModel("catalog/product")
+		->getCollection()
+		->addAttributeToFilter("name","Litle_Subscription_Model_Product_Test");
+		foreach($collection as $productToDelete) {
+			$productToDelete->delete();
+		}
 	}
 	
 	public function testGetStatus_NullInitialStatus_SubscriptionPaymentInactive_NotASubscriptionProduct() {
@@ -45,13 +50,28 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
  		$newproduct->setTypeId('simple');
  		$newproduct->setAttributeSetId(4);
 		$newproduct->setLitleSubscription(false);
+		$newproduct->setName("Litle_Subscription_Model_Product_Test");
 		$newproduct->setStatus(NULL);
  		$store->setConfig("payment/Subscription/active",0);
 		$newproduct->save();
 		
  		$result = $newproduct->getStatus();
-		$newproduct->delete();
  		$this->assertEquals(Mage_Catalog_Model_Product_Status::STATUS_ENABLED, $result);
+	}
+	
+	public function testGetStatus_SubscriptionPaymentInactive_YesASubscriptionProduct() {
+		$store = Mage::getModel("core/store")->load(Mage_Core_Model_App::ADMIN_STORE_ID);
+	
+		$newproduct = new Litle_Subscription_Model_Product();
+		$newproduct->setTypeId('simple');
+		$newproduct->setAttributeSetId(4);
+		$newproduct->setLitleSubscription(true);
+		$newproduct->setName("Litle_Subscription_Model_Product_Test");
+		$store->setConfig("payment/Subscription/active",0);
+		$newproduct->save();
+	
+		$result = $newproduct->getStatus();
+		$this->assertEquals(false, $result);
 	}
 	
 	public function testGetStatus_SubscriptionPaymentActive_NotASubscriptionProduct() {
@@ -61,12 +81,12 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 		$newproduct->setTypeId('simple');
 		$newproduct->setAttributeSetId(4);
 		$newproduct->setLitleSubscription(false);
+		$newproduct->setName("Litle_Subscription_Model_Product_Test");
 		$newproduct->setStatus(NULL);
 		$store->setConfig("payment/Subscription/active",1);
 		$newproduct->save();
 	
 		$result = $newproduct->getStatus();
-		$newproduct->delete();
 		$this->assertEquals(Mage_Catalog_Model_Product_Status::STATUS_ENABLED, $result);
 	}
 	
@@ -77,11 +97,12 @@ class Litle_Subscription_Model_Product_Test extends PHPUnit_Framework_TestCase
 		$newproduct->setTypeId('simple');
 		$newproduct->setAttributeSetId(4);
 		$newproduct->setLitleSubscription(true);
+		$newproduct->setStatus("foo");
+		$newproduct->setName("Litle_Subscription_Model_Product_Test");
 		$store->setConfig("payment/Subscription/active",1);
 		$newproduct->save();
 	
 		$result = $newproduct->getStatus();
-		$newproduct->delete();
-		$this->assertEquals(false, $result);
+		$this->assertEquals("foo", $result);
 	}
 }
