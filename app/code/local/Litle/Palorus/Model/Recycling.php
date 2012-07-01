@@ -78,34 +78,33 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 	public function recycleOneItem($recyclingCollectionItem) {
 		
 		Mage::log("inside recycling collection");
-		$$subscriptionItem = $this->findSubscriptionItemForRecycling($recyclingCollectionItem);
+		$subscriptionItem = $this->findSubscriptionItemForRecycling($recyclingCollectionItem);
 		// if subscription is still active, and current time < "next_bill_date" time in subscription table ...
 		// (we do not want to run re-cycling if "next_bill_date" time was in the past -- we want to deactivate the subscription
 		// and notify the admins via email etc.)
 		if($subscriptionItem['active'] && (time() < strtotime($subscriptionItem['next_bill_date'])))
 		{
-		$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
-		$subscriptionHistoryItemData = array("subscription_id" => $recyclingCollectionItem['subscription_id'],
-		"cron_id" => $cronId,
-		"run_date" => time());
+			$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
+			$subscriptionHistoryItemData = array(	"subscription_id" => $recyclingCollectionItem['subscription_id'],
+													"cron_id" => $cronId,
+													"run_date" => time());
 		
-		$returnFromCreateOrder = $this->createOrder($subscriptionItem['product_id'], $subscriptionItem['customer_id'], $subscriptionItem['initial_order_id'], $recyclingCollectionItem['subscription_id']);
-		if( !$returnFromCreateOrder["success"] )
-		{
-		Mage::log("the transaction failed");
-		$recyclingCollectionItem->setSuccessful(false);
-		$recyclingCollectionItem->setStatus('failed');
-			
-		}
-		else
-		{
-		Mage::log("the transaction passed");
-		$subscriptionItem->setNumOfIterationsRan($subscriptionItem['num_of_iterations_ran'] + 1);
-			$subscriptionItem->setRunNextIteration(true);
-			$subscriptionItem->save();
-			$recyclingCollectionItem->setSuccessful(true);
-			$recyclingCollectionItem->setStatus('completed');
-		}
+			$returnFromCreateOrder = $this->createOrder($subscriptionItem['product_id'], $subscriptionItem['customer_id'], $subscriptionItem['initial_order_id'], $recyclingCollectionItem['subscription_id']);
+			if( !$returnFromCreateOrder["success"] )
+			{
+				Mage::log("the transaction failed");
+				$recyclingCollectionItem->setSuccessful(false);
+				$recyclingCollectionItem->setStatus('failed');			
+			}
+			else
+			{
+				Mage::log("the transaction passed");
+				$subscriptionItem->setNumOfIterationsRan($subscriptionItem['num_of_iterations_ran'] + 1);
+				$subscriptionItem->setRunNextIteration(true);
+				$subscriptionItem->save();
+				$recyclingCollectionItem->setSuccessful(true);
+				$recyclingCollectionItem->setStatus('completed');
+			}
 			$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData, $returnFromCreateOrder);
 			$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();
 			$nextSubscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
@@ -113,17 +112,17 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 			$nextSubscriptionIdCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(subscription_history_id) as subscription_history_id');
 			$nextSubscriptionId = 0;
 			foreach ($nextSubscriptionIdCollection as $nextSubscriptionIdCollectionItem)
-						{
-							$nextSubscriptionId = $nextSubscriptionIdCollectionItem['subscription_history_id'];
-		}
-		Mage::log("the next subscription id is " . $nextSubscriptionId);
-		$recyclingCollectionItem->setNextSubscriptionId($nextSubscriptionId);
-		$recyclingCollectionItem->save();
+			{
+				$nextSubscriptionId = $nextSubscriptionIdCollectionItem['subscription_history_id'];
+			}
+			Mage::log("the next subscription id is " . $nextSubscriptionId);
+			$recyclingCollectionItem->setNextSubscriptionId($nextSubscriptionId);
+			$recyclingCollectionItem->save();
 		}
 		else
 		{
-		//$subscriptionItem->setActive(false);
-		$subscriptionItem->save();
+			//$subscriptionItem->setActive(false);
+			$subscriptionItem->save();
 		}
 		
 	}
