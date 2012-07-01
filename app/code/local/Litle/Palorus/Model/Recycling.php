@@ -46,7 +46,7 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 	public function callFromCron($cronId)
 	{
 		$recyclingCollection = $this->findRecordsToRecycle();
-		var_dump($recyclingCollection);
+
 		foreach($recyclingCollection as $recyclingCollectionItem)
 		{
 			$this->recycleOneItem($recyclingCollectionItem);

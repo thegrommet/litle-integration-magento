@@ -79,4 +79,23 @@ class Litle_Palorus_Model_Recycling_Test extends PHPUnit_Framework_TestCase
 		
 		$cut->callFromCron();
 	}
+	
+	public function testFindRecordsToRecycle() {
+		$waitingOld = Mage::getModel('palorus/recycling')
+			->setStatus("waiting")
+			->setToRunDate(time()-100000)
+			->save();
+		$waitingToNew = Mage::getModel('palorus/recycling')
+			->setStatus("waiting")
+			->setToRunDate(time()+100000)
+			->save();
+		$notWaiting = Mage::getModel("palorus/recycling")
+			->setStatus("other")
+			->setToRunDate(time())
+			->save();
+		
+		$cut = new Litle_Palorus_Model_Recycling();
+		$ret = $cut->findRecordsToRecycle();
+		$this->assertEquals(1, $ret->getSize());
+	}
 }
