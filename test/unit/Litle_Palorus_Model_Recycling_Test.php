@@ -98,4 +98,23 @@ class Litle_Palorus_Model_Recycling_Test extends PHPUnit_Framework_TestCase
 		$ret = $cut->findRecordsToRecycle();
 		$this->assertEquals(1, $ret->getSize());
 	}
+	
+	public function testFindSubscriptionItemForRecycling() {
+		$subscriptionItem = Mage::getModel('palorus/subscription')
+			->setProductId(5)
+			->save();
+		$notsubscriptionItem = Mage::getModel('palorus/subscription')
+			->setProductId(3)
+			->save();
+		$recyclingItem = Mage::getModel('palorus/recycling')
+			->setStatus("waiting")
+			->setToRunDate(time()-100000)
+			->setSubscriptionId($subscriptionItem->getId())
+			->save();
+		
+		$cut = new Litle_Palorus_Model_Recycling();
+		$ret = $cut->findSubscriptionItemForRecycling($recyclingItem);
+		$this->assertEquals(5, $ret->getProductId());
+	}
+	
 }
