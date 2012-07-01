@@ -39,9 +39,9 @@ class Litle_Palorus_Model_Recycling_Test extends PHPUnit_Framework_TestCase
 			$subscription->delete();
 		}
 		
-		$subscriptionCronHistory = Mage::getModel("palorus/subscriptionCronHistory")
+		$subscriptionHistory = Mage::getModel("palorus/subscriptionHistory")
 			->getCollection();
-		foreach($subscriptionCronHistory as $toDelete) {
+		foreach($subscriptionHistory as $toDelete) {
 			$toDelete->delete();
 		}
 		
@@ -136,5 +136,125 @@ class Litle_Palorus_Model_Recycling_Test extends PHPUnit_Framework_TestCase
 		$subscription->setNextBillDate(date('Y-m-d', time()+(7*24*60*60))); //Next week
 		$this->assertFalse($cut->shouldRecycleThisSubscription($subscription));
 	}
+	
+	public function testRecycleOneItem_ShouldRecycle_Success() {
+		$subscription = Mage::getModel("palorus/subscription")
+			->setProductId(5)
+			->setCustomerId(1)
+			->setInitialOrderId(3)
+			->setNumOfIterationsRan(6)
+			->save();
+		$recycling = Mage::getModel("palorus/recycling")
+			->setSubscriptionId($subscription->getSubscriptionId())
+			->save();
+		$cut = $this->getMock('Litle_Palorus_Model_Recycling', array('findSubscriptionItemForRecycling','shouldRecycleThisSubscription','createOrder'));
+		$cut->expects($this->once())
+			->method('findSubscriptionItemForRecycling')
+			->with($this->attributeEqualTo("_data",$recycling->getData()))
+			->will($this->returnValue($subscription));
+		$cut->expects($this->once())
+			->method('shouldRecycleThisSubscription')
+			->with($this->attributeEqualTo("_data",$subscription->getData()))
+			->will($this->returnValue(true));
+		$cut->expects($this->once())
+			->method('createOrder')
+			->with(
+				$this->equalTo(5),
+				$this->equalTo(1),
+				$this->equalTo(3),
+				$this->equalTo($subscription->getSubscriptionId())
+				)
+			->will($this->returnValue(array("success"=>true)));
+		
+		$cut->recycleOneItem($recycling, 2);
+		$history = Mage::getModel("palorus/subscriptionHistory")
+			->getCollection()
+			->getItemByColumnValue('subscription_id',$subscription->getSubscriptionId());
+		$this->assertEquals(true, $recycling->getSuccessful());
+		$this->assertEquals('completed', $recycling->getStatus());
+		$this->assertEquals($history->getSubscriptionHistoryId(), $recycling->getNextSubscriptionId());
+		$this->assertEquals(7, $subscription->getNumOfIterationsRan()); 
+		$this->assertEquals(true, $subscription->getRunNextIteration());
+		$this->assertEquals($recycling->getSubscriptionId(), $history->getSubscriptionId());
+		$this->assertEquals(2, $history->getCronId());
+		$this->assertNotNull($history->getRunDate());
+	}
+	
+	public function testRecycleOneItem_ShouldRecycle_Failure() {
+		$subscription = Mage::getModel("palorus/subscription")
+			->setProductId(5)
+			->setCustomerId(1)
+			->setInitialOrderId(3)
+			->setNumOfIterationsRan(6)
+			->save();
+		$recycling = Mage::getModel("palorus/recycling")
+			->setSubscriptionId($subscription->getSubscriptionId())
+			->save();
+		$cut = $this->getMock('Litle_Palorus_Model_Recycling', array('findSubscriptionItemForRecycling','shouldRecycleThisSubscription','createOrder'));
+		$cut->expects($this->once())
+			->method('findSubscriptionItemForRecycling')
+			->with($this->attributeEqualTo("_data",$recycling->getData()))
+			->will($this->returnValue($subscription));
+		$cut->expects($this->once())
+			->method('shouldRecycleThisSubscription')
+			->with($this->attributeEqualTo("_data",$subscription->getData()))
+			->will($this->returnValue(true));
+		$cut->expects($this->once())
+			->method('createOrder')
+			->with(
+				$this->equalTo(5),
+				$this->equalTo(1),
+				$this->equalTo(3),
+				$this->equalTo($subscription->getSubscriptionId())
+			)
+			->will($this->returnValue(array("success"=>false)));
+	
+		$cut->recycleOneItem($recycling, 2);
+		$history = Mage::getModel("palorus/subscriptionHistory")
+			->getCollection()
+			->getItemByColumnValue('subscription_id',$subscription->getSubscriptionId());
+		$this->assertEquals(false, $recycling->getSuccessful());
+		$this->assertEquals('failed', $recycling->getStatus());
+		$this->assertEquals($history->getSubscriptionHistoryId(), $recycling->getNextSubscriptionId());
+		$this->assertEquals(6, $subscription->getNumOfIterationsRan()); 
+		$this->assertNull($subscription->getRunNextIteration());
+		$this->assertEquals($recycling->getSubscriptionId(), $history->getSubscriptionId());
+		$this->assertEquals(2, $history->getCronId());
+		$this->assertNotNull($history->getRunDate());
+	}
+	
+	public function testRecycleOneItem_ShouldNotRecycle() {
+		$subscription = Mage::getModel("palorus/subscription")
+			->setProductId(5)
+			->setCustomerId(1)
+			->setInitialOrderId(3)
+			->setNumOfIterationsRan(6)
+			->save();
+		$recycling = Mage::getModel("palorus/recycling")
+			->setSubscriptionId($subscription->getSubscriptionId())
+			->save();
+		$cut = $this->getMock('Litle_Palorus_Model_Recycling', array('findSubscriptionItemForRecycling','shouldRecycleThisSubscription','createOrder'));
+		$cut->expects($this->once())
+			->method('findSubscriptionItemForRecycling')
+			->with($this->attributeEqualTo("_data",$recycling->getData()))
+			->will($this->returnValue($subscription));
+		$cut->expects($this->once())
+			->method('shouldRecycleThisSubscription')
+			->with($this->attributeEqualTo("_data",$subscription->getData()))
+			->will($this->returnValue(false));
+		$cut->expects($this->never())
+			->method('createOrder');
+	
+		$cut->recycleOneItem($recycling, 2);
+		$history = Mage::getModel("palorus/subscriptionHistory")
+			->getCollection()
+			->getItemByColumnValue('subscription_id',$subscription->getSubscriptionId());
+		$this->assertEquals(false, $recycling->getSuccessful());
+		$this->assertNull($recycling->getStatus());
+		$this->assertNull($history);
+		$this->assertEquals(6, $subscription->getNumOfIterationsRan());
+		$this->assertNull($subscription->getRunNextIteration());
+	}
+	
 	
 }
