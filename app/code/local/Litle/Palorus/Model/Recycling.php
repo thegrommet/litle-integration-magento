@@ -49,7 +49,7 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 
 		foreach($recyclingCollection as $recyclingCollectionItem)
 		{
-			$this->recycleOneItem($recyclingCollectionItem);
+			$this->recycleOneItem($recyclingCollectionItem, $cronId);
 		}
 	}
 	
@@ -79,7 +79,7 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		return $subscription['active'] && (time() < strtotime($subscription['next_bill_date']));
 	}
 	
-	public function recycleOneItem($recyclingCollectionItem) {
+	public function recycleOneItem($recyclingCollectionItem, $cronId) {
 		
 		Mage::log("inside recycling collection");
 		$subscriptionItem = $this->findSubscriptionItemForRecycling($recyclingCollectionItem);
