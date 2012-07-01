@@ -117,4 +117,24 @@ class Litle_Palorus_Model_Recycling_Test extends PHPUnit_Framework_TestCase
 		$this->assertEquals(5, $ret->getProductId());
 	}
 	
+	public function testShouldRecycleThisSubscription() {
+		$cut = new Litle_Palorus_Model_Recycling();
+		$subscription = new Varien_Object();
+		$subscription->setActive(true);
+		$subscription->setNextBillDate(date('Y-m-d', time()+(7*24*60*60))); //Next week
+		$this->assertTrue($cut->shouldRecycleThisSubscription($subscription));
+
+		$subscription->setActive(true);
+		$subscription->setNextBillDate(date('Y-m-d', time()-(7*24*60*60))); //Last week
+		$this->assertFalse($cut->shouldRecycleThisSubscription($subscription));
+
+		$subscription->setActive(false);
+		$subscription->setNextBillDate(date('Y-m-d', time()-(7*24*60*60))); //Last week
+		$this->assertFalse($cut->shouldRecycleThisSubscription($subscription));
+		
+		$subscription->setActive(false);
+		$subscription->setNextBillDate(date('Y-m-d', time()+(7*24*60*60))); //Next week
+		$this->assertFalse($cut->shouldRecycleThisSubscription($subscription));
+	}
+	
 }

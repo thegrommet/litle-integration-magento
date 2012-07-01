@@ -75,6 +75,10 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		return $subscriptionItem;
 	}
 	
+	public function shouldRecycleThisSubscription($subscription) {
+		return $subscription['active'] && (time() < strtotime($subscription['next_bill_date']));
+	}
+	
 	public function recycleOneItem($recyclingCollectionItem) {
 		
 		Mage::log("inside recycling collection");
@@ -82,7 +86,7 @@ class Litle_Palorus_Model_Recycling extends Mage_Core_Model_Abstract
 		// if subscription is still active, and current time < "next_bill_date" time in subscription table ...
 		// (we do not want to run re-cycling if "next_bill_date" time was in the past -- we want to deactivate the subscription
 		// and notify the admins via email etc.)
-		if($subscriptionItem['active'] && (time() < strtotime($subscriptionItem['next_bill_date'])))
+		if(shouldRecycleThisSubscription($subscriptionItem))
 		{
 			$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
 			$subscriptionHistoryItemData = array(	"subscription_id" => $recyclingCollectionItem['subscription_id'],
