@@ -10,6 +10,11 @@
 			<litlesubscription>
 				<class>Litle_Subscription_Helper</class>
 			</litlesubscription>
+			<checkout>
+				<rewrite>
+					<data>Litle_Subscription_Helper_Checkouthelper</data>
+				</rewrite>
+			</checkout>
 		</helpers>
 		<models>
 			<litlesubscription>

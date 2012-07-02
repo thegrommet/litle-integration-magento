@@ -12,7 +12,8 @@ class Litle_Subscription_Block_Agreements extends Mage_Checkout_Block_Agreements
     	}
     	else{
     		$litleAgreement = new Varien_Object();
-	    	$litleAgreement->setAgreementId(39);
+	    	$litleAgreement->setAgreementId(1001);
+	    	$litleAgreement->setId(1001);
 	    	$litleAgreement->setName("Subscription Agreement");
 	    	$litleAgreement->setContent("bleep blop tip top");
 	    	$litleAgreement->setContentHeight(NULL);
