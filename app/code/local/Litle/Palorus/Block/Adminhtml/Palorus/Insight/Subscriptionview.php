@@ -203,6 +203,12 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
              return $this->subscriptionId;
      }
      
+     public function getInitialOrderId(){
+     	$orderModel = Mage::getModel("sales/order");
+     	$initialOrderObj = $orderModel->load($this->getSubscriptionData('initial_order_id'));
+     	return $initialOrderObj['increment_id'];
+     }
+     
      public function getRecyclingData($field){
     	$collection = $this->getRecyclingRow();
     	foreach ($collection as $order){
