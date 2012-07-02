@@ -187,7 +187,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				}
 			}
 		
-			$subscription['next_bill_date'] = $this->getNextBillDate($subscription['iteration_length'], $collectionItem['next_bill_date']);
+			$subscription['next_bill_date'] = $this->getNextBillDate($subscription['iteration_length'], $subscription['next_bill_date']);
 			$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
 			$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();
 			$subscription->save();
