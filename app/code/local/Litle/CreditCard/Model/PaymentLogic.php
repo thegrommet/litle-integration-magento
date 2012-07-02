@@ -483,12 +483,11 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 						{
 							$nextRecycleTime = XMLParser::getNode($litleResponse,'nextRecycleTime');
 							$recycleAdviceEnd = XMLParser::getNode($litleResponse,'recycleAdviceEnd');
-							//$shouldRecycleDateBeRead = (empty($nextRecycleTime) && empty($recycleAdviceEnd)) ? false : true;
+							$shouldRecycleDateBeRead = (empty($nextRecycleTime) && empty($recycleAdviceEnd)) ? false : true;
 							$subscriptionSingleton = Mage::getSingleton('palorus/subscription');
-							//$subscriptionSingleton->setRecycleNextRunDate((time()+(2 * 24 * 60 * 60)));
 							$subscriptionSingleton->setRecycleNextRunDate(XMLParser::getNode($litleResponse,'nextRecycleTime'));
 							$subscriptionSingleton->setRecycleAdviceEnd(XMLParser::getNode($litleResponse,'recycleAdviceEnd'));
-							$subscriptionSingleton->setShouldRecycleDateBeRead(false);
+							$subscriptionSingleton->setShouldRecycleDateBeRead($shouldRecycleDateBeRead);
 						}
 						
 						if($isSale)
