@@ -430,6 +430,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 // 		$emailTemplateVariables['myvar4'] = $subscriptionId;
 // 		$link = Mage::helper("adminhtml")->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $subscriptionId));
 // 		$emailTemplateVariables['myvar5'] = $link;
+//		$emailTemplateVariables['myvar6'] = $title;
+//		$emailTemplateVariables['myvar7'] = $description;
 // 		$storeId = Mage::getStoreConfig('trans_email/ident_general/email');
 // 		$senderName = Mage::getStoreConfig('trans_email/ident_general/name');
 
