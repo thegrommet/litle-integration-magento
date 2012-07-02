@@ -220,7 +220,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		{
 			Mage::log("Payment information could not be retrieved for intial order id: " . $initialOrderId . " and customer id: " . $customerId);
 			
-			$description = "No payment information found for this transaction.";
+			$description = "No payment information found for subscription: $subscriptionId";
 			$title = "Payment information missing";
 			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
 		}
@@ -441,7 +441,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			 							"date_added" => time(),
 			 							"title" => $title,
 			 							"description" => $description,
-			 							"url" => $this->getUrl('palorus/adminhtml_myform/subscriptionview/'),
+			 							"url" => Mage::helper("adminhtml")->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $subscriptionId)),
 			 							"is_read" => false,
 			 							"is_remove" => false		
 									);
