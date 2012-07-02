@@ -134,7 +134,7 @@ class Litle_LEcheck_Model_PaymentLogic extends Mage_Payment_Model_Method_Abstrac
 		$ret = "";
 		$ret = $this->getLineItemData($payment);
 		Mage::log($ret);
-		if($ret === "1")
+		if($ret === 1)
 			throw new Mage_Payment_Model_Info_Exception(Mage::helper('core')->__("Cannot use ECheck to buy a subscription Item"));
 
 		
@@ -368,10 +368,9 @@ class Litle_LEcheck_Model_PaymentLogic extends Mage_Payment_Model_Method_Abstrac
 	public function getLineItemData(Varien_Object $payment){
 		$order = $payment->getOrder();
 		$items = $order->getAllItems();
-		foreach ($items as $itemId => $item)
+		foreach ($items as $item)
 		{
-			Mage::log("litle subscription: " . $this->getProductAttribute($productId, 'litle_subscription'));
-			if($this->getProductAttribute($productId, 'litle_subscription') === "Yes")
+			if($this->getProductAttribute($item->getProductId(), 'litle_subscription') === "Yes")
 				{
 					// Item is subscription item, cannot use Echeck to buy it now !
 					Mage::log("return true");

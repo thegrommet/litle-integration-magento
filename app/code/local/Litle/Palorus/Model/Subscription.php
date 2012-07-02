@@ -417,16 +417,18 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	{
 		$emailTemplate  = Mage::getModel('core/email_template')->loadDefault('custom_email_template1');
 
-		//Create an array of variables to assign to template
-		$emailTemplateVariables = array();
-		$emailTemplateVariables['myvar1'] = $originalOrderId;
-		$emailTemplateVariables['myvar2'] = $customerId;
-		$emailTemplateVariables['myvar3'] = $productId;
-		$emailTemplateVariables['myvar4'] = $subscriptionId;
-		$link = Mage::helper("adminhtml")->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $subscriptionId));
-		$emailTemplateVariables['myvar5'] = $link;
-		$storeId = Mage::getStoreConfig('trans_email/ident_general/email');
-		$senderName = Mage::getStoreConfig('trans_email/ident_general/name');
+// 		//Create an array of variables to assign to template
+// 		$emailTemplateVariables = array();
+// 		$emailTemplateVariables['myvar1'] = $originalOrderId;
+// 		$emailTemplateVariables['myvar2'] = $customerId;
+// 		$emailTemplateVariables['myvar3'] = $productId;
+// 		$emailTemplateVariables['myvar4'] = $subscriptionId;
+// 		$link = Mage::helper("adminhtml")->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $subscriptionId));
+// 		$emailTemplateVariables['myvar5'] = $link;
+//		$emailTemplateVariables['myvar6'] = $title;
+//		$emailTemplateVariables['myvar7'] = $description;
+// 		$storeId = Mage::getStoreConfig('trans_email/ident_general/email');
+// 		$senderName = Mage::getStoreConfig('trans_email/ident_general/name');
 
 		// 		$orderModel = Mage::getModel("sales/order");
 		// 		$initialOrderObj = $orderModel->load($originalOrderId);
