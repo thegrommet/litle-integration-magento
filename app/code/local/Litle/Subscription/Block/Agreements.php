@@ -15,7 +15,7 @@ class Litle_Subscription_Block_Agreements extends Mage_Checkout_Block_Agreements
 	    	$litleAgreement->setAgreementId(1001);
 	    	$litleAgreement->setId(1001);
 	    	$litleAgreement->setName("Subscription Agreement");
-	    	$litleAgreement->setContent("bleep blop tip top");
+	    	$litleAgreement->setContent("By checking the box below, you are giving us permission charge your card on regular basis, for the amount as listed on the product page.");
 	    	$litleAgreement->setContentHeight(NULL);
 	    	$litleAgreement->setCheckboxText("I agree");
 	    	$litleAgreement->setIsActive(1);
