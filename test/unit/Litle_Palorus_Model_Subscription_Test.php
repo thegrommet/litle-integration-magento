@@ -67,7 +67,7 @@ class Litle_Palorus_Model_Subscription_Test extends PHPUnit_Framework_TestCase
 		$cut->expects($this->once())->method('addRecordForCronRunToCronHistory');
 		$cut->expects($this->once())->method('calculateTheCurrentRunCronId')->will($this->returnValue(4));
 		$cut->expects($this->once())->method('recycle')->with($this->equalTo(4));
-		$cut->expects($this->once())->method('createOrdersForAllActiveSubscriptions');
+		$cut->expects($this->once())->method('createOrdersForAllActiveSubscriptions')->with($this->equalTo(4));
 		$cut->expects($this->once())->method('syncSubscriptionIdBetweenSourceAndTarget');
 		
 		$cut->callFromCron();
@@ -129,7 +129,7 @@ class Litle_Palorus_Model_Subscription_Test extends PHPUnit_Framework_TestCase
 		
 		$cut = $this->getMock('Litle_Palorus_Model_Subscription', array('createAnOrderForThis'));
 		$cut->expects($this->exactly(2))->method('createAnOrderForThis');
-		$cut->createOrdersForAllActiveSubscriptions();
+		$cut->createOrdersForAllActiveSubscriptions(4);
 	}
 	
 	public function testAddRecordForCronRunToCronHistory() {

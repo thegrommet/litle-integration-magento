@@ -26,6 +26,7 @@ Feature: AccountUpdater
       And I select "2012" from "creditcard_expiration_yr"
       And I put in "Card Verification Number" with "123"
       And I press the "4th" continue button
+      And I choose "IAgree"
       And I press "Place Order"
     Then I should see "Thank you for your purchase"
       And I follow "Log Out"

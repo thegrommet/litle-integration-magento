@@ -249,6 +249,9 @@ EOD;
     	if($choice === 'LEcheck') {
     		$page->findById("p_method_lecheck")->click();
     	}
+    	if($choice === 'IAgree') {
+    		$page->findById("agreement-1001")->click();
+    	}
     	if($choice === 'English') {
     		if(getenv('USER') === 'aagarwal') { //TODO Only Archit has this option, and we aren't sure how he got it
     			$page->findById("store_1")->click();
@@ -307,7 +310,7 @@ EOD;
  		$page = $session->getPage(); 		
  		$page->findField("User Name:")->setValue("admin");
  		//echo('filed is:' . $page->findField("User Name:"));
- 		//$page->findField("Password:")->setValue("LocalMagentoAdmin1");
+ 		$page->findField("Password:")->setValue("LocalMagentoAdmin1");
  		$session->executeScript('document.getElementById("login").value="LocalMagentoAdmin1"');
  		$page->findButton("Login")->click();    	
     }

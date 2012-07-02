@@ -77,7 +77,7 @@ class Litle_Palorus_Model_Recycling_Test extends PHPUnit_Framework_TestCase
 		$cut->expects($this->exactly(2))
 			->method('recycleOneItem');
 		
-		$cut->callFromCron();
+		$cut->callFromCron(20);
 	}
 	
 	public function testFindRecordsToRecycle() {
