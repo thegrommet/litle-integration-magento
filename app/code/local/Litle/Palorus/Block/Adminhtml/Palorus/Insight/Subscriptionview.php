@@ -209,6 +209,12 @@ class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Subscriptionview extends Mag
      	return $initialOrderObj['increment_id'];
      }
      
+     public function getOrderIdByPK($pk){
+     	$orderModel = Mage::getModel("sales/order");
+     	$initialOrderObj = $orderModel->load($pk);
+     	return $initialOrderObj['increment_id'];
+     }
+     
      public function getRecyclingData($field){
     	$collection = $this->getRecyclingRow();
     	foreach ($collection as $order){
