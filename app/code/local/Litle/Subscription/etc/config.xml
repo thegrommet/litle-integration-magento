@@ -81,6 +81,7 @@
 				<test>1</test>
 				<title>Litle Subscription</title>
 				<allowspecific>0</allowspecific>
+				<disablesubsagreement>0</disablesubsagreement>
 			</litlesubscription>
 		</payment>
 	</default>
