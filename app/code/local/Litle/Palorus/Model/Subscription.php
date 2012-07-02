@@ -180,7 +180,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 												 "cron_id" => $cronId,
 												 "run_date" => time());
 			$returnFromCreateOrder = $this->createOrder($productId, $customerId, $originalOrderId, $subscriptionId, $subscription['amount']);
-			if( $returnFromCreateOrder["success"] == false ) {
+			if( !$returnFromCreateOrder["success"] ) {
 				$subscription->setRunNextIteration(false);
 			}
 			else {
@@ -261,8 +261,9 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			{
 				$success = false;
 
-				if( $this->shouldRecycleDateBeRead )
+				if( $this->shouldRecycleDateBeRead ){
 					$this->saveDataInSubscriptionHistory($initialOrderId, $customerId, $productId, $subscriptionId);
+				}
 				else
 				{
 					$description = "Subscription Id: $subscriptionId Transaction failed and automatic recycling is disabled. Please contact the customer.";
@@ -374,26 +375,33 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$lastSubscriptionHistoryId = $subscriptionHistoryCollectionItem['subscription_history_id'];
 		}
 
+		Mage::log("Last subscription Id is: " . $lastSubscriptionHistoryId);
+		
 		$recyclingModel = Mage::getModel('palorus/recycling');
 		$status = "waiting";
 		if( $this->recycleAdviceEnd && $nextRunDate == "" ){
+			Mage::log("in here");
 			$status = "cancelled";
-			$recipientEmail = $collectionItem->getConfigData('email_id');
+			$recipientEmail = Mage::getStoreConfig('payment/Subscription/email_id');
 			$description = "All payment recycle patterns have been exhausted and the customer still has not been successfully charged.";
 			$title = "All Recycle payments unsuccessful";
 			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
+			
+			return;
 		}
 		$subscriptionModel = Mage::getModel('palorus/subscription');
 		$subscriptionItem = $subscriptionModel->load($subscriptionId);
 		if($nextRunDate > $subscriptionItem->getNextRunDate())
 		{
+			Mage::log("in there");
 			$status = "cancelled";
-			$recipientEmail = $collectionItem->getConfigData('email_id');
+			$recipientEmail = Mage::getStoreConfig('payment/Subscription/email_id');
 			$description = "The recycling has been cancelled for this subscription because next recycle date falls after next scheduled payment date";
 			$title = "Recycling cancelled";
 			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
+			
+			return;
 		}
-		Mage::log($subscriptionId,$lastSubscriptionHistoryId);
 		$recyclingItemData = array(
 		 							"subscription_id" => $subscriptionId,
 		 							"subscription_history_id" => $lastSubscriptionHistoryId + 1,
@@ -401,6 +409,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		 							"status" => $status,
 		 							"to_run_date" => $nextRunDate		
 		);
+		
 		$recyclingModel->setData($recyclingItemData)->save();
 	}
 
