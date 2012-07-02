@@ -52,21 +52,21 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	{
 		$this->recycleAdviceEnd = $in_val;
 	}
-	
+
 	public function getRecycleNextRunDate()
 	{
 		return $this->recycleNextRunDate;
 	}
-	
+
 	public function setRecycleNextRunDate($in_date)
 	{
 		$this->recycleNextRunDate = strtotime($in_date);
 	}
-	
+
 	public function getShouldRecycleDateBeRead(){
 		return $this->shouldRecycleDateBeRead;
 	}
-	
+
 	public function setShouldRecycleDateBeRead( $in_updated ){
 		$this->shouldRecycleDateBeRead = $in_updated;
 	}
@@ -75,52 +75,53 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	{
 		$this->_model = 'palorus/subscription';
 		$this->_init($this->_model);
-		
+
 		$this->shouldRecycleDateBeRead = false;
 	}
 
 	public function callFromCron()
 	{
 		$this->addRecordForCronRunToCronHistory();
-		
+
 		$cronId = $this->calculateTheCurrentRunCronId();
 
+		Mage::log($cronId);
 		$this->recycle($cronId, Mage::getModel('palorus/recycling'));
-		
-		$this->createOrdersForAllActiveSubscriptions();
-		
+
+		$this->createOrdersForAllActiveSubscriptions($cronId);
+
 		$this->syncSubscriptionIdBetweenSourceAndTarget(Mage::getModel('palorus/recycling'));
 	}
-	
+
 	public function syncSubscriptionIdBetweenSourceAndTarget($recyclingModel) {
 		//sync the subscription id in the recycle with the subscription id in the History
 		$recyclingModel->syncSubscriptionIdWithHistory();
 		$recyclingModel->syncSubscriptionHistoryId();
 	}
-	
-	public function createOrdersForAllActiveSubscriptions() {
+
+	public function createOrdersForAllActiveSubscriptions($cronId) {
 		$collection = Mage::getModel('palorus/subscription')->getCollection()
-			->addFieldToFilter("active", true);
-		
+		->addFieldToFilter("active", true);
+
 		// Get all the subscription items from the subscription table where next_run_date < current time and
 		// active flag is true
 		foreach($collection as $collectionItem)
 		{
-			$this->createAnOrderForThis($collectionItem);
+			$this->createAnOrderForThis($collectionItem, $cronId);
 		}
 	}
-	
+
 	public function addRecordForCronRunToCronHistory() {
 		$subscriptionCronHistoryModel = Mage::getModel('palorus/subscriptionCronHistory');
 		$subscriptionCronHistoryData = array("time_ran" => date( 'Y-m-d H:i:s', time()) );
 		$subscriptionCronHistoryModel->setData($subscriptionCronHistoryData)->save();
 	}
-	
+
 	public function calculateTheCurrentRunCronId() {
 		$subscriptionCronHistoryModel = Mage::getModel('palorus/subscriptionCronHistory');
 		$subscriptionCronHistoryCollection = $subscriptionCronHistoryModel->getCollection();
 		$subscriptionCronHistoryCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(cron_history_id) as cron_id');
-		
+
 		$cronId = 0;
 		foreach($subscriptionCronHistoryCollection as $subscriptionCronHistoryCollectionItem)
 		{
@@ -128,28 +129,28 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		}
 		return $cronId;
 	}
-	
+
 	public function recycle($cronId, $recyclingModel) {
 		$recyclingModel->callFromCron($cronId);
 	}
-	
-	public function createAnOrderForThis($subscription) {
+
+	public function createAnOrderForThis($subscription, $cronId) {
 		//Get the original order for that subscription
 		$originalOrderId = $subscription['initial_order_id'];
 		$customerId = $subscription['customer_id'];
 		$productId = $subscription['product_id'];
 		$subscriptionId = $subscription['subscription_id'];
-						
+
 		//Notify merchant that the previous transcation has not gone through yet and it is time for
 		//next charge.
 		//Subscription is Active, and run_next_iteration is false (which mean it's in recycling OR suspended)
 		//and next_bill_date is in the past, AND subscription is not suspended as per subscriptionSuspend.
-		if( $subscription['active'] && !$subscription['run_next_iteration'] && 
-			(strtotime($subscription['next_bill_date']) < time())) {
-			
+		if( $subscription['active'] && !$subscription['run_next_iteration'] &&
+		(strtotime($subscription['next_bill_date']) < time())) {
+				
 			$recipientEmail = $subscription->getConfigData('email_id');
-			$description = "This subscription has now become invalid.";
-			$title = "Invalid subscription";
+			$description = "Subscription Id: $subscriptionId Next bill is due and customer has not yet been successfully charged for previous billing cycle.";
+			$title = "Subscription Id: $subscriptionId Subscription billing error";
 			$this->notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
 			$recyclingCollectionModel = Mage::getModel('palorus/recycling')->getCollection();
 			$recyclingCollectionModel->addFieldToFilter("subscription_id", array("in", array($subscription['subscription_id'])));
@@ -163,41 +164,44 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$recyclingItem->setStatus('cancelled');
 				$recyclingItem->save();
 			}
-		
+
 			continue;
 		}
-		
+
 		//################################################################
 		//############ Implement last ran for each subscription ##########
 		//############ so that same subscription does not get run every single cron job..... (see the if statement below!)
 		if(	$subscription['active'] && $subscription['run_next_iteration'] &&
-			($subscription['num_of_iterations_ran'] < $subscription['num_of_iterations'] )&&
-			(strtotime($subscription['next_bill_date']) < time())) {
-				
+		($subscription['num_of_iterations_ran'] < $subscription['num_of_iterations'] )&&
+		(strtotime($subscription['next_bill_date']) < time())) {
+
 			$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
 			$subscriptionHistoryItemData = array("subscription_id" => $subscriptionId,
 												 "cron_id" => $cronId,
 												 "run_date" => time());
 			$returnFromCreateOrder = $this->createOrder($productId, $customerId, $originalOrderId, $subscriptionId);
-			if( !$returnFromCreateOrder["success"] ) {
+			Mage::log("hello?");
+			if( $returnFromCreateOrder["success"] == false ) {
 				$subscription->setRunNextIteration(false);
+				Mage::log("trying to set this to false. " . $subscription->getSubscriptionId());
 			}
 			else {
 				$subscription->setNumOfIterationsRan($subscription['num_of_iterations_ran'] + 1);
-				if($subscription[num_of_iterations_ran] == $subscription['num_of_iterations']) {
+				if($subscription['num_of_iterations_ran'] == $subscription['num_of_iterations']) {
 					$subscription->setActive(false);
 				}
 			}
-		
+
 			$subscription['next_bill_date'] = $this->getNextBillDate($subscription['iteration_length'], $subscription['next_bill_date']);
 			$subscriptionHistoryItemData = array_merge($subscriptionHistoryItemData,$returnFromCreateOrder);
 			$subscriptionHistoryModel->setData($subscriptionHistoryItemData)->save();
 			$subscription->save();
 		}
-		
+
 	}
 
 	public function createOrder($productId, $customerId, $initialOrderId, $subscriptionId){
+		Mage::log("1");
 		$store = Mage::app()->getStore('default');
 		$success = false;
 		$orderId = 0;
@@ -205,7 +209,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$customer = Mage::getModel('customer/customer');
 		$customer->setStore($store);
 		$customer->load($customerId);
-
+		Mage::log("2");
 		$quote = Mage::getModel('sales/quote');
 		$quote->setStore($store);
 		$quote->assignCustomer($customer);
@@ -216,13 +220,15 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		foreach($vaultCollection as $vaultRecord){
 			// do nothing -- DO NOT DELETE; this is a hack and we need it!
 		}
+		Mage::log("3");
 		if( empty($vaultRecord) )
 		{
 			Mage::log("Payment information could not be retrieved for intial order id: " . $initialOrderId . " and customer id: " . $customerId);
-			
+				
 			$description = "No payment information found for subscription: $subscriptionId";
 			$title = "Payment information missing";
 			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
+			Mage::log("4");
 		}
 		else{
 			try{
@@ -230,7 +236,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$buyInfo1 = array('qty' => "1");
 				$orderModel = Mage::getModel("sales/order");
 				$initialOrderObj = $orderModel->load($initialOrderId);
-				
+
 				$quote->addProduct($product1, new Varien_Object($buyInfo1));
 				$billingAddress = $quote->getBillingAddress()->addData($customer->getPrimaryBillingAddress()->getData());
 				$shippingAddress = $quote->getShippingAddress()->addData($customer->getPrimaryShippingAddress()->getData());
@@ -244,8 +250,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
  				 											'litletokenexpdate' => $vaultRecord['expdate'],
  				 											'ordersource' => 'recurring',
  				 											'subscriptionid' => $subscriptionId
-														)
-												);
+				)
+				);
 					
 				$quote->collectTotals()->save();
 				$service = Mage::getModel('sales/service_quote', $quote);
@@ -256,19 +262,22 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			} catch (Exception $e)
 			{
 				$success = false;
-				
+
 				if( $this->shouldRecycleDateBeRead )
-					$this->saveDataInSubscriptionHistory($initialOrderId, $customerId, $productId, $subscriptionId);
+				$this->saveDataInSubscriptionHistory($initialOrderId, $customerId, $productId, $subscriptionId);
 				else
 				{
-					$description = "Txn failed, Recycling is disabled at the moment";
-					$title = "Txn Failed";
+					$description = "Subscription Id: $subscriptionId Transaction failed and automatic recycling is disabled. Please contact the customer.";
+					$title = "Subscription Id: $subscriptionId Transaction failed";
 					$this->notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
 				}
-				
+
 				$this->setShouldRecycleDateBeRead( false );
 			}
 		}
+		Mage::log("5");
+		Mage::log($success);
+		Mage::log($orderId);
 		return array("success" => $success, "order_id" => $orderId);
 	}
 
@@ -352,14 +361,14 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		//return date("Y-m-d"); // TODO : Do not export for testing purposes only.
 	}
 
-	
+
 	public function saveDataInSubscriptionHistory($initialOrderId, $customerId, $productId, $subscriptionId, $nextRunDate = "")
 	{
 		if( $nextRunDate === "" )
 		{
 			$nextRunDate = $this->getRecycleNextRunDate();
 		}
-		
+
 		$subscriptionHistoryModel = Mage::getModel('palorus/subscriptionHistory');
 		$subsHistoryForLastSubsHistIdCollection = $subscriptionHistoryModel->getCollection();
 		$subsHistoryForLastSubsHistIdCollection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns('MAX(subscription_history_id) as subscription_history_id');
@@ -396,10 +405,10 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		 							"successful" => false,
 		 							"status" => $status,
 		 							"to_run_date" => $nextRunDate		
-								);
+		);
 		$recyclingModel->setData($recyclingItemData)->save();
 	}
-	
+
 	public function getConfigData($fieldToLookFor, $store = NULL)
 	{
 		$returnFromThisModel = Mage::getStoreConfig('payment/Subscription/' . $fieldToLookFor);
@@ -408,11 +417,11 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		Mage::log($returnFromThisModel);
 		return $returnFromThisModel;
 	}
-	
+
 	public function notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $addressToSendTo, $description,$title)
 	{
 		$emailTemplate  = Mage::getModel('core/email_template')->loadDefault('custom_email_template1');
-				
+
 		//Create an array of variables to assign to template
 		$emailTemplateVariables = array();
 		$emailTemplateVariables['myvar1'] = $originalOrderId;
@@ -423,17 +432,17 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$emailTemplateVariables['myvar5'] = $link;
 		$storeId = Mage::getStoreConfig('trans_email/ident_general/email');
 		$senderName = Mage::getStoreConfig('trans_email/ident_general/name');
-		
-// 		$orderModel = Mage::getModel("sales/order");
-// 		$initialOrderObj = $orderModel->load($originalOrderId);
-// 		$orderId = $initialOrderObj['increment_id'];
-// 		Mage::log(Mage::helper("adminhtml")->getUrl('sales_order_/view', array('order_id' => $orderId)));
-		
+
+		// 		$orderModel = Mage::getModel("sales/order");
+		// 		$initialOrderObj = $orderModel->load($originalOrderId);
+		// 		$orderId = $initialOrderObj['increment_id'];
+		// 		Mage::log(Mage::helper("adminhtml")->getUrl('sales_order_/view', array('order_id' => $orderId)));
+
 		$emailTemplate->setSenderName($senderName);
 		$emailTemplate->setSenderEmail($storeId);
-		$emailTemplate->setTemplateSubject($title);		
+		$emailTemplate->setTemplateSubject($title);
 		$emailTemplate->send($addressToSendTo,'Admin', $emailTemplateVariables);
-		
+
 		$notificationModel = Mage::getModel('adminnotification/inbox');
 		$notification="Invalid subscription Email";
 		$notificationItemData = array(
@@ -444,8 +453,8 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			 							"url" => Mage::helper("adminhtml")->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $subscriptionId)),
 			 							"is_read" => false,
 			 							"is_remove" => false		
-									);
+		);
 		$notificationModel->setData($notificationItemData)->save();
-		
+
 	}
 }

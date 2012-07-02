@@ -191,7 +191,7 @@
 			<tr>
 				<td align=center><?php echo $historyRow[$key]["cron_id"];?></td>
 				<td align=center><?php echo $historyRow[$key]["order_id"];?></td>
-				<td align=center><?php echo $historyRow[$key]["success"];?></td>
+				<td align=center><?php echo ($historyRow[$key]["success"] == 0) ? "No" : "Yes";?></td>
 				<td align=center><?php echo $historyRow[$key]["run_date"];?></td>
 			</tr>
 			<?php endforeach ?>
