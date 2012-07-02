@@ -278,8 +278,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 	{
 		$nextDate;
 		$date = strtotime($previousNextBillDate);
-		// AMIT-TODO : Do not export for testing purposes only.
-		//$date = mktime(0, 0, 0, 1, 30, 2012);
 			
 		$lastDay = date('t',($date));
 		$checkDate = date('d',($date));
@@ -351,7 +349,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				break;
 		}
 		return $nextDate;
-		//return date("Y-m-d"); // TODO : Do not export for testing purposes only.
 	}
 
 
