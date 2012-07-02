@@ -165,7 +165,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$recyclingItem->save();
 			}
 
-			continue;
+			return;
 		}
 
 		//################################################################
@@ -179,11 +179,9 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$subscriptionHistoryItemData = array("subscription_id" => $subscriptionId,
 												 "cron_id" => $cronId,
 												 "run_date" => time());
-			$returnFromCreateOrder = $this->createOrder($productId, $customerId, $originalOrderId, $subscriptionId);
-			Mage::log("hello?");
+			$returnFromCreateOrder = $this->createOrder($productId, $customerId, $originalOrderId, $subscriptionId, $subscription['amount']);
 			if( $returnFromCreateOrder["success"] == false ) {
 				$subscription->setRunNextIteration(false);
-				Mage::log("trying to set this to false. " . $subscription->getSubscriptionId());
 			}
 			else {
 				$subscription->setNumOfIterationsRan($subscription['num_of_iterations_ran'] + 1);
@@ -200,8 +198,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 
 	}
 
-	public function createOrder($productId, $customerId, $initialOrderId, $subscriptionId){
-		Mage::log("1");
+	public function createOrder($productId, $customerId, $initialOrderId, $subscriptionId, $amount){
 		$store = Mage::app()->getStore('default');
 		$success = false;
 		$orderId = 0;
@@ -209,7 +206,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$customer = Mage::getModel('customer/customer');
 		$customer->setStore($store);
 		$customer->load($customerId);
-		Mage::log("2");
 		$quote = Mage::getModel('sales/quote');
 		$quote->setStore($store);
 		$quote->assignCustomer($customer);
@@ -220,7 +216,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		foreach($vaultCollection as $vaultRecord){
 			// do nothing -- DO NOT DELETE; this is a hack and we need it!
 		}
-		Mage::log("3");
 		if( empty($vaultRecord) )
 		{
 			Mage::log("Payment information could not be retrieved for intial order id: " . $initialOrderId . " and customer id: " . $customerId);
@@ -228,11 +223,12 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$description = "No payment information found for subscription: $subscriptionId";
 			$title = "Payment information missing";
 			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
-			Mage::log("4");
 		}
 		else{
 			try{
 				$product1 = Mage::getModel('catalog/product')->load($productId);
+				$product1->setSpecialPrice($amount/100);
+				$product1->save();
 				$buyInfo1 = array('qty' => "1");
 				$orderModel = Mage::getModel("sales/order");
 				$initialOrderObj = $orderModel->load($initialOrderId);
@@ -253,7 +249,9 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				)
 				);
 					
-				$quote->collectTotals()->save();
+				$quote->collectTotals();
+				$quote->save();
+				
 				$service = Mage::getModel('sales/service_quote', $quote);
 				$service->submitAll();
 				$order = $service->getOrder();
@@ -264,20 +262,17 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 				$success = false;
 
 				if( $this->shouldRecycleDateBeRead )
-				$this->saveDataInSubscriptionHistory($initialOrderId, $customerId, $productId, $subscriptionId);
+					$this->saveDataInSubscriptionHistory($initialOrderId, $customerId, $productId, $subscriptionId);
 				else
 				{
 					$description = "Subscription Id: $subscriptionId Transaction failed and automatic recycling is disabled. Please contact the customer.";
 					$title = "Subscription Id: $subscriptionId Transaction failed";
-					$this->notifyMerchant($originalOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
+					$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
 				}
 
 				$this->setShouldRecycleDateBeRead( false );
 			}
 		}
-		Mage::log("5");
-		Mage::log($success);
-		Mage::log($orderId);
 		return array("success" => $success, "order_id" => $orderId);
 	}
 
