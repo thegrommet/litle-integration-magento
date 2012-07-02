@@ -85,7 +85,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 
 		$cronId = $this->calculateTheCurrentRunCronId();
 
-		Mage::log($cronId);
 		$this->recycle($cronId, Mage::getModel('palorus/recycling'));
 
 		$this->createOrdersForAllActiveSubscriptions($cronId);
@@ -217,9 +216,7 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			// do nothing -- DO NOT DELETE; this is a hack and we need it!
 		}
 		if( empty($vaultRecord) )
-		{
-			Mage::log("Payment information could not be retrieved for intial order id: " . $initialOrderId . " and customer id: " . $customerId);
-				
+		{	
 			$description = "No payment information found for subscription: $subscriptionId";
 			$title = "Payment information missing";
 			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
@@ -393,7 +390,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$title = "Recycling cancelled";
 			$this->notifyMerchant($initialOrderId, $customerId, $productId, $subscriptionId, $recipientEmail, $description,$title);
 		}
-		Mage::log($subscriptionId,$lastSubscriptionHistoryId);
 		$recyclingItemData = array(
 		 							"subscription_id" => $subscriptionId,
 		 							"subscription_history_id" => $lastSubscriptionHistoryId + 1,
@@ -409,7 +405,6 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$returnFromThisModel = Mage::getStoreConfig('payment/Subscription/' . $fieldToLookFor);
 		if( $returnFromThisModel == NULL )
 		$returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
-		Mage::log($returnFromThisModel);
 		return $returnFromThisModel;
 	}
 
