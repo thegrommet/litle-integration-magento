@@ -155,12 +155,14 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 			$recyclingCollectionModel->addFieldToFilter("subscription_id", array("in", array($subscription['subscription_id'])));
 			$recyclingCollectionModel->addAttributeToSort('recycling_id','ASC');
 			$recycleId=0;
-			$recyclingItem;
 			foreach($recyclingCollectionModel as $recyclingItem) {
 				$recycleId = $recyclingItem['recycling_id'];
 			}
-			$recyclingItem->setStatus('cancelled');
-			$recyclingItem->save();
+			if(!empty($recyclingItem))
+			{
+				$recyclingItem->setStatus('cancelled');
+				$recyclingItem->save();
+			}
 		
 			continue;
 		}
@@ -412,38 +414,38 @@ class Litle_Palorus_Model_Subscription extends Mage_Core_Model_Abstract
 		$emailTemplate  = Mage::getModel('core/email_template')->loadDefault('custom_email_template1');
 				
 		//Create an array of variables to assign to template
-// 		$emailTemplateVariables = array();
-// 		$emailTemplateVariables['myvar1'] = $originalOrderId;
-// 		$emailTemplateVariables['myvar2'] = $customerId;
-// 		$emailTemplateVariables['myvar3'] = $productId;
-// 		$emailTemplateVariables['myvar4'] = $subscriptionId;
-// 		$link = Mage::helper("adminhtml")->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $subscriptionId));
-// 		$emailTemplateVariables['myvar5'] = $link;
-// 		$storeId = Mage::getStoreConfig('trans_email/ident_general/email');
-// 		$senderName = Mage::getStoreConfig('trans_email/ident_general/name');;
+		$emailTemplateVariables = array();
+		$emailTemplateVariables['myvar1'] = $originalOrderId;
+		$emailTemplateVariables['myvar2'] = $customerId;
+		$emailTemplateVariables['myvar3'] = $productId;
+		$emailTemplateVariables['myvar4'] = $subscriptionId;
+		$link = Mage::helper("adminhtml")->getUrl('palorus/adminhtml_myform/subscriptionview/', array('subscription_id' => $subscriptionId));
+		$emailTemplateVariables['myvar5'] = $link;
+		$storeId = Mage::getStoreConfig('trans_email/ident_general/email');
+		$senderName = Mage::getStoreConfig('trans_email/ident_general/name');
 		
-		$orderModel = Mage::getModel("sales/order");
-		$initialOrderObj = $orderModel->load($originalOrderId);
-		$orderId = $initialOrderObj['increment_id'];
-		Mage::log(Mage::helper("adminhtml")->getUrl('sales_order_/view', array('order_id' => $orderId)));
+// 		$orderModel = Mage::getModel("sales/order");
+// 		$initialOrderObj = $orderModel->load($originalOrderId);
+// 		$orderId = $initialOrderObj['increment_id'];
+// 		Mage::log(Mage::helper("adminhtml")->getUrl('sales_order_/view', array('order_id' => $orderId)));
 		
-// 		$emailTemplate->setSenderName($senderName);
-// 		$emailTemplate->setSenderEmail($storeId);
-// 		$emailTemplate->setTemplateSubject($title);		
-// 		$emailTemplate->send($addressToSendTo,'Admin', $emailTemplateVariables);
+		$emailTemplate->setSenderName($senderName);
+		$emailTemplate->setSenderEmail($storeId);
+		$emailTemplate->setTemplateSubject($title);		
+		$emailTemplate->send($addressToSendTo,'Admin', $emailTemplateVariables);
 		
-// 		$notificationModel = Mage::getModel('adminnotification/inbox');
-// 		$notification="Invalid subscription Email";
-// 		$notificationItemData = array(
-// 			 							"severity" => 2,
-// 			 							"date_added" => time(),
-// 			 							"title" => $title,
-// 			 							"description" => $description,
-// 			 							"url" => $this->getUrl('palorus/adminhtml_myform/subscriptionview/'),
-// 			 							"is_read" => false,
-// 			 							"is_remove" => false		
-// 									);
-// 		$notificationModel->setData($notificationItemData)->save();
+		$notificationModel = Mage::getModel('adminnotification/inbox');
+		$notification="Invalid subscription Email";
+		$notificationItemData = array(
+			 							"severity" => 2,
+			 							"date_added" => time(),
+			 							"title" => $title,
+			 							"description" => $description,
+			 							"url" => $this->getUrl('palorus/adminhtml_myform/subscriptionview/'),
+			 							"is_read" => false,
+			 							"is_remove" => false		
+									);
+		$notificationModel->setData($notificationItemData)->save();
 		
 	}
 }
