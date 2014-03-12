@@ -257,7 +257,7 @@ public class LitleMagentoXMLWriter extends Task {
 			setAttribute(dirLitleElement, "name", "Litle");
 			Element emptyDirElement = doc.createElement("dir");
 			
-			addNodesFromFileStructureInFolder(emptyDirElement, "app/code/local/Litle/");
+			addNodesFromFileStructureInFolder(emptyDirElement, "app/code/community/Litle/");
 			
 			dirLitleElement.appendChild(emptyDirElement);
 			localTargetElement.appendChild(dirLitleElement);

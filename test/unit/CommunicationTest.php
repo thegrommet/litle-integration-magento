@@ -22,7 +22,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-require_once(getenv('MAGENTO_HOME')."/app/code/local/Litle/LitleSDK/Communication.php");
+require_once(getenv('MAGENTO_HOME')."/app/code/community/Litle/LitleSDK/Communication.php");
 
 class CommunicationTest extends PHPUnit_Framework_TestCase
 {

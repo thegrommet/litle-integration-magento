@@ -3,19 +3,19 @@
 	<modules>
 		<Litle_CreditCard>
 			<active>true</active>
-			<codePool>local</codePool>
+			<codePool>community</codePool>
 		</Litle_CreditCard>
 	</modules>
 	<modules>
 		<Litle_LEcheck>
 			<active>true</active>
-			<codePool>local</codePool>
+			<codePool>community</codePool>
 		</Litle_LEcheck>
 	</modules>
 	<modules>
         <Litle_Palorus>
             <active>true</active>
-            <codePool>local</codePool>
+            <codePool>community</codePool>
         </Litle_Palorus>
     </modules>
 	
