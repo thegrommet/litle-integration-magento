@@ -89,7 +89,7 @@
 	<default>
 		<payment>
 			<creditcard>
-				<active>1</active>
+				<active>0</active>
 				<timeout>65</timeout>
 				<url>https://www.testlitle.com/sandbox/communicator/online</url>
 				<model>creditcard/paymentLogic</model>
