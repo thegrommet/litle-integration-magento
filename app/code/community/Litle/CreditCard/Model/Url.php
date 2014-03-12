@@ -10,8 +10,12 @@ class  Litle_CreditCard_Model_URL
 	                'label' => 'Sandbox'
 			),
 			array(
-			         'value' => "https://cert.litle.com/vap/communicator/online",
-			         'label' => 'Cert'
+			         'value' => "https://postlive.litle.com/vap/communicator/online",
+			         'label' => 'Postlive'
+			),
+			array(
+			         'value' => "https://prelive.litle.com/vap/communicator/online",
+			         'label' => 'PreLive'
 			),
 			array(
 	                 'value' => "https://precert.litle.com/vap/communicator/online",

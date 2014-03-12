@@ -9,7 +9,7 @@ class Litle_CreditCard_Model_Validatehttp extends Mage_Core_Model_Config_Data
 	
 	public function getEcheckConfigData($fieldToLookFor, $store = NULL)
 	{
-		$returnFromThisModel = Mage::getStoreConfig('payment/LEcheck/' . $fieldToLookFor);
+		$returnFromThisModel = Mage::getStoreConfig('payment/lecheck/' . $fieldToLookFor);
 		if( $returnFromThisModel == NULL )
 		$returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
 	

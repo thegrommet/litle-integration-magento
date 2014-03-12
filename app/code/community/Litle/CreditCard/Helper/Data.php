@@ -51,7 +51,7 @@ class Litle_CreditCard_Helper_Data extends Mage_Core_Helper_Abstract
 	 */
 	public function isSandbox()
 	{
-		$url = Mage::getStoreConfig('payment/CreditCard/url');
+		$url = Mage::getStoreConfig('payment/creditcard/url');
 		return (stristr($url, '.testlitle.com/sandbox') !== false);
 	}
 }

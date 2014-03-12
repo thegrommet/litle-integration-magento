@@ -171,7 +171,7 @@ class Litle_CreditCard_Block_Form_CreditCard extends Mage_Payment_Block_Form
 
 	public function getPaypageEnabled()
 	{
-		return Mage::getStoreConfig('payment/CreditCard/paypage_enable');
+		return Mage::getStoreConfig('payment/creditcard/paypage_enable');
 	}
 
 	public function getVaultEnabled()

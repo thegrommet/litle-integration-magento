@@ -36,14 +36,14 @@ class Communication{
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		if(Mage::getStoreConfig('payment/CreditCard/debug_enable')) {
+		if(Mage::getStoreConfig('payment/creditcard/debug_enable')) {
 			$xmlToPrint = Communication::cleanseAccountNumber($req);
 			$xmlToPrint = Communication::cleanseCardValidationNum($xmlToPrint);
 			$xmlToPrint = Communication::cleansePassword($xmlToPrint);
 			Mage::log($xmlToPrint,null,"litle_transaction.log");
 		}
 		$output = curl_exec($ch);
-		if(Mage::getStoreConfig('payment/CreditCard/debug_enable')) {
+		if(Mage::getStoreConfig('payment/creditcard/debug_enable')) {
 			$xmlToPrint = Communication::cleanseAccountNumber($output);
 			Mage::log($xmlToPrint,null,"litle_transaction.log");
 		}

@@ -65,7 +65,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	
 	public function getConfigData($fieldToLookFor, $store = null)
 	{
-		$returnFromThisModel = Mage::getStoreConfig('payment/CreditCard/' . $fieldToLookFor);
+		$returnFromThisModel = Mage::getStoreConfig('payment/creditcard/' . $fieldToLookFor);
 		if (is_null($returnFromThisModel)) {
 			$returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
 		}
@@ -471,7 +471,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 				$litleResponseCode = XMLParser::getNode($litleResponse, 'response');
 				if ($litleResponseCode != '000') {
 					if ($isSale) {
-						if(Mage::getStoreConfig('payment/CreditCard/debug_enable')) {
+						if(Mage::getStoreConfig('payment/creditcard/debug_enable')) {
 							Mage::log("Had an unsuccessful response in an authorization/sale - response code: " . $litleResponseCode, null, "litle.log");
 						}
 						$customerId = $payment->getOrder()->getCustomerId();
