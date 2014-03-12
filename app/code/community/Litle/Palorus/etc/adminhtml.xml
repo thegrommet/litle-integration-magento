@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <menu>
+        <dashboard>
+            <children>
+                <palorus_adminform translate="title" module="palorus">
+                    <title>Litle &amp; Co</title>
+                    <sort_order>100</sort_order>
+                    <children>
+                        <dashboardauthorization translate="title" module="palorus">
+                            <title>Authorization Dashboard</title>
+                            <action>palorus/adminhtml_myform/dashboardauthorization</action>
+                        </dashboardauthorization>
+                        <dashboardfrauddetection translate="title" module="palorus">
+                            <title>Fraud Detection</title>
+                            <action>palorus/adminhtml_myform/dashboardfrauddetection</action>
+                        </dashboardfrauddetection>
+                        <dashboardpostdepositfraudimpact translate="title" module="palorus">
+                            <title>Post-Deposit Fraud Impact</title>
+                            <action>palorus/adminhtml_myform/dashboardpostdepositfraudimpact</action>
+                        </dashboardpostdepositfraudimpact>
+                    </children>
+                </palorus_adminform>
+            </children>
+        </dashboard>
+
+        <sales>
+            <children>
+                <palorus_adminform translate="title" module="palorus">
+                    <title>Litle &amp; Co</title>
+                    <sort_order>200</sort_order>
+                    <children>
+                        <search translate="title" module="palorus">
+                            <title>Transaction Search</title>
+                            <action>palorus/adminhtml_myform/search</action>
+                        </search>
+                        <summary translate="title" module="palorus">
+                            <title>Transaction Summary</title>
+                            <action>palorus/adminhtml_myform/summary</action>
+                        </summary>
+                        <chargebacks translate="title" module="palorus">
+                            <title>Chargebacks</title>
+                            <action>palorus/adminhtml_myform/chargebacksearch</action>
+                            <resource>sales/palorus_adminform/chargebacksearch</resource>
+                        </chargebacks>
+                        <failedtransactions translate="title" module="palorus">
+                            <title>Failed transactions</title>
+                            <action>palorus/adminhtml_myform/failedtransactions</action>
+                        </failedtransactions>
+                    </children>
+                </palorus_adminform>
+            </children>
+        </sales>
+
+        <report>
+            <children>
+                <palorus_adminform translate="title" module="palorus">
+                    <title>Litle &amp; Co</title>
+                    <sort_order>200</sort_order>
+                    <children>
+                        <activity translate="title" module="palorus">
+                            <title>Activity</title>
+                            <action>palorus/adminhtml_myform/activity</action>
+                        </activity>
+                        <authorization translate="title" module="palorus">
+                            <title>Authorization Report</title>
+                            <action>palorus/adminhtml_myform/authorization</action>
+                        </authorization>
+                        <exchange translate="title" module="palorus">
+                            <title>Exchange</title>
+                            <action>palorus/adminhtml_myform/exchange</action>
+                        </exchange>
+                        <binlookup translate="title" module="palorus">
+                            <title>BIN Lookup</title>
+                            <action>palorus/adminhtml_myform/binlookup</action>
+                        </binlookup>
+                        <session translate="title" module="palorus">
+                            <title>Session</title>
+                            <action>palorus/adminhtml_myform/session</action>
+                        </session>
+                        <settlement translate="title" module="palorus">
+                            <title>Settlement</title>
+                            <action>palorus/adminhtml_myform/settlement</action>
+                        </settlement>
+                        <chargebackreport translate="title" module="palorus">
+                            <title>Chargeback Report</title>
+                            <action>palorus/adminhtml_myform/chargebackreport</action>
+                        </chargebackreport>
+                    </children>
+                </palorus_adminform>
+            </children>
+        </report>
+    </menu>
+
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <dashboard>
+                        <children>
+                            <palorus_adminform translate="title" module="palorus">
+                                <title>Litle &amp; Co</title>
+                                <sort_order>100</sort_order>
+                                <children>
+                                    <dashboardauthorization translate="title" module="palorus">
+                                        <title>Authorization Dashboard</title>
+                                        <sort_order>10</sort_order>
+                                    </dashboardauthorization>
+                                    <dashboardfrauddetection translate="title" module="palorus">
+                                        <title>Fraud Detection</title>
+                                        <sort_order>20</sort_order>
+                                    </dashboardfrauddetection>
+                                    <dashboardpostdepositfraudimpact translate="title" module="palorus">
+                                        <title>Post-Deposit Fraud Impact</title>
+                                        <sort_order>30</sort_order>
+                                    </dashboardpostdepositfraudimpact>
+                                </children>
+                            </palorus_adminform>
+                        </children>
+                    </dashboard>
+                    <sales>
+                        <children>
+                            <palorus_adminform translate="title" module="palorus">
+                                <title>Litle &amp; Co</title>
+                                <sort_order>100</sort_order>
+                                <children>
+                                    <search translate="title" module="palorus">
+                                        <title>Transaction Search</title>
+                                        <sort_order>10</sort_order>
+                                    </search>
+                                    <summary translate="title" module="palorus">
+                                        <title>Transaction Summary</title>
+                                        <sort_order>20</sort_order>
+                                    </summary>
+                                    <chargebacksearch translate="title" module="palorus">
+                                        <title>Chargebacks</title>
+                                        <sort_order>30</sort_order>
+                                    </chargebacksearch>
+                                    <failedtransactions translate="title" module="palorus">
+                                        <title>Failed transactions</title>
+                                        <sort_order>40</sort_order>
+                                    </failedtransactions>
+                                </children>
+                            </palorus_adminform>
+                        </children>
+                    </sales>
+                    <report>
+                        <children>
+                            <palorus_adminform translate="title" module="palorus">
+                                <title>Litle &amp; Co</title>
+                                <sort_order>100</sort_order>
+                                <children>
+                                    <activity translate="title" module="palorus">
+                                        <title>Activity</title>
+                                        <sort_order>10</sort_order>
+                                    </activity>
+                                    <authorization translate="title" module="palorus">
+                                        <title>Authorization Report</title>
+                                        <sort_order>20</sort_order>
+                                    </authorization>
+                                    <exchange translate="title" module="palorus">
+                                        <title>Exchange</title>
+                                        <sort_order>30</sort_order>
+                                    </exchange>
+                                    <binlookup translate="title" module="palorus">
+                                        <title>BIN Lookup</title>
+                                        <sort_order>40</sort_order>
+                                    </binlookup>
+                                    <session translate="title" module="palorus">
+                                        <title>Session</title>
+                                        <sort_order>50</sort_order>
+                                    </session>
+                                    <settlement translate="title" module="palorus">
+                                        <title>Settlement</title>
+                                        <sort_order>60</sort_order>
+                                    </settlement>
+                                    <chargebackreport translate="title" module="palorus">
+                                        <title>Chargeback Report</title>
+                                        <sort_order>70</sort_order>
+                                    </chargebackreport>
+                                </children>
+                            </palorus_adminform>
+                        </children>
+                    </report>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

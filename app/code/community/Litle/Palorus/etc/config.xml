@@ -114,109 +114,6 @@
 	</admin>
 
 	<adminhtml>
-       <menu>
-            <dashboard>
-                <children>
-                    <palorus_adminform translate="title" module="palorus">
-                        <title>Litle &amp; Co</title>
-                        <children>
-		                    <dashboardauthorization translate="title" module="palorus">
-        		                <title>Authorization Dashboard</title>
-        		                <action>palorus/adminhtml_myform/dashboardauthorization</action>
-        		            </dashboardauthorization>
-		                    <dashboardfrauddetection translate="title" module="palorus">
-        		                <title>Fraud Detection</title>
-        		                <action>palorus/adminhtml_myform/dashboardfrauddetection</action>
-        		            </dashboardfrauddetection>
-		                    <dashboardpostdepositfraudimpact translate="title" module="palorus">
-        		                <title>Post-Deposit Fraud Impact</title>
-        		                <action>palorus/adminhtml_myform/dashboardpostdepositfraudimpact</action>
-        		            </dashboardpostdepositfraudimpact>
-        		        </children>
-        		    </palorus_adminform>
-        		 </children>
-        	</dashboard>
-
-            <sales>
-                <children>
-                    <palorus_adminform translate="title" module="palorus">
-                        <title>Litle &amp; Co</title>
-                        <children>
-		                    <search translate="title" module="palorus">
-        		                <title>Transaction Search</title>
-        		                <action>palorus/adminhtml_myform/search</action>
-        		            </search>
-		                    <summary translate="title" module="palorus">
-        		                <title>Transaction Summary</title>
-        		                <action>palorus/adminhtml_myform/summary</action>
-        		            </summary>
-		                    <chargebacks translate="title" module="palorus">
-        		                <title>Chargebacks</title>
-        		                <action>palorus/adminhtml_myform/chargebacksearch</action>
-        		            </chargebacks>
-		   		            <failedtransactions translate="title" module="palorus">
-		   		            	<title>Failed transactions</title>
-		   		            	<action>palorus/adminhtml_myform/failedtransactions</action>
-		   		            </failedtransactions>
-        		        </children>
-        		    </palorus_adminform>
-        		 </children>
-        	</sales>
-
-            <report>
-                <children>
-                    <palorus_adminform translate="title" module="palorus">
-                        <title>Litle &amp; Co</title>
-                        <children>
-		                    <activity translate="title" module="palorus">
-        		                <title>Activity</title>
-        		                <action>palorus/adminhtml_myform/activity</action>
-        		            </activity>
-		                    <authorization translate="title" module="palorus">
-        		                <title>Authorization Report</title>
-        		                <action>palorus/adminhtml_myform/authorization</action>
-        		            </authorization>
-		                    <exchange translate="title" module="palorus">
-        		                <title>Exchange</title>
-        		                <action>palorus/adminhtml_myform/exchange</action>
-        		            </exchange>
-		                    <binlookup translate="title" module="palorus">
-        		                <title>BIN Lookup</title>
-        		                <action>palorus/adminhtml_myform/binlookup</action>
-        		            </binlookup>
-		                    <session translate="title" module="palorus">
-        		                <title>Session</title>
-        		                <action>palorus/adminhtml_myform/session</action>
-        		            </session>
-		                    <settlement translate="title" module="palorus">
-        		                <title>Settlement</title>
-        		                <action>palorus/adminhtml_myform/settlement</action>
-        		            </settlement>
-		                    <chargebackreport translate="title" module="palorus">
-        		                <title>Chargeback Report</title>
-        		                <action>palorus/adminhtml_myform/chargebackreport</action>
-        		            </chargebackreport>
-                        </children>
-                    </palorus_adminform>
-                </children>
-            </report>
-        </menu>
-
-        <acl>
-            <resources>
-                <admin>
-                    <children>
-                        <catalog>
-                            <children>
-                                <sintax_adminform>
-                                    <title>My Form</title>
-                                </sintax_adminform>
-                            </children>
-                        </catalog>
-                    </children>
-                </admin>
-            </resources>
-        </acl>
 		<layout>
 			<updates>
 				<customtabs>
@@ -225,6 +122,5 @@
 			</updates>
 		</layout>
 	</adminhtml>
-
 
 </config>

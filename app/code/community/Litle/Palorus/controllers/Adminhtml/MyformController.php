@@ -107,4 +107,42 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
     	$this->getLayout()->getBlock('content')->append($block);
     	$this->renderLayout();
     }
+
+    /**
+     * ACL check
+     *
+     * @return bool
+     */
+    protected function _isAllowed ()
+    {
+        $base = '';
+        $action = strtolower($this->getRequest()->getActionName());
+        if (stripos($action, 'dashboard') !== false) {
+            $base = 'dashboard';
+        }
+        else {
+            switch ($action) {
+                case 'search':
+                case 'summary':
+                case 'chargebacksearch':
+                case 'failedtransactions':
+                    $base = 'sales';
+                    break;
+                case 'activity':
+                case 'authorization':
+                case 'exchange':
+                case 'binlookup':
+                case 'session':
+                case 'settlement':
+                case 'chargebackreport':
+                    $base = 'report';
+                    break;
+            }
+        }
+        $acl = $base . '/palorus_adminform';
+        if (stripos($action, 'mass') === false) {
+            $acl .= '/' . $action;
+        }
+		return Mage::getSingleton('admin/session')->isAllowed($acl);
+    }
 }

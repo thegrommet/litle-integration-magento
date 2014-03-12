@@ -54,7 +54,7 @@ class Litle_CreditCard_Block_Form_CreditCard extends Mage_Payment_Block_Form
 
 	public function getMerchantIdMap()
 	{
-		return Mage::getStoreConfig('payment/CreditCard/merchant_id');
+		return Mage::getStoreConfig('payment/creditcard/merchant_id');
 	}
 
 	public function getReportGroup()

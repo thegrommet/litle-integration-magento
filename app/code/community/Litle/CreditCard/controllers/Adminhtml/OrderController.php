@@ -44,4 +44,14 @@ class Litle_CreditCard_Adminhtml_OrderController extends Mage_Adminhtml_Controll
 			Mage::logException($e);
 		}
 	}
+
+    /**
+     * ACL check
+     *
+     * @return bool
+     */
+    protected function _isAllowed ()
+    {
+		return Mage::getSingleton('admin/session')->isAllowed('sales/order/actions/capture');
+    }
 }
