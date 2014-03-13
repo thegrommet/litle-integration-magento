@@ -83,6 +83,14 @@
 				<cc_exp_month><to_vault>expiration_month</to_vault></cc_exp_month>
 				<cc_exp_year><to_vault>expiration_year</to_vault></cc_exp_year>
 			</palorus_vault_payment>
+
+            <palorus_vault_quote_payment>
+                <vault_id><to_payment>litle_vault_id</to_payment></vault_id>
+                <type><to_payment>cc_type</to_payment></type>
+				<last4><to_payment>cc_last4</to_payment></last4>
+				<expiration_year><to_payment>cc_exp_year</to_payment></expiration_year>
+				<expiration_month><to_payment>cc_exp_month</to_payment></expiration_month>
+            </palorus_vault_quote_payment>
 		</fieldsets>
 	</global>
 

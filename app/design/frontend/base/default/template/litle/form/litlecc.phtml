@@ -52,11 +52,9 @@ $_id = $_time . substr($_session,13);
 	<label for="<?php echo $_code ?>_cc_vaulted" class="required"><?php echo $this->__('Stored Credit Cards') ?></label>
 		<div class="input-box">
 			<select id="<?php echo $_code ?>_cc_vaulted" name="payment[cc_vaulted]">
-				<option value=""><?php echo $this->__('--Please Select a Stored Credit Card--')?></option>
-				<option value="0">New Credit Card</option>
-
+				<option value="0"><?php echo $this->__('New Credit Card') ?></option>
             <?php foreach ($this->getStoredCards() as $card): ?>
-                <option value="<?php echo $card->getVaultId() ?>"><?php echo 'Stored ' . $card->getTypeName() . ' Ending in: ' . $card->getLast4() ?></option>
+                <option value="<?php echo $card->getVaultId() ?>"><?php echo $this->__('Stored %s Ending in: %s', $card->getTypeName(), $card->getLast4()) ?></option>
 	    	<?php endforeach ?>
             </select>
 		</div>

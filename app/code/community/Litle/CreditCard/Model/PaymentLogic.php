@@ -88,6 +88,8 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 			$data = new Varien_Object($data);
 		}
 
+        parent::assignData($data);
+
 		if ($this->getConfigData('paypage_enabled')) {
 			$info = $this->getInfoInstance();
 			$info->setAdditionalInformation('paypage_enabled', $data->getPaypageEnabled());
@@ -98,11 +100,14 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 		}
 
 		if ($this->getConfigData('vault_enable')) {
-			$info->setAdditionalInformation('cc_vaulted', $data->getCcVaulted());
+            $vault = Mage::getModel('palorus/vault')->load($data->getCcVaulted());
+            if ($vault->getId()) {
+                Mage::helper('core')->copyFieldset('palorus_vault_quote_payment', 'to_payment', $vault, $info);
+                $info->setAdditionalInformation('cc_vaulted', $data->getCcVaulted());
+            }
 			$info->setAdditionalInformation('cc_should_save', $data->getCcShouldSave());
 		}
-
-		return parent::assignData($data);
+		return $this;
 	}
 
 	public function validate()
@@ -165,8 +170,10 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
 	public function getTokenInfo($payment)
 	{
 		$vaultIndex = $this->getInfoInstance()->getAdditionalInformation('cc_vaulted');
-		$vaultCard = Mage::getModel('palorus/vault')->load($vaultIndex);
-
+		$vaultCard = Mage::getModel('palorus/vault')->loadByCustomer($vaultIndex, $payment->getOrder()->getCustomerId());
+        if (!$vaultCard->getId()) {
+            Mage::throwException(Mage::helper('creditcard')->__('The stored credit card you chose is unavailable. Please choose a different card or use a new one.'));
+        }
 		$retArray = array();
 		$retArray['type'] = $vaultCard->getType();
 		$retArray['litleToken'] = $vaultCard->getToken();

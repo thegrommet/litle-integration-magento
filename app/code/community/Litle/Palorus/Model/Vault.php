@@ -25,7 +25,25 @@ class Litle_Palorus_Model_Vault extends Mage_Core_Model_Abstract
 			->addFieldToFilter('customer_id', $customerId);
 	}
 
-	/**
+    /**
+     * Load a token only if owned by the provided customer.
+     *
+     * @param int $vault
+     * @param int|Mage_Customer_Model_Customer $customerId
+     * @return Litle_Palorus_Model_Vault
+     */
+    public function loadByCustomer ($vault, $customerId)
+    {
+        if ($customerId instanceof Mage_Customer_Model_Customer) {
+            $customerId = $customerId->getId();
+        }
+        if ($customerId) {
+            $this->getResource()->loadByCustomerId($this, $vault, $customerId);
+        }
+        return $this;
+    }
+
+    /**
 	 * Get a matching customer vault item.
 	 *
 	 * @param Mage_Customer_Model_Customer $customer
@@ -65,13 +83,10 @@ class Litle_Palorus_Model_Vault extends Mage_Core_Model_Abstract
 		$order = $payment->getOrder();
 		Mage::helper('core')->copyFieldset('palorus_vault_order', 'to_vault', $order, $vault);
 		Mage::helper('core')->copyFieldset('palorus_vault_payment', 'to_vault', $payment, $vault);
-
-		
+	
 		$last4 = substr($payment->getCcNumber(), -4);
 		$ccType = $payment->getCcType();
-		
-		
-		
+	
 		$vault->setLast4(substr($payment->getCcNumber(), -4))
 			->setLitleCcType($payment->getCcType())
 			->setToken($token)
