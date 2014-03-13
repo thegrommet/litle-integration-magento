@@ -29,7 +29,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface
 	/**
 	 * Returns a collection of vaulted cards for the registry customer.
 	 *
-	 * @return Litle_Palorus_Model_Mysql4_Vault_Collection
+	 * @return Litle_Palorus_Model_Resource_Vault_Collection
 	 */
 	public function getStoredCards()
 	{

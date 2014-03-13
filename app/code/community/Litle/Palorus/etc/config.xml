@@ -9,10 +9,10 @@
 		<models>
 			<palorus>
 				<class>Litle_Palorus_Model</class>
-				<resourceModel>palorus_mysql4</resourceModel>
+				<resourceModel>palorus_resource</resourceModel>
 			</palorus>
-			<palorus_mysql4>
-				<class>Litle_Palorus_Model_Mysql4</class>
+			<palorus_resource>
+				<class>Litle_Palorus_Model_Resource</class>
 				<entities>
 					<insight>
 						<table>litle_customer_insight</table>
@@ -24,7 +24,7 @@
 						<table>litle_failed_transactions</table>
 					</failedtransactions>
 				</entities>
-			</palorus_mysql4>
+			</palorus_resource>
 		</models>
 
 		<blocks>

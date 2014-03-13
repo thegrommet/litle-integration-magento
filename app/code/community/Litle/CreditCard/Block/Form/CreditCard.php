@@ -181,7 +181,7 @@ class Litle_CreditCard_Block_Form_CreditCard extends Mage_Payment_Block_Form
 
 	/**
 	 *
-	 * @return Litle_Palorus_Model_Mysql4_Vault_Collection
+	 * @return Litle_Palorus_Model_Resource_Vault_Collection
 	 */
 	public function getStoredCards()
 	{

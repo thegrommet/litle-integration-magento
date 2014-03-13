@@ -1,6 +1,6 @@
 <?php
 
-class Litle_Palorus_Model_Mysql4_Vault extends Mage_Core_Model_Mysql4_Abstract
+class Litle_Palorus_Model_Resource_Vault extends Mage_Core_Model_Resource_Db_Abstract
 {
 
 	protected function _construct()
@@ -12,7 +12,7 @@ class Litle_Palorus_Model_Mysql4_Vault extends Mage_Core_Model_Mysql4_Abstract
 	 * Sets the created and modified date attributes.
 	 *
 	 * @param Mage_Core_Model_Abstract $object
-	 * @return Litle_Palorus_Model_Mysql4_Vault
+	 * @return Litle_Palorus_Model_Resource_Vault
 	 */
 	protected function _beforeSave(Mage_Core_Model_Abstract $object)
 	{
@@ -30,7 +30,7 @@ class Litle_Palorus_Model_Mysql4_Vault extends Mage_Core_Model_Mysql4_Abstract
      * @param Litle_Palorus_Model_Vault $object
      * @param int $vaultId
      * @param type $customerId
-     * @return \Litle_Palorus_Model_Mysql4_Vault
+     * @return Litle_Palorus_Model_Resource_Vault
      */
     public function loadByCustomerId (Litle_Palorus_Model_Vault $object, $vaultId, $customerId)
     {

@@ -32,6 +32,6 @@
  * @package     Mage_Sales
  * @author      Magento Core Team <core@magentocommerce.com>
  */
-class Litle_Palorus_Model_Mysql4_Failedtransactions_Grid_Collection extends Mage_Sales_Model_Resource_Order_Grid_Collection
+class Litle_Palorus_Model_Resource_Failedtransactions_Grid_Collection extends Mage_Sales_Model_Resource_Order_Grid_Collection
 {
 }

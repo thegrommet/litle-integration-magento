@@ -14,11 +14,11 @@ class Litle_Palorus_Model_Vault extends Mage_Core_Model_Abstract
 	 * Get unique credit cards for customer
 	 *
 	 * @param int $customerId
-	 * @return Litle_Palorus_Model_Mysql4_Vault_Collection
+	 * @return Litle_Palorus_Model_Resource_Vault_Collection
 	 */
 	public function visibleStoredCards($customerId)
 	{
-		/* @var $collection Litle_Palorus_Model_Mysql4_Vault_Collection */
+		/* @var $collection Litle_Palorus_Model_Resource_Vault_Collection */
 		return Mage::getModel('palorus/vault')
 			->getCollection()
 			->addFieldToFilter('is_visible', 1)
