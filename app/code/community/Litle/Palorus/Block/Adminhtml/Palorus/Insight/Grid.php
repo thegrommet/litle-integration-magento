@@ -39,9 +39,9 @@ extends Mage_Adminhtml_Block_Widget_Grid {
     public function __construct()
     {
         parent::__construct();
-        $this->setId('sales_order_grid');
+        $this->setId('palorus_insight_grid');
         $this->setUseAjax(false);
-        $this->setDefaultSort('created_at');
+        $this->setDefaultSort('transaction_timestamp');
         $this->setDefaultDir('DESC');
         $this->setSaveParametersInSession(true);
     }
