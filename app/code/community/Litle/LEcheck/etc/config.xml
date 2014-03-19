@@ -2,7 +2,7 @@
 <config>
 	<modules>
 		<Litle_LEcheck>
-			<version>8.13.3</version>
+			<version>8.13.4</version>
 		</Litle_LEcheck>
 	</modules>
 	<global>
@@ -26,20 +26,7 @@
 				<setup>
 					<module>Litle_LEcheck</module>
 				</setup>
-				<connection>
-					<use>core_setup</use>
-				</connection>
 			</lecheck_setup>
-			<lecheck_write>
-				<connection>
-					<use>core_write</use>
-				</connection>
-			</lecheck_write>
-			<lecheck_read>
-				<connection>
-					<use>core_read</use>
-				</connection>
-			</lecheck_read>
 		</resources>
 	</global>
 	<default>
