@@ -70,6 +70,8 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
     public function failedtransactionsAction()
     {
      	$this->loadLayout();
+        $this->_title(Mage::helper('palorus')->__('Litle'))
+            ->_title(Mage::helper('palorus')->__('Failed Transactions'));
     	$block = $this->getLayout()->createBlock('palorus/adminhtml_palorus_insight_grid');
 		$this->getLayout()->getBlock('content')->append($block);
     	$this->renderLayout();
@@ -98,11 +100,12 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
     	}
     	$this->failedtransactionsAction();
     }
-    
-    
+       
     public function failedtransactionsviewAction()
     {
     	$this->loadLayout();
+        $this->_title(Mage::helper('palorus')->__('Litle'))
+            ->_title(Mage::helper('palorus')->__('View Failed Transaction'));
     	$block = $this->getLayout()->createBlock('palorus/adminhtml_palorus_insight_failedtransactionsview');
     	$this->getLayout()->getBlock('content')->append($block);
     	$this->renderLayout();

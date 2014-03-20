@@ -33,9 +33,8 @@
 * @license    http://www.opensource.org/licenses/mit-license.php
 * @author     Litle & Co <sdksupport@litle.com> www.litle.com/developers
 */
-class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Grid
-extends Mage_Adminhtml_Block_Widget_Grid {
-
+class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Grid extends Mage_Adminhtml_Block_Widget_Grid
+{
     public function __construct()
     {
         parent::__construct();
@@ -67,7 +66,7 @@ extends Mage_Adminhtml_Block_Widget_Grid {
     {
         $this->addColumn('litle_txn_id', array(
             'header'=> Mage::helper('sales')->__('Litle Transaction Id'),
-            'width' => '80px',
+            'width' => '160px',
             'type'  => 'text',
             'index' => 'litle_txn_id',
         ));
@@ -76,31 +75,44 @@ extends Mage_Adminhtml_Block_Widget_Grid {
             'header' => Mage::helper('sales')->__('Date/Time'),
             'index' => 'transaction_timestamp',
             'type' => 'datetime',
-            'width' => '140px',
+            'width' => '160px',
         ));
 
-        $this->addColumn('order_num', array(
-            'header' => Mage::helper('sales')->__('Order Number'),
-            'index' => 'order_num',
+        $this->addColumn('message', array(
+            'header' => Mage::helper('sales')->__('Reason'),
+            'index' => 'message',
+        ));
+
+        $this->addColumn('quote_id', array(
+            'header' => Mage::helper('sales')->__('Quote ID'),
+            'index' => 'quote_id',
+            'width' => '90px',
+        ));
+
+        $this->addColumn('order_id', array(
+            'header' => Mage::helper('sales')->__('Order ID'),
+            'index' => 'order_id',
+            'width' => '90px',
         ));
 
         $this->addColumn('customer_id', array(
-            'header' => Mage::helper('sales')->__('Customer Number'),
+            'header' => Mage::helper('sales')->__('Customer ID'),
             'index' => 'customer_id',
+            'width' => '90px',
         ));
 
         $this->addColumn('active', array(
             'header' => Mage::helper('sales')->__('Status'),
             'index' => 'active',
             'type'  => 'options',
-            'width' => '70px',
+            'width' => '100px',
             'options' => array('Action Taken','Pending'),
         ));
 
         $this->addColumn('action',
             array(
                 'header'    => Mage::helper('sales')->__('Action'),
-                'width'     => '50px',
+                'width'     => '80px',
                 'type'      => 'action',
                 'getter'     => 'getId',
                 'actions'   => array(

@@ -24,23 +24,22 @@
  * @license     http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 ?>
-<!-- Addresses list -->
-
-<?php $active = $this->getActive();?>
+<?php /* @var $this Litle_Palorus_Block_Adminhtml_Palorus_Insight_Failedtransactionsview */ ?>
+<?php $active = $this->getFailedTransaction()->getActive() ?>
 <table cellspacing="0" class="form-edit">
 	<tr>
 		<td class="address-list">
 			<div class="content-header">
-				<h3 class="icon-head head-sales-order">
-					
-				Failed Transaction Details
-				</h3>
+				<h3 class="icon-head head-sales-order"><?php echo $this->__('Failed Transaction Details') ?></h3>
+                <p class="form-buttons">
+                    <button onclick="setLocation('<?php echo $this->getUrl('*/*/failedtransactions') ?>')" class="scalable back" type="button" title="<?php echo $this->__('Back') ?>"><span><span><span><?php echo $this->__('Back') ?></span></span></span></button>
+                </p>
 			</div>
 			<ul class="messages">
 
 			<?php if ($active === false):?>
 				<ul>
-					<li><span>Failed Transaction has already been dealt with.</span></li>
+					<li><span><?php echo $this->__('This Failed Transaction has already been processed.') ?></span></li>
 				</ul>
 			<?php endif;?>
 				
@@ -48,24 +47,34 @@
 				<table class="form-list" cellspacing="0">
 					<tbody>
 						<tr>
-							<td class="label"><label>Litle Transaction ID:</label></td>
-							<td class="value"><?php echo $this->getLitleTxnId()?></td>
+							<td class="label"><label><?php echo $this->__('Date:') ?></label></td>
+							<td class="value"><?php echo $this->formatDate($this->getFailedTransaction()->getTransactionTimestamp(), 'medium', true) ?></td>
 						</tr>
 						<tr>
-							<td class="label"><label>Customer ID:</label></td> 
-							<td class="value"><?php echo $this->getCustomerUrl()?></td>
+							<td class="label"><label><?php echo $this->__('Litle Transaction ID:') ?></label></td>
+                            <td class="value"><?php echo $this->escapeHtml($this->getFailedTransaction()->getLitleTxnId()) ?></td>
 						</tr>
 						<tr>
-							<td class="label"><label>Order Number:</label></td>
-							<td class="value"><?php echo $this->getOrderUrl()?></td>
+							<td class="label"><label><?php echo $this->__('Customer ID:') ?></label></td>
+							<td class="value"><?php echo $this->getCustomerUrl() ?></td>
+						</tr>
+                        <?php if ($this->getFailedTransaction()->getQuoteId()): ?>
+						<tr>
+							<td class="label"><label><?php echo $this->__('Quote ID:') ?></label></td>
+							<td class="value"><?php echo $this->getFailedTransaction()->getQuoteId() ?></td>
+						</tr>
+                        <?php endif; ?>
+						<tr>
+							<td class="label"><label><?php echo $this->__('Order Number:') ?></label></td>
+							<td class="value"><?php echo $this->getOrderUrl() ?></td>
 						</tr>
 						<tr>
-							<td class="label"><label>Message:</label></td>
-							<td class="value"><?php echo $this->getMessage()?></td>
+							<td class="label"><label><?php echo $this->__('Message:') ?></label></td>
+							<td class="value"><?php echo $this->escapeHtml($this->getFailedTransaction()->getMessage()) ?></td>
 						</tr>
 						<tr>
-							<td class="label"><label>Raw XML:</label></td>
-							<td class="value"><?php echo $this->getFullXml()?></td>
+							<td class="label"><label><?php echo $this->__('Raw XML:') ?></label></td>
+                            <td class="value"><pre><?php echo $this->getFullXml() ?></pre></td>
 						</tr>
 					</tbody>
 				</table>
@@ -73,14 +82,14 @@
 		</td>
 	</tr>
 	<div align="right">
-<?php if ($active === true):?>
+<?php if (0 && $active === true):  // don't know what the idea was here ?>
 	<?php echo $this->getChildHtml('cancel_button') ?> &nbsp
 	<?php echo $this->getChildHtml('suspend_button') ?> &nbsp
 	<?php echo $this->getChildHtml('save_button') ?> &nbsp
 	<?php if ($this->showResumeButton()): ?>
 		<?php echo $this->getChildHtml('resume_button') ?>
-	<?php endif?>
-<?php endif?>
+	<?php endif ?>
+<?php endif ?>
 	</div>
 	
 </table>
