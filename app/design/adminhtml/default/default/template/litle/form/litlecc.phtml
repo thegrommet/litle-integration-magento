@@ -28,8 +28,8 @@
 /* @var $this Litle_CreditCard_Block_Form_CreditCard  */
 $_code = $this->getMethodCode();
 $_reportGroup = $this->getReportGroup();
-$_paypageId = Mage::getModel('Litle_CreditCard_Model_PaymentLogic')->getConfigData("paypage_id");
-$_paypageUrl = Mage::getModel('Litle_CreditCard_Model_PaymentLogic')->getConfigData("paypage_url");
+$_paypageId = Mage::getSingleton('creditcard/paymentLogic')->getConfigData('paypage_id');
+$_paypageUrl = Mage::getSingleton('creditcard/paymentLogic')->getConfigData('paypage_url');
 ?>
 
 <ul id="payment_form_<?php echo $_code ?>" style="display:none;">

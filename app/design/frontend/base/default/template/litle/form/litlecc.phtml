@@ -27,8 +27,8 @@
 ?>
 <?php
 $_reportGroup = $this->getReportGroup();
-$_paypageId = Mage::getModel('Litle_CreditCard_Model_PaymentLogic')->getConfigData("paypage_id");
-$_paypageUrl = Mage::getModel('Litle_CreditCard_Model_PaymentLogic')->getConfigData("paypage_url");
+$_paypageId = Mage::getSingleton('creditcard/paymentLogic')->getConfigData('paypage_id');
+$_paypageUrl = Mage::getSingleton('creditcard/paymentLogic')->getConfigData('paypage_url');
 $_isLoggedIn = Mage::helper('customer')->isLoggedIn();
 ?>
 
