@@ -14,7 +14,7 @@ class Litle_Palorus_Helper_Data extends Mage_Core_Helper_Abstract
         if ($payment->getCcLast4()) {
             $last4 = $payment->getCcLast4();
         }
-        else if (!empty($payment->getCcNumber())) {
+        else if ($payment->getCcNumber()) {
             preg_match('/.*(\d\d\d\d)/', $payment->getCcNumber(), $matches);
             $last4 = $matches[1];
         }
