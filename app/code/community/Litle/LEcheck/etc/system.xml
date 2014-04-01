@@ -3,7 +3,7 @@
 	<sections>
 		<payment>
 			<groups>
-				<lecheck translate="label" module="paygate">
+				<lecheck translate="label" module="lecheck">
 					<label>Litle - Echeck</label>
 					<frontend_type>text</frontend_type>
 					<sort_order>1</sort_order>

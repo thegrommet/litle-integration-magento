@@ -75,7 +75,8 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
         $parentTxnId = $payment->getParentTransactionId();
         if ($parentTxnId == 'Litle VT') {
             Mage::throwException(
-                "This order was placed using Litle Virtual Terminal. Please process the $txnType by logging into Litle Virtual Terminal (https://vt.litle.com).");
+                "This order was placed using Litle Virtual Terminal. Please process the $txnType by logging into Litle Virtual Terminal (https://reports.litle.com)."
+            );
         }
     }
 
@@ -101,6 +102,10 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
             if ($vault->getId()) {
                 Mage::helper('core')->copyFieldset('palorus_vault_quote_payment', 'to_payment', $vault, $info);
                 $info->setAdditionalInformation('cc_vaulted', $data->getCcVaulted());
+            }
+            else {
+                $info->setLitleVaultId(null)
+                    ->unsAdditionalInformation('cc_vaulted');
             }
             $info->setAdditionalInformation('cc_should_save', $data->getCcShouldSave());
         }
@@ -137,6 +142,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
         $retArray['expDate'] = sprintf('%02d%02d', $payment->getCcExpMonth(), $expYear[1]);
         $retArray['cardValidationNum'] = $payment->getCcCid();
 
+        $this->formatData($retArray);
         return $retArray;
     }
 
@@ -162,6 +168,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
         preg_match('/\d\d(\d\d)/', $payment->getCcExpYear(), $expYear);
         $retArray['expDate'] = sprintf('%02d%02d', $payment->getCcExpMonth(), $expYear[1]);
         $retArray['cardValidationNum'] = $payment->getCcCid();
+        $this->formatData($retArray);
 
         return $retArray;
     }
@@ -177,6 +184,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
         $retArray['type'] = $vaultCard->getType();
         $retArray['litleToken'] = $vaultCard->getToken();
         $retArray['cardValidationNum'] = $payment->getCcCid();
+        $this->formatData($retArray);
 
         $payment->setCcLast4($vaultCard->getLast4());
         $payment->setCcType($vaultCard->getType());
@@ -217,6 +225,8 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
             $retArray['country'] = $contactInfo->getCountry();
             $retArray['email'] = $contactInfo->getCustomerEmail();
             $retArray['phone'] = $contactInfo->getTelephone();
+
+            $this->formatData($retArray);
             return $retArray;
         }
         return null;
@@ -272,13 +282,21 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
             'user' => $this->getConfigData('user'),
             'password' => $this->getConfigData('password'),
             'merchantId' => $this->getMerchantId($payment),
-            'version' => '8.10',
-            'merchantSdk' => 'Magento;8.14.0',
+            'merchantSdk' => 'Magento;8.15.0',
             'reportGroup' => $this->getMerchantId($payment),
             'customerId' => $order->getCustomerEmail(),
             'url' => $this->getConfigData('url'),
             'proxy' => $this->getConfigData('proxy'),
-            'timeout' => $this->getConfigData('timeout')
+            'timeout' => $this->getConfigData('timeout'),
+            'batch_requests_path' => 'MAGENTO', //Magento doesn't use batch
+            'sftp_username' => 'MAGENTO', //Magento doesn't use batch
+            'sftp_password' => 'MAGENTO', //Magento doesn't use batch
+            'batch_url' => 'MAGENTO', //Magento doesn't use batch
+            'tcp_port' => 'MAGENTO', //Magento doesn't use batch
+            'tcp_ssl' => 'MAGENTO', //Magento doesn't use batch
+            'tcp_timeout' => 'MAGENTO', //Magento doesn't use batch
+            'litle_requests_path' => 'MAGENTO', //Magento doesn't use batch
+            'print_xml' => 'false' //Magento uses debug_enabled instead
         );
         return $hash;
     }
@@ -298,13 +316,16 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
                     $url_temp2 = explode('.', $url);
                     $count = count($url_temp2);
                 }
-                if ($count < 3) {
+                if ($count == 2) {
                     if (strlen($url_temp2['0'] . '.' . $url_temp2['1']) > 13) {
                         $url = $url_temp2['0'];
                     }
                     else {
                         $url = $url_temp2['0'] . '.' . $url_temp2['1'];
                     }
+                }
+                if ($count == 1) {
+                    $url = substr($url_temp2['0'], 0, 13);
                 }
             }
         }
@@ -324,7 +345,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
     public function getOrderDate (Varien_Object $payment)
     {
         $order = $payment->getOrder();
-        $date = $order->getCreatedAtFormated(short);
+        $date = $order->getCreatedAtFormated('short');
         $date_temp = explode('/', $date);
         $month = $date_temp['0'];
         if ((int)$month < 10) {
@@ -393,9 +414,16 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
     public function getFraudCheck (Varien_Object $payment)
     {
         $order = $payment->getOrder();
-        $hash = array(
-            'customerIpAddress' => $order->getRemoteIp()
-        );
+        $ip = $order->getRemoteIp();
+        $ipv4Regex = "/\A(?:\d{1,3}\.){3}\d{1,3}\z/";
+        $matches = preg_match($ipv4Regex, $ip);
+        if ($matches === 1) {
+            $hash = array('customerIpAddress' => $ip);
+        }
+        else {
+            //Mage::log("Not sending ip address " . $ip . " because it isn't ipv4", null, "litle.log");
+            $hash = array();
+        }
         return $hash;
     }
 
@@ -457,9 +485,13 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
             !is_null($this->getUpdater($litleResponse, 'tokenResponse', 'litleToken'))) {
 
             $vault = Mage::getModel('palorus/vault')->setTokenFromPayment(
-                $payment, $this->getUpdater($litleResponse, 'tokenResponse', 'litleToken'), $this->getUpdater($litleResponse, 'tokenResponse', 'bin'));
-
-            $this->getInfoInstance()->setAdditionalInformation('vault_id', $vault->getId());
+                $payment, 
+                $this->getUpdater($litleResponse, 'tokenResponse', 'litleToken'),
+                $this->getUpdater($litleResponse, 'tokenResponse', 'bin')
+            );
+            if ($vault) {
+                $this->getInfoInstance()->setAdditionalInformation('vault_id', $vault->getId());
+            }
         }
     }
 
@@ -498,15 +530,19 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
             }
         }
         else {
-            Mage::throwException($message);
+            $this->saveFailedTransaction($payment, $litleResponse, '', $message);
+            Mage::throwException('Sorry, but there was a problem processing your order. Please try again later or contact us.');
+            //Mage::throwException($message);
         }
     }
 
-    protected function saveFailedTransaction (Varien_Object $payment, $xmlDocument, $litleTxnId)
+    protected function saveFailedTransaction (Varien_Object $payment, $xmlDocument, $litleTxnId, $message = null)
     {
         $fullXml = $xmlDocument->saveXML();
         try {
-            $message = XMLParser::getNode($xmlDocument, 'message');
+            if (!$message) {
+                $message = XMLParser::getNode($xmlDocument, 'message');
+            }
             $model = Mage::getModel('palorus/failedtransactions')
                 ->setMessage($message)
                 ->setFullXml($fullXml)
@@ -564,7 +600,8 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
                 $response = 'The transaction was not approved by the debit or credit card company. Please call the card company or try another card.';
                 break;
 
-            case '301': case '302': case '303': case '304': case '307': case '315': case '349': case '350':
+            case '301': case '302': case '303': case '304': case '307': case '315': case '323': case '349':
+            case '350':
                 $response = 'The transaction was declined by the debit or credit card company. Please verify the card information is correct or try another card.';
                 break;
 
@@ -587,7 +624,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
             default:
                 $response = 'The order was not approved. Please try again later or contact us.';
         }
-        Mage::throwException(Mage::helper('creditcard')->__('%s (Transaction ID Ref: %s)', $response, $txnId));
+        Mage::throwException(Mage::helper('creditcard')->__('%s (Transaction Ref: %s)', $response, $txnId));
     }
 
     /**
@@ -600,13 +637,34 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
         $litleTxnId = XMLParser::getNode($litleResponse, 'litleTxnId');
 
         if ($litleResponseCode === '306') {
-            $this->setOrderStatusAndCommentsForFailedTransaction($payment, $litleTxnId, Mage_Sales_Model_Order_Payment_Transaction::TYPE_VOID, Mage_Sales_Model_Order::STATE_CANCELED, Mage_Payment_Model_Method_Abstract::STATUS_VOID, "Authorization has expired - no need to reverse.  The original Authorization is no longer valid, because it has expired.  You can not perform an Authorization Reversal for an expired Authorization.");
+            $this->setOrderStatusAndCommentsForFailedTransaction(
+                $payment,
+                $litleTxnId,
+                Mage_Sales_Model_Order_Payment_Transaction::TYPE_VOID,
+                Mage_Sales_Model_Order::STATE_CANCELED,
+                Mage_Payment_Model_Method_Abstract::STATUS_VOID,
+                "Authorization has expired - no need to reverse.  The original Authorization is no longer valid, because it has expired.  You can not perform an Authorization Reversal for an expired Authorization."
+            );
         }
         else if ($litleResponseCode === '311') {
-            $this->setOrderStatusAndCommentsForFailedTransaction($payment, $litleTxnId, Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND, Mage_Sales_Model_Order::STATE_COMPLETE, Mage_Payment_Model_Method_Abstract::STATUS_APPROVED, "Deposit is already referenced by a chargeback.  The deposit is already referenced by a chargeback; therefore, a refund cannot be processed against the original transaction.");
+            $this->setOrderStatusAndCommentsForFailedTransaction(
+                $payment,
+                $litleTxnId,
+                Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND,
+                Mage_Sales_Model_Order::STATE_COMPLETE,
+                Mage_Payment_Model_Method_Abstract::STATUS_APPROVED,
+                "Deposit is already referenced by a chargeback.  The deposit is already referenced by a chargeback; therefore, a refund cannot be processed against the original transaction."
+            );
         }
         else if ($litleResponseCode === '316') {
-            $this->setOrderStatusAndCommentsForFailedTransaction($payment, $litleTxnId, Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND, Mage_Sales_Model_Order::STATE_COMPLETE, Mage_Payment_Model_Method_Abstract::STATUS_APPROVED, "Automatic refund already issued.  This refund transaction is a duplicate for one already processed automatically by the Litle Fraud Chargeback Prevention Service.");
+            $this->setOrderStatusAndCommentsForFailedTransaction(
+                $payment,
+                $litleTxnId,
+                Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND,
+                Mage_Sales_Model_Order::STATE_COMPLETE,
+                Mage_Payment_Model_Method_Abstract::STATUS_APPROVED,
+                "Automatic refund already issued.  This refund transaction is a duplicate for one already processed automatically by the Litle Fraud Chargeback Prevention Service."
+            );
         }
         else if ($litleResponseCode === '335') {
             $descriptiveMessage = "This method of payment does not support authorization reversals.  You can not perform an Authorization Reversal transaction for this payment type.";
@@ -660,13 +718,25 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
     }
 
     /**
+     * Format/trim data before posting to the API.
+     *
+     * @param array $data
+     */
+    protected function formatData (array &$data)
+    {
+        foreach ($data as &$field) {
+            if (is_string($field)) {
+                $field = trim($field, " \t\r");
+            }
+        }
+    }
+
+    /**
      * this method is called if we are just authorising a transaction
      */
     public function authorize (Varien_Object $payment, $amount)
     {
-        // @TODO This is the wrong way to do this.
-        if (preg_match('/sales_order_create/i', $_SERVER['REQUEST_URI']) &&
-            ($this->getConfigData('paypage_enable') == '1')) {
+        if (Mage::app()->getStore()->isAdmin() && $this->getConfigData('paypage_enable') == '1') {
             $payment->setStatus('N/A')
                 ->setCcTransId('Litle VT')
                 ->setLastTransId('Litle VT')
@@ -724,8 +794,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
      */
     public function capture (Varien_Object $payment, $amount)
     {
-        if (preg_match('/sales_order_create/i', $_SERVER['REQUEST_URI']) &&
-            ($this->getConfigData('paypage_enable') == '1')) {
+        if (Mage::app()->getStore()->isAdmin() && $this->getConfigData('paypage_enable') == '1') {
             $payment->setStatus('N/A')
                 ->setCcTransId('Litle VT')
                 ->setLastTransId('Litle VT')
@@ -733,7 +802,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
                 ->setIsTransactionClosed(0)
                 ->setCcType('Litle VT');
 
-            return;
+            return $this;
         }
 
         $this->isFromVT($payment, 'capture');

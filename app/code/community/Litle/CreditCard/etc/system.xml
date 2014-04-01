@@ -3,7 +3,7 @@
 	<sections>
 		<payment>
 			<groups>
-				<creditcard translate="label" module="paygate">
+				<creditcard translate="label" module="creditcard">
 					<label>Litle - Credit Card</label>
 					<frontend_type>text</frontend_type>
 					<sort_order>1</sort_order>

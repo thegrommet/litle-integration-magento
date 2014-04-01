@@ -23,7 +23,6 @@
  */
 class Litle_CreditCard_Block_Form_CreditCard extends Mage_Payment_Block_Form
 {
-
 	/**
 	 *
 	 * @var array
@@ -186,7 +185,10 @@ class Litle_CreditCard_Block_Form_CreditCard extends Mage_Payment_Block_Form
 	public function getStoredCards()
 	{
 		if (is_null($this->_storedCards)) {
-			$this->_storedCards = Mage::getModel('palorus/vault')->getCollection()->addCustomerFilter(Mage::helper('palorus')->getCustomer());
+			$this->_storedCards = Mage::getResourceModel('palorus/vault_collection')
+                ->addCustomerFilter(Mage::helper('palorus')->getCustomer())
+                ->addFieldToFilter('is_visible', 1)
+                ->addOrder('created', 'DESC');
 		}
 		return $this->_storedCards;
 	}
@@ -198,6 +200,32 @@ class Litle_CreditCard_Block_Form_CreditCard extends Mage_Payment_Block_Form
 		}
 		return false;
 	}
+
+	/**
+     * Get the chosen vault ID.
+     *
+     * @return int
+     */
+    public function getActiveVaultId ()
+    {
+        $info = $this->getMethod()->getInfoInstance();
+        if (is_null($info->getLitleVaultId()) && !$info->getCcType()) {  // default to last used card
+            return $this->getStoredCards()->getFirstItem()->getId();
+        }
+        $vaultId = $info->getLitleVaultId();
+        return $vaultId ? $vaultId : false;
+    }
+
+    /**
+     * Is the provided vault ID chosen as the payment method?
+     *
+     * @param int $vaultId
+     * @return bool
+     */
+    public function isStoredCardActive ($vaultId)
+    {
+        return $this->getActiveVaultId() == $vaultId;
+    }
 
 	/**
 	 * Render block HTML
@@ -212,4 +240,3 @@ class Litle_CreditCard_Block_Form_CreditCard extends Mage_Payment_Block_Form
 		return parent::_toHtml();
 	}
 }
-
