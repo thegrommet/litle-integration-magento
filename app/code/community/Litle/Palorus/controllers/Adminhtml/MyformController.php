@@ -131,6 +131,10 @@ class Litle_Palorus_Adminhtml_MyformController extends Mage_Adminhtml_Controller
                 case 'failedtransactions':
                     $base = 'sales';
                     break;
+                case 'failedtransactionsview':
+                    $base = 'sales';
+                    $action = 'failedtransactions';
+                    break;
                 case 'activity':
                 case 'authorization':
                 case 'exchange':
