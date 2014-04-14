@@ -60,16 +60,6 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
      */
     protected $_canSaveCc = false;
 
-    public function getConfigData ($fieldToLookFor, $store = null)
-    {
-        $returnFromThisModel = Mage::getStoreConfig('payment/creditcard/' . $fieldToLookFor);
-        if (is_null($returnFromThisModel)) {
-            $returnFromThisModel = parent::getConfigData($fieldToLookFor, $store);
-        }
-
-        return $returnFromThisModel;
-    }
-
     public function isFromVT ($payment, $txnType)
     {
         $parentTxnId = $payment->getParentTransactionId();
