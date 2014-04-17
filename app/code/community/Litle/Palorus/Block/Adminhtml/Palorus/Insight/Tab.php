@@ -1,9 +1,9 @@
 <?php
 
 class Litle_Palorus_Block_Adminhtml_Palorus_Insight_Tab
-extends Mage_Adminhtml_Block_Widget_Grid
-implements Mage_Adminhtml_Block_Widget_Tab_Interface {
-
+    extends Mage_Adminhtml_Block_Widget_Grid
+    implements Mage_Adminhtml_Block_Widget_Tab_Interface
+{
 	/**
 	 * Set the template for the block
 	 *
@@ -24,7 +24,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 		$collection = Mage::getModel('palorus/insight')
 			->getCollection()
 			->addFieldToFilter('customer_id',$customerId);
-			
+
 		$this->setCollection($collection);
 		return parent::_prepareCollection();
 	}
@@ -87,12 +87,12 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 		));
 		return parent::_prepareColumns();
 	}
-	
+
 	public function getRowUrl($row)
 	{
 		return $this->getUrl('*/sales_order/view', array('order_id' => $row->getOrderId()));
 	}
-	
+
 	public function getGridUrl()
 	{
 	}
@@ -125,7 +125,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface {
 	 */
 	public function canShowTab()
 	{
-		return true;
+		return (bool)Mage::registry('current_customer')->getId();
 	}
 
 	/**

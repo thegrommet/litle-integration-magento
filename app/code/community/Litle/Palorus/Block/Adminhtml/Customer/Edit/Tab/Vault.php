@@ -1,15 +1,13 @@
 <?php
-
 /**
  * Litle Vault Info block
  *
  * @author jholden
  */
 class Litle_Palorus_Block_Adminhtml_Customer_Edit_Tab_Vault
-extends Mage_Adminhtml_Block_Template
-implements Mage_Adminhtml_Block_Widget_Tab_Interface
+    extends Mage_Adminhtml_Block_Template
+    implements Mage_Adminhtml_Block_Widget_Tab_Interface
 {
-
 	protected function _construct()
 	{
 		parent::_construct();
@@ -79,7 +77,7 @@ implements Mage_Adminhtml_Block_Widget_Tab_Interface
 	 */
 	public function canShowTab()
 	{
-		return true;
+		return (bool)$this->getCustomer()->getId();
 	}
 
 	/**
