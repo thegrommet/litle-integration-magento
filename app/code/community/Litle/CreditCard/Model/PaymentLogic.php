@@ -332,22 +332,17 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
         return $retArray;
     }
 
+    /**
+     * Format the order date.
+     *
+     * @param Varien_Object $payment
+     * @return string
+     */
     public function getOrderDate (Varien_Object $payment)
     {
-        $order = $payment->getOrder();
-        $date = $order->getCreatedAtFormated('short');
-        $date_temp = explode('/', $date);
-        $month = $date_temp['0'];
-        if ((int)$month < 10) {
-            $month = '0' . $month;
-        }
-        $day = $date_temp['1'];
-        if ((int)$day < 10) {
-            $day = '0' . $day;
-        }
-        $year_temp = explode(' ', $date_temp['2']);
-        $year = '20' . $year_temp['0'];
-        return $year . '-' . $month . '-' . $day;
+        $date = $payment->getOrder()->getCreatedAtStoreDate();
+        /* @var $date Zend_Date */
+        return $date->toString('yyyy-MM-dd');
     }
 
     public function getLineItemData (Varien_Object $payment)
@@ -471,16 +466,14 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
      */
     protected function _saveToken (Varien_Object $payment, DOMDocument $litleResponse)
     {
-        if (!is_null($this->getUpdater($litleResponse, 'tokenResponse')) &&
-            !is_null($this->getUpdater($litleResponse, 'tokenResponse', 'litleToken'))) {
-
-            $vault = Mage::getModel('palorus/vault')->setTokenFromPayment(
-                $payment, 
-                $this->getUpdater($litleResponse, 'tokenResponse', 'litleToken'),
-                $this->getUpdater($litleResponse, 'tokenResponse', 'bin')
-            );
+        $token = XmlParser::getNode($litleResponse, 'litleToken');
+        $bin = XmlParser::getNode($litleResponse, 'bin');
+        if ($token) {
+            $vault = Mage::getModel('palorus/vault')->setTokenFromPayment($payment, $token, $bin);
             if ($vault) {
-                $this->getInfoInstance()->setAdditionalInformation('vault_id', $vault->getId());
+                $this->getInfoInstance()
+                        ->setLitleVaultId($vault->getId())
+                        ->setAdditionalInformation('cc_vaulted', $vault->getId());
             }
         }
     }

@@ -49,8 +49,10 @@ class XMLParser{
 	public static function getAttribute($dom, $elementName, $attributeName)
 	{
 		$attributes = $dom->getElementsByTagName($elementName)->item(0);
-		$retVal = $attributes->getAttribute($attributeName);
-		return $retVal;
+        if ($attributes) {
+            return $attributes->getAttribute($attributeName);
+        }
+		return '';
 	}
 	
 	public static function getDomDocumentAsString($dom)
