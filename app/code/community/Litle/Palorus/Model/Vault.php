@@ -84,9 +84,6 @@ class Litle_Palorus_Model_Vault extends Mage_Core_Model_Abstract
 		Mage::helper('core')->copyFieldset('palorus_vault_order', 'to_vault', $order, $vault);
 		Mage::helper('core')->copyFieldset('palorus_vault_payment', 'to_vault', $payment, $vault);
 	
-		$last4 = substr($payment->getCcNumber(), -4);
-		$ccType = $payment->getCcType();
-	
 		$vault->setLast4(substr($payment->getCcNumber(), -4))
 			->setLitleCcType($payment->getCcType())
 			->setToken($token)

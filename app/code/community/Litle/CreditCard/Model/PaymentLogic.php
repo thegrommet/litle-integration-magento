@@ -108,25 +108,27 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
         return $this;
     }
 
-    public function litleCcTypeEnum (Varien_Object $payment)
+    /**
+     * Convert the Magento CC type into a Litle one.
+     *
+     * @param string $type
+     * @return string
+     */
+    public function litleCcTypeEnum ($type)
     {
-        $typeEnum = '';
-        if ($payment->getCcType() == 'AE') {
-            $typeEnum = 'AX';
+        if ($type == 'AE') {
+            return 'AX';
         }
-        else if ($payment->getCcType() == 'JCB') {
-            $typeEnum = 'JC';
+        else if ($type == 'JCB') {
+            return 'JC';
         }
-        else {
-            $typeEnum = $payment->getCcType();
-        }
-        return $typeEnum;
+        return $type;
     }
 
     public function getCreditCardInfo (Varien_Object $payment)
     {
         $retArray = array();
-        $retArray['type'] = $this->litleCcTypeEnum($payment);
+        $retArray['type'] = $this->litleCcTypeEnum($payment->getCcType());
         $retArray['number'] = $payment->getCcNumber();
         preg_match('/\d\d(\d\d)/', $payment->getCcExpYear(), $expYear);
         $retArray['expDate'] = sprintf('%02d%02d', $payment->getCcExpMonth(), $expYear[1]);
@@ -153,7 +155,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
         $info = $this->getInfoInstance();
 
         $retArray = array();
-        $retArray['type'] = $this->litleCcTypeEnum($payment);
+        $retArray['type'] = $this->litleCcTypeEnum($payment->getCcType());
         $retArray['paypageRegistrationId'] = $info->getAdditionalInformation('paypage_registration_id');
         preg_match('/\d\d(\d\d)/', $payment->getCcExpYear(), $expYear);
         $retArray['expDate'] = sprintf('%02d%02d', $payment->getCcExpMonth(), $expYear[1]);
@@ -171,7 +173,7 @@ class Litle_CreditCard_Model_PaymentLogic extends Mage_Payment_Model_Method_Cc
             Mage::throwException(Mage::helper('creditcard')->__('The stored credit card you chose is unavailable. Please choose a different card or use a new one.'));
         }
         $retArray = array();
-        $retArray['type'] = $vaultCard->getType();
+        $retArray['type'] = $this->litleCcTypeEnum($vaultCard->getType());
         $retArray['litleToken'] = $vaultCard->getToken();
         $retArray['cardValidationNum'] = $payment->getCcCid();
         $this->formatData($retArray);
